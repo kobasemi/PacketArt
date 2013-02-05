@@ -7,12 +7,34 @@ import net.sourceforge.jpcap.net.*;
 /**
  * Jpcapの動作確認と、プロトコルの仕分けテストを兼ねて、パケットデータの読み取りを行う。
  * IPv6は使えないんじゃないか・・・？RARPってARPプロトコルの一種じゃないのか・・？
+ * 
+ * 
+ * CUIで動かしてください。
+ * 
+ * 8[19:35:35 root@PacketMonster ~/PacketArt]$ java ProtoSum ../a.cap
+ * PacketCapture: loading native library jpcap.. ok
+ * 
+ * Captured 1000000 Packets...
+ * 
+ * Ether Packets: 0
+ * ARP Packets: 0
+ * RARP Packets: 0
+ * ICMP Packets: 78288
+ * IGMP Packets: 0
+ * IP Packets: 28028
+ * IP6 Packets: 77951
+ * TCP Packets: 675358
+ * UDP Packets: 140374
+ * Unknown Packets: 0
+ *
+ * ~C (800MBも読み込む時間無いから100万パケットでCtrl+Cして中断した）
+ * 
 */
 public class ProtoSum{
-    private static final int PACKET_COUNT = -1/* ALL */; 
-    private static final String FILTER = ""/* ALL */;
-    public static PacketCapture m_pcap;
-    public static ProtoSumPacketHandler h;
+    private static final int PACKET_COUNT = -1/* どんな数のパケットでも読むぜ */; 
+    private static final String FILTER = ""/* どんなパケットでも読むぜ */;
+    public static PacketCapture m_pcap;//こいつがJpcap本体。
+    public static ProtoSumPacketHandler testPacketHandler;//今回、パケットを操作する関数
 
     /**
      * @param filename WIDEプロジェクトからとったpcapdumpファイル
@@ -20,10 +42,10 @@ public class ProtoSum{
     */
     public ProtoSum(String filename) throws Exception{
         m_pcap = new PacketCapture();
-        m_pcap.openOffline(filename);
-        m_pcap.setFilter(FILTER, true);
-        h=new ProtoSumPacketHandler();
-        m_pcap.addPacketListener(h);
+        m_pcap.openOffline(filename);//ファイルが存在しないエラー無視してます。
+        m_pcap.setFilter(FILTER, true);//trueってなんだ
+        testPacketHandler=new ProtoSumPacketHandler();
+        m_pcap.addPacketListener(testPacketHandler);
         m_pcap.capture(PACKET_COUNT);
     }//Exception無視しちゃった！
     public static void main(String[] args){
@@ -32,8 +54,8 @@ public class ProtoSum{
                 System.out.println("Usage: java ProtoSum test.cap");
                 System.exit(2);
             }
-            ProtoSum t = new ProtoSum(args[0]);
-            t.h.p();
+            ProtoSum testProgram = new ProtoSum(args[0]);
+            testProgram.testPacketHandler.print_stats();
             //最後に統計を表示
         }catch(Exception e){
             e.printStackTrace();
@@ -44,8 +66,8 @@ public class ProtoSum{
 }
 
 class ProtoSumPacketHandler implements PacketListener{
-    //private static final boolean DEBUG = false;
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
+    //private static final boolean DEBUG = true;
     /**
      * デバッグ用
     */
@@ -56,6 +78,7 @@ class ProtoSumPacketHandler implements PacketListener{
         return;
     } 
     private static int count;
+
     private static int ether;
     private static int arp;
     private static int rarp;
@@ -66,7 +89,7 @@ class ProtoSumPacketHandler implements PacketListener{
     private static int tcp;
     private static int udp;
     private static int other;
-    private static int ipVersion;
+    //private static int ipVersion;
     //なんでもスタティック！
     public void ProtoSumPacketHandler(){
         count = 0;
@@ -84,7 +107,7 @@ class ProtoSumPacketHandler implements PacketListener{
     public void packetArrived(Packet packet){
         count++;
         if(count % 1000000 == 0){
-            p();
+            print_stats();
             //100万回に一回、パケットの統計を表示
         }
 
@@ -153,7 +176,7 @@ class ProtoSumPacketHandler implements PacketListener{
         }
         return;
     }
-    public void p(){
+    public void print_stats(){
         System.out.println("");
         System.out.println("");
         System.out.println("");
