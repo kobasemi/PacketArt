@@ -5,7 +5,6 @@ import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.packet.PcapPacketHandler;
 
 public class ProtoSumNTest {
-    private final NO_SUCH_FILE
     public static void main(String[] args) {
         if(args.length < 1) {
                 System.out.println("Usage: java ProtoSumN test.cap");
@@ -50,9 +49,12 @@ class ProtoSumN {
 
     public void run() {
         try {
-            myPcap.loop(1000, myHandler,"DummyUserData");//1000個パケット読んでmyHandlerに渡す
+            myPcap.loop(1000, myHandler,"DummyUserData");
+            //1000個パケット読んでmyHandlerに渡す
         } finally {
-            myPcap.close();//pcapファイル、開けたら閉める
+            //1000回読んだらこっちに引きこむ
+            myPcap.close();//開けたら閉める
+            //PacketArt.close();
         }
     }
 }
@@ -61,8 +63,10 @@ class ProtoSumNPacketHandler implements PcapPacketHandler<String> {
     //ProtoSumNPacketHandler(){
         //System.sout.println("This Packet has been captured by " + user);
     //}
+    //<String>とか、いろんなオブジェクトをパケットハンドラに持ってこれるらしい。
+    //使わんがな。
     public void nextPacket(PcapPacket packet,String user) {
-        System.out.print(".");
+        System.out.print(".");//1000個「.」が表示されるはず・・・
     }
 }
 
