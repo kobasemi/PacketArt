@@ -4,3 +4,9 @@
 *.jar
 *.war
 *.ear
+
+# vim vi,emacs working temp files#
+*#
+*~
+# Capture files #
+#*.cap
