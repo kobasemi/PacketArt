@@ -78,7 +78,7 @@ class ProtoSumN {
 
     public void run() {
         try {
-            myPcap.loop(1000, myHandler,"DummyUserData");
+            myPcap.loop(0, myHandler,"DummyUserData");
             //1000個パケット読んでmyHandlerに渡す
         } finally {
             //1000回読んだらこっちに引きこむ
@@ -110,28 +110,33 @@ class ProtoSumNPacketHandler implements PcapPacketHandler<String> {
     //使わんがな。
     public void nextPacket(PcapPacket packet,String user) {
         //packet.scan();
-        if ( packet.hasHeader(TCP_PACKET) ) {  
-            System.out.print("T");
-            //Tcp tcp = packet.getHeader(TCP_PACKET);
-            //System.out.println("\nTCP.dport = "tcp.destination());
-        } else if ( packet.hasHeader(UDP_PACKET) ) {  
-            System.out.print("U");
-        } else if ( packet.hasHeader(IP6_PACKET) ) {  
-            System.out.print("6");//IPv6 over IPv4を考えて、
-        } else if ( packet.hasHeader(IP4_PACKET) ) {  
-            System.out.print("U");
-        } else if ( packet.hasHeader(PPP_PACKET) ) {  
-            System.out.print("P");
-        } else if ( packet.hasHeader(L2TP_PACKET) ) {  
-            System.out.print("L");
-        } else if ( packet.hasHeader(ICMP_PACKET) ) {  
-            System.out.print("I");
-        } else if ( packet.hasHeader(ARP_PACKET) ) {  
-            System.out.print("A");
-        } else if ( packet.hasHeader(ETHERNET_PACKET) ) {  
-            System.out.print("E");
-        } else {
-            System.out.print("?");
+        try {
+            if ( packet.hasHeader(TCP_PACKET) ) {  
+                System.out.print("T");
+                //Tcp tcp = packet.getHeader(TCP_PACKET);
+                //System.out.println("\nTCP.dport = "tcp.destination());
+            } else if ( packet.hasHeader(UDP_PACKET) ) {  
+                System.out.print("U");
+            } else if ( packet.hasHeader(IP6_PACKET) ) {  
+                System.out.print("6");//IPv6 over IPv4を考えて、
+            } else if ( packet.hasHeader(IP4_PACKET) ) {  
+                System.out.print("U");
+            } else if ( packet.hasHeader(PPP_PACKET) ) {  
+                System.out.print("P");
+            } else if ( packet.hasHeader(L2TP_PACKET) ) {  
+                System.out.print("L");
+            } else if ( packet.hasHeader(ICMP_PACKET) ) {  
+                System.out.print("I");
+            } else if ( packet.hasHeader(ARP_PACKET) ) {  
+                System.out.print("A");
+            } else if ( packet.hasHeader(ETHERNET_PACKET) ) {  
+                System.out.print("E");
+            } else {
+                System.out.print("?");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            //DANGER PACKET packet
         }
     }
 }
