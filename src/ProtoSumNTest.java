@@ -4,8 +4,27 @@ import org.jnetpcap.Pcap;
 import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.packet.PcapPacketHandler;
 
-import org.jnetpcap.protocol.tcpip.Tcp;
+//-----Protocols
 
+//import org.jnetpcap.protocol.lan.SLL;
+//import org.jnetpcap.protocol.lan.IEEE802dot1q;
+// IEEE802dot2, IEEE802dot3, IEEESnapなどなど・・・
+import org.jnetpcap.protocol.lan.Ethernet;
+import org.jnetpcap.protocol.network.Arp;
+import org.jnetpcap.protocol.network.Icmp;
+import org.jnetpcap.protocol.network.Ip4;
+import org.jnetpcap.protocol.network.Ip6;//Typeof IPv4
+import org.jnetpcap.protocol.vpn.L2TP;
+import org.jnetpcap.protocol.network.Rip;//RIPv1+RIPv2
+import org.jnetpcap.protocol.tcpip.Tcp;
+import org.jnetpcap.protocol.tcpip.Udp;
+
+//import org.jnetpcap.protocol.voip.Sdp;
+//import org.jnetpcap.protocol.application.Html;
+// SIP,HTTPなどなど・・・
+//-----
+
+//
 public class ProtoSumNTest {
     public static void main(String[] args) {
         if(args.length < 1) {
@@ -64,7 +83,16 @@ class ProtoSumN {
 
 
 class ProtoSumNPacketHandler implements PcapPacketHandler<String> {
+    //identifierを宣言
+    private final Ethernet ETHERNET_PACKET = new Ethernet();
+    private final Arp ATP_PACKET = new Arp();
+    private final Icap ICMPPACKET = new Icmp();
+    private final Ip4 IP4_PACKET = new Ip4();
+    private final Ip6 IP6_PACKET = new Ip6();//Typeof IPv4
+    private final L2TP L2TP_PACKET new L2TP();
+    private final Rip RIP_PACKET = new Rip();//RIPv1+RIPv2
     private final Tcp TCP_PACKET = new Tcp();  
+    private final Udp UDP_PACKET = new Udp();
     //ProtoSumNPacketHandler(){
         //System.sout.println("This Packet has been captured by " + user);
     //}
@@ -79,4 +107,3 @@ class ProtoSumNPacketHandler implements PcapPacketHandler<String> {
         }
     }
 }
-
