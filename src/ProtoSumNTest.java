@@ -116,36 +116,20 @@ class ProtoSumNPacketHandler implements PcapPacketHandler<String> {
             //System.out.println("\nTCP.dport = "tcp.destination());
         } else if ( packet.hasHeader(UDP_PACKET) ) {  
             System.out.print("U");
-            //Tcp tcp = packet.getHeader(UDP_PACKET);
-            //System.out.println("\nUDP.dport = "udp.destination());
         } else if ( packet.hasHeader(IP6_PACKET) ) {  
             System.out.print("6");//IPv6 over IPv4を考えて、
-            //Tcp tcp = packet.getHeader(TCP_PACKET);
-            //System.out.println("\nTCP.dport = "tcp.destination());
         } else if ( packet.hasHeader(IP4_PACKET) ) {  
             System.out.print("U");
-            //Tcp tcp = packet.getHeader(TCP_PACKET);
-            //System.out.println("\nTCP.dport = "tcp.destination());
         } else if ( packet.hasHeader(PPP_PACKET) ) {  
             System.out.print("P");
-            //Tcp tcp = packet.getHeader(TCP_PACKET);
-            //System.out.println("\nTCP.dport = "tcp.destination());
         } else if ( packet.hasHeader(L2TP_PACKET) ) {  
             System.out.print("L");
-            //Tcp tcp = packet.getHeader(TCP_PACKET);
-            //System.out.println("\nTCP.dport = "tcp.destination());
         } else if ( packet.hasHeader(ICMP_PACKET) ) {  
             System.out.print("I");
-            //Tcp tcp = packet.getHeader(TCP_PACKET);
-            //System.out.println("\nTCP.dport = "tcp.destination());
         } else if ( packet.hasHeader(ARP_PACKET) ) {  
             System.out.print("A");
-            //Tcp tcp = packet.getHeader(TCP_PACKET);
-            //System.out.println("\nTCP.dport = "tcp.destination());
         } else if ( packet.hasHeader(ETHERNET_PACKET) ) {  
             System.out.print("E");
-            //Tcp tcp = packet.getHeader(TCP_PACKET);
-            //System.out.println("\nTCP.dport = "tcp.destination());
         } else {
             System.out.print("?");
         }
