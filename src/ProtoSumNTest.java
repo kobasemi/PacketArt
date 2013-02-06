@@ -7,19 +7,27 @@ import org.jnetpcap.packet.PcapPacketHandler;
 //-----Protocols
 
 //import org.jnetpcap.protocol.lan.SLL;
+//import org.jnetpcap.protocol.lan.IEEESnap;
 //import org.jnetpcap.protocol.lan.IEEE802dot1q;
-// IEEE802dot2, IEEE802dot3, IEEESnapなどなど・・・
+//import org.jnetpcap.protocol.lan.IEEE802dot2;
+//import org.jnetpcap.protocol.lan.IEEE802dot3;
 import org.jnetpcap.protocol.lan.Ethernet;
 import org.jnetpcap.protocol.network.Arp;
 import org.jnetpcap.protocol.network.Icmp;
+import org.jnetpcap.protocol.wan.PPP;
 import org.jnetpcap.protocol.network.Ip4;
 import org.jnetpcap.protocol.network.Ip6;//Typeof IPv4
 import org.jnetpcap.protocol.vpn.L2TP;
-import org.jnetpcap.protocol.network.Rip;//RIPv1+RIPv2
+//import org.jnetpcap.protocol.network.Rip;//RIPv1+RIPv2
+//import org.jnetpcap.protocol.network.Rip1;//RIPv1+RIPv2
+//import org.jnetpcap.protocol.network.Rip2;//RIPv1+RIPv2
 import org.jnetpcap.protocol.tcpip.Tcp;
 import org.jnetpcap.protocol.tcpip.Udp;
 
 //import org.jnetpcap.protocol.voip.Sdp;
+//import org.jnetpcap.protocol.voip.Rtp;
+//import org.jnetpcap.protocol.voip.Sip;
+//import org.jnetpcap.protocol.tcpip.Http;
 //import org.jnetpcap.protocol.application.Html;
 // SIP,HTTPなどなど・・・
 //-----
@@ -85,14 +93,16 @@ class ProtoSumN {
 class ProtoSumNPacketHandler implements PcapPacketHandler<String> {
     //identifierを宣言
     private final Ethernet ETHERNET_PACKET = new Ethernet();
-    private final Arp ATP_PACKET = new Arp();
-    private final Icap ICMPPACKET = new Icmp();
+    private final Arp ARP_PACKET = new Arp();
+    private final L2TP L2TP_PACKET = new L2TP();
+    private final PPP PPP_PACKET = new PPP();
+    private final Icmp ICMP_PACKET = new Icmp();
+    //private final Rip1 RIP_PACKET = new Rip1();
     private final Ip4 IP4_PACKET = new Ip4();
     private final Ip6 IP6_PACKET = new Ip6();//Typeof IPv4
-    private final L2TP L2TP_PACKET new L2TP();
-    private final Rip RIP_PACKET = new Rip();//RIPv1+RIPv2
     private final Tcp TCP_PACKET = new Tcp();  
     private final Udp UDP_PACKET = new Udp();
+    
     //ProtoSumNPacketHandler(){
         //System.sout.println("This Packet has been captured by " + user);
     //}
@@ -100,10 +110,44 @@ class ProtoSumNPacketHandler implements PcapPacketHandler<String> {
     //使わんがな。
     public void nextPacket(PcapPacket packet,String user) {
         //packet.scan();
-        if (packet.hasHeader(TCP_PACKET) ) {  
+        if ( packet.hasHeader(TCP_PACKET) ) {  
             System.out.print("T");
-        }else{
-            System.out.print(".");
+            //Tcp tcp = packet.getHeader(TCP_PACKET);
+            //System.out.println("\nTCP.dport = "tcp.destination());
+        } else if ( packet.hasHeader(UDP_PACKET) ) {  
+            System.out.print("U");
+            //Tcp tcp = packet.getHeader(UDP_PACKET);
+            //System.out.println("\nUDP.dport = "udp.destination());
+        } else if ( packet.hasHeader(IP6_PACKET) ) {  
+            System.out.print("6");//IPv6 over IPv4を考えて、
+            //Tcp tcp = packet.getHeader(TCP_PACKET);
+            //System.out.println("\nTCP.dport = "tcp.destination());
+        } else if ( packet.hasHeader(IP4_PACKET) ) {  
+            System.out.print("U");
+            //Tcp tcp = packet.getHeader(TCP_PACKET);
+            //System.out.println("\nTCP.dport = "tcp.destination());
+        } else if ( packet.hasHeader(PPP_PACKET) ) {  
+            System.out.print("P");
+            //Tcp tcp = packet.getHeader(TCP_PACKET);
+            //System.out.println("\nTCP.dport = "tcp.destination());
+        } else if ( packet.hasHeader(L2TP_PACKET) ) {  
+            System.out.print("L");
+            //Tcp tcp = packet.getHeader(TCP_PACKET);
+            //System.out.println("\nTCP.dport = "tcp.destination());
+        } else if ( packet.hasHeader(ICMP_PACKET) ) {  
+            System.out.print("I");
+            //Tcp tcp = packet.getHeader(TCP_PACKET);
+            //System.out.println("\nTCP.dport = "tcp.destination());
+        } else if ( packet.hasHeader(ARP_PACKET) ) {  
+            System.out.print("A");
+            //Tcp tcp = packet.getHeader(TCP_PACKET);
+            //System.out.println("\nTCP.dport = "tcp.destination());
+        } else if ( packet.hasHeader(ETHERNET_PACKET) ) {  
+            System.out.print("E");
+            //Tcp tcp = packet.getHeader(TCP_PACKET);
+            //System.out.println("\nTCP.dport = "tcp.destination());
+        } else {
+            System.out.print("?");
         }
     }
 }
