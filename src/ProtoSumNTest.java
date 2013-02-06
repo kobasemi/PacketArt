@@ -4,6 +4,8 @@ import org.jnetpcap.Pcap;
 import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.packet.PcapPacketHandler;
 
+import org.jnetpcap.protocol.tcpip.Tcp;
+
 public class ProtoSumNTest {
     public static void main(String[] args) {
         if(args.length < 1) {
@@ -59,14 +61,22 @@ class ProtoSumN {
     }
 }
 
+
+
 class ProtoSumNPacketHandler implements PcapPacketHandler<String> {
+    private final Tcp TCP_PACKET = new Tcp();  
     //ProtoSumNPacketHandler(){
         //System.sout.println("This Packet has been captured by " + user);
     //}
     //<String>とか、いろんなオブジェクトをパケットハンドラに持ってこれるらしい。
     //使わんがな。
     public void nextPacket(PcapPacket packet,String user) {
-        System.out.print(".");//1000個「.」が表示されるはず・・・
+        //packet.scan();
+        if (packet.hasHeader(TCP_PACKET) ) {  
+            System.out.print("T");
+        }else{
+            System.out.print(".");
+        }
     }
 }
 
