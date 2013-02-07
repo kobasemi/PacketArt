@@ -38,6 +38,7 @@ import org.jnetpcap.protocol.tcpip.Udp;
  * ちょこっといじるだけですぐに他のプログラムに転用できます。
 */
 public class ProtoSumNTest {
+
     public static void main(String[] args) {
         if(args.length < 1) {
                 System.out.println("Usage: java ProtoSumN test.cap");
@@ -56,6 +57,7 @@ public class ProtoSumNTest {
             System.exit(-2);
         }
     }
+
 }
 
 class ProtoSumN {
@@ -76,6 +78,7 @@ class ProtoSumN {
     public StringBuilder getErrbuf() {
         return myErrbuf;
     }
+
     public void openPcap() {
         myPcap = Pcap.openOffline(myFile, myErrbuf);//pcapファイルを開く
         //エラーを放出しない代わりにErrbufにエラー情報が書き込まれる。
@@ -89,6 +92,7 @@ class ProtoSumN {
     public void run() {
         try {
             myPcap.loop(0, myHandler,"DummyUserData");
+            //無論、マルチスレッドで実行スべき。
             //無限個パケット読んでmyHandlerに渡す。
             //private final int INFINITE = 0;とでもすればわかりやすい。
             //ユーザー定義引数は今回は使わないので、適当に埋めている。
@@ -98,6 +102,7 @@ class ProtoSumN {
             //PacketArt.close();パケット読み終わったらどうする？（いわゆる、弾切れ）
         }
     }
+
 }
 
 /**
@@ -159,4 +164,5 @@ class ProtoSumNPacketHandler implements PcapPacketHandler<String> {
             //解析不能パケットを受け取ったらここに飛ぶ
         }
     }
+
 }
