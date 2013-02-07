@@ -5,6 +5,26 @@ import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.packet.PcapPacketHandler;
 //↑プロトコルアナライザとして使うならこんだけのインポートで十分。
 
+/*
+
+=====出力=====
+[ root@PacketMonster ~/PacketArt/src]$ javac ProtoSumNTest.java
+[ root@PacketMonster ~/PacketArt/src]$ java ProtoSumNTest WIDE.cap
+TTTTTTUTTTTTTTTTUTTTTUTTTTTTTTTTTTTTTTTT4TUTTTTTTTTUTTTTTTTTTUTTTTTTTTTTUTTTTTTTTTUTTTTTT4TTTTTTUTTU
+4TTTTTTTTTTTTTTTTTTT4T4T4TTTTTT4UUU4TT4T4T444T4TTTTTTTTTT4TTTTTTTTTTUUUUTTUUT4TTTT46666T4TTTTTU4TTTT
+TTTTUTUTTTTTTTTTTTT4TTTTTUTTTTTTTTTTUTTTTTTTTTTTTUTTTTT4TTTTTUTTTTTT4T4TTTTTTTTTUTTUTTTUTTTTTTTTTTTT
+T44TUU4U4TT444U4TTTTTTTTTT44TTT4T4T44444444444T4T444TT444TT44444T4UU44444444444T44444444U44444444444
+T44TU4U6TT64TTTTTTTT44TTTTTTTTUUTUUUT4TU44U44444T4U444T444TTT4TTTT444T444T44444TTT4444T44T4444TTTT4T
+44444444UTT4TTTTTTT4TTTTTTT4TTTTT4TTTTT4TTT4TT4TTTT44T44UUUU4TTTTTTTT44TTTTTTTTTTTTTT666TTTTTTTTUTTT
+TTTT4TTTT4TTUT44TTTTTTTTTTTT4TTTTTTTTTT4TTTTT4TTTTTTTTTTTTTTT4UTTTTUTT4UTTTTUT4T44T4TTTTT4TTT4TTTTTT
+TT4UTUUTTUT4TT6666666664T44TTTTTTTTTTTTUUUUUUTT4UTTTTTTTTTTTTTTTTU4UUUUU4TUUUUUUUUUUUTT66TUTTTUTT664
+T4TTTTTTTTTTTTTTTTTTUTT4TTUUUUUUUU4TUTTTUUUTUTT4TTTTTTTTUTTTTTUU4T4TTTTTTTUTTTTT44TTTTTTTTUTTTTTTTTT
+TTTTTTTTTU66666666666644TTTTTUTTTTT44TTUTTTU4TTTTTTTTTTTT4TTTTTTUTTTTTTTTTTTTUUUT4UTTUTTUUTUTUUTTTUT
+=====出力=====
+
+*/
+
+
 //*-----使用出来るプロトコル達-----*
 //import org.jnetpcap.protocol.lan.SLL;
 //import org.jnetpcap.protocol.lan.IEEESnap;
@@ -91,13 +111,13 @@ class ProtoSumN {
 
     public void run() {
         try {
-            myPcap.loop(0, myHandler,"DummyUserData");
+            myPcap.loop(1000, myHandler,"DummyUserData");
             //無論、マルチスレッドで実行スべき。
-            //無限個パケット読んでmyHandlerに渡す。
-            //private final int INFINITE = 0;とでもすればわかりやすい。
+            //1000個パケット読んでmyHandlerに渡す。
+            //1000を0に変えればなら全読み込み。private final int INFINITE = 0;とでもすればわかりやすい。
             //ユーザー定義引数は今回は使わないので、適当に埋めている。
         } finally {
-            //無限回読んだらこっちに引きこむ
+            //1000回読んだらこっちに引きこむ
             myPcap.close();//開けたら閉める
             //PacketArt.close();パケット読み終わったらどうする？（いわゆる、弾切れ）
         }
@@ -144,7 +164,7 @@ class ProtoSumNPacketHandler implements PcapPacketHandler<String> {
             } else if ( packet.hasHeader(IP6_PACKET) ) {  
                 System.out.print("6");//IPv6 over IPv4を考えて、
             } else if ( packet.hasHeader(IP4_PACKET) ) {  
-                System.out.print("U");
+                System.out.print("4");
             } else if ( packet.hasHeader(PPP_PACKET) ) {  
                 System.out.print("P");
             } else if ( packet.hasHeader(L2TP_PACKET) ) {  
@@ -158,6 +178,8 @@ class ProtoSumNPacketHandler implements PcapPacketHandler<String> {
             } else {
                 System.out.print("?");
             }
+            //レイヤーが高い順にすることで、最上階のレイヤーを扱う。
+            //もっといい方法ありそうだけど。
         } catch (Exception e) {
             //e.printStackTrace();
             //System.out.print(packet)
