@@ -1,8 +1,8 @@
 //package org.jnetpcap.examples;
 
-import org.jnetpcap.Pcap;//jnetpcap.jarはインストールしましたか？そのクラスパスは追加しましたか？jarのパーミッションは644が適切ですよ。javaとjavacのバージョンはあっていますか？
-import org.jnetpcap.packet.PcapPacket;
-import org.jnetpcap.packet.PcapPacketHandler;
+import org.jnetpcap.Pcap;//パケットダンプクラス //インポートエラー用メッセージ→jnetpcap.jarはインストールしましたか？そのクラスパスは追加しましたか？jarのパーミッションは644が適切ですよ。javaとjavacのバージョンはあっていますか？
+import org.jnetpcap.packet.PcapPacket;//パケットクラス
+import org.jnetpcap.packet.PcapPacketHandler;//パケットハンドラクラス
 //↑プロトコルアナライザとして使うならこんだけのインポートで十分。
 
 /*
@@ -113,12 +113,12 @@ class ProtoSumN {
         try {
             myPcap.loop(1000, myHandler,"DummyUserData");
             //無論、マルチスレッドで実行スべき。
-            //1000個パケット読んでmyHandlerに渡す。
+            //1000個パケットを一個一個読んでmyHandlerに渡す。
             //1000を0に変えればなら全読み込み。private final int INFINITE = 0;とでもすればわかりやすい。
             //ユーザー定義引数は今回は使わないので、適当に埋めている。
         } finally {
             //1000回読んだらこっちに引きこむ
-            myPcap.close();//開けたら閉める
+            myPcap.close();//pcapダンプファイルを開けたら、閉めるのを忘れない。
             //PacketArt.close();パケット読み終わったらどうする？（いわゆる、弾切れ）
         }
     }
@@ -176,14 +176,14 @@ class ProtoSumNPacketHandler implements PcapPacketHandler<String> {
             } else if ( packet.hasHeader(ETHERNET_PACKET) ) {  
                 System.out.print("E");
             } else {
-                System.out.print("?");
+                System.out.print("?");//ETHERNET_PACKETを含まないパケットって、なんだろ
             }
             //レイヤーが高い順にすることで、最上階のレイヤーを扱う。
             //もっといい方法ありそうだけど。
         } catch (Exception e) {
             //e.printStackTrace();
             //System.out.print(packet)
-            //解析不能パケットを受け取ったらここに飛ぶ
+            //jnetpcapが解析できないパケットを受け取ったらここに飛ぶ
         }
     }
 
