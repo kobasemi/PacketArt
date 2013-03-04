@@ -55,14 +55,14 @@ public class ProtoSumNTest {
 
     public static void main(String[] args) {
         if(args.length < 1) {
-                System.out.println("Usage: java ProtoSumN test.cap");
-                System.exit(-1);
+            System.out.println("Usage: java ProtoSumN URL(or Filename)");
+            System.exit(-1);
         }
         try {
-        ProtoSumN psn = new ProtoSumN(args[0]);//自作クラスを呼び出す。
-        psn.openPcap();//pcapファイルを開く関数の呼び出し
-        psn.run();//pcapファイルを読み込ループ開始。
-        System.out.println(psn.getErrbuf() );//最後にjnetpcap内部エラー情報を表示。
+            ProtoSumN psn = new ProtoSumN(args[0]);//自作クラスを呼び出す。
+            psn.openPcap();//pcapファイルを開く関数の呼び出し
+            psn.run();//pcapファイルを読み込ループ開始。
+            System.out.println(psn.getErrbuf() );//最後にjnetpcap内部エラー情報を表示。
         } catch (Exception e) { 
             // エラーは個別に対処するほうがいいけど、今はしない。
             //出てくるエラーの網羅にはIDEを使わないと多分できない。
@@ -94,6 +94,8 @@ class ProtoSumN {
     }
 
     public void openPcap() {
+        //if path exists filename
+        //else : URL openInputStream stdin openOffline("-",myerrbuf)
         myPcap = Pcap.openOffline(myFile, myErrbuf);//pcapファイルを開く
         //エラーを放出しない代わりにErrbufにエラー情報が書き込まれる。
         if (myPcap == null) {
@@ -105,7 +107,8 @@ class ProtoSumN {
 
     public void run() {
         try {
-            myPcap.loop(0, myHandler,"DummyUserData");
+            myPcap.loop(10000, myHandler,"DummyUserData");
+            //myPcap.loop(0, myHandler,"DummyUserData");
             //無論、マルチスレッドで実行スべき。
             //1000個パケットを一個一個読んでmyHandlerに渡す。
             //1000を0に変えればなら全読み込み。private final int INFINITE = 0;とでもすればわかりやすい。
