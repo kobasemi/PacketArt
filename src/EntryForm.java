@@ -12,9 +12,12 @@ public class EntryForm extends FormBase {
 	Point[] cursor;
 	int[] time;
 	int count;
+	String fileName;
+	JButton loadButton;
+
 	// あらゆるオブジェクトの初期化はここから(jnetpcap関連クラスなど)
+	// あくまでフォームなのでフォームを使ってなんでもやらないこと推奨
 	public void initialize() {
-		setBackground(Color.white);
 		tick = 0;
 		count = 0;
 		limit = 50;
@@ -22,6 +25,21 @@ public class EntryForm extends FormBase {
 		time = new int[50];
 
 		addMouseListener(this);
+		setBackground(Color.white);
+
+		loadButton = new JButton("ファイルを開く");
+		loadButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				JFileChooser chooser = new JFileChooser();
+				if((int)chooser.showOpenDialog(getParent()) == JFileChooser.APPROVE_OPTION)
+					fileName = chooser.getSelectedFile().getAbsolutePath();
+
+				System.out.println(fileName);
+			}
+		});
+		loadButton.setBounds((getSize().width / 3) , (getSize().height / 5) * 3, getSize().width / 3, getSize().height / 5);
+		getContentPane().add(loadButton, 0);
+
 	}
 
 	// 描画関連のコードはここに
@@ -29,7 +47,7 @@ public class EntryForm extends FormBase {
 		for (int i = 0; i < 50 ; i++) {
 			if(cursor[i] != null) {
 				g.setColor(Color.getHSBColor(360.0f / (time[i] % 360.0f), 0.8f, 0.8f));
-				g.fillOval((int)cursor[i].getX(), (int)cursor[i].getY(), 50, 50);
+				g.fillOval((int)cursor[i].getX() - 25, (int)cursor[i].getY() - 25, 50, 50);
 			}
 		}
 	}

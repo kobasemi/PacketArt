@@ -8,8 +8,10 @@ import java.lang.reflect.*;
 public class Form extends JFrame{
 	String currentFormInstanceName = "";
 	// 各フォームのインスタンスはDictionaryを用いて名前で管理される
-	Map<String, FormBase> instances = new HashMap<String, FormBase>();
+	// Form(JFrame) > JComponent > FormBase extended　object の構造
+	Map<String, Tuple<FormBase, JComponent>> instances = new HashMap<String, Tuple<FormBase, JComponent>>();
 
+	// 時間管理用スレッド
 	TimerThread timer = new TimerThread();
 
 	Form(String startupFormName, FormBase startupFormInstance){
@@ -20,14 +22,24 @@ public class Form extends JFrame{
 		setSize(640, 480);
 		getRootPane().setDoubleBuffered(true);
 		((JComponent)getContentPane()).setDoubleBuffered(true);
+		try{
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		SwingUtilities.updateComponentTreeUI(this);
 
 		currentFormInstanceName = startupFormName;
-		instances.put(startupFormName, startupFormInstance);
+		instances.put(startupFormName, new Tuple<FormBase, JComponent>(startupFormInstance, new JLayeredPane()));
 		getCurrentInstance().setBounds(0, 0, 640, 480);
+		getCurrentInstance().setParentFrame((JFrame)this);
 		getContentPane().setBounds(0, 0, 640, 480);
-		getContentPane().add(getCurrentInstance(), BorderLayout.CENTER);
+		getCurrentComponent().setLayout(null);
+		getCurrentComponent().add(getCurrentInstance(), -1);
+		getContentPane().add(getCurrentComponent(), null);
 
 		System.out.println(getCurrentInstance());
+		System.out.println(getCurrentInstance().getContentPane().getClass().getName());
 
  		show();
 
@@ -44,7 +56,7 @@ public class Form extends JFrame{
  	}
 	// インスタンスを追加
 	public void addCurrentInstance (String name, FormBase instance) {
-		instances.put(name, instance);
+		instances.put(name, new Tuple<FormBase, JComponent>(instance, new JLayeredPane()));
 	}
 
 	// インスタンスを削除
@@ -54,7 +66,10 @@ public class Form extends JFrame{
 
 	// 現在見えているインスタンスを取得
 	public FormBase getCurrentInstance() {
-		return instances.get(currentFormInstanceName);
+		return instances.get(currentFormInstanceName).x;
+	}
+	public JComponent getCurrentComponent() {
+		return instances.get(currentFormInstanceName).y;
 	}
 }
 

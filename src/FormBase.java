@@ -10,6 +10,7 @@ public abstract class FormBase extends Canvas implements MouseListener, KeyListe
 	Graphics offgc;
 	Image offscreen = null;
 	boolean enableAntiAlias;
+	JFrame parentForm;
 
 	FormBase(){
 		addMouseListener(this);
@@ -49,5 +50,15 @@ public abstract class FormBase extends Canvas implements MouseListener, KeyListe
 	}
 	public boolean getAntiAlias(){
 		return enableAntiAlias;
+	}
+
+	public JFrame getParentFrame(){
+		return parentForm;
+	}
+	public void setParentFrame(JFrame frame){
+		parentForm = frame;
+	}
+	protected Container getContentPane(){
+		return getParent();
 	}
 }
