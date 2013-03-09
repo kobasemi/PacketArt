@@ -4,9 +4,11 @@ import java.lang.StringBuilder;
 import java.net.URL;
 import java.io.File;
 import java.io.InputStream;
+import java.io.PipedInputStream;//openURL用
+import java.io.PipedOutputStream;//openURL用
 import java.util.List;
 import java.util.ArrayList;
-import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPInputStream;//openURL用
 import org.jnetpcap.Pcap;
 import org.jnetpcap.PcapIf;
 
@@ -15,10 +17,10 @@ import org.jnetpcap.PcapIf;
  * 使い方:
  * PcapManager pm = new PcapManager(new [URL,String,File])
  * if (pm.isReadyRun) { pm.run(); }
- * //run()ではPcapPacketHandlerBaseが動く
+ * //run()ではPcapPacketHandlerBaseが動く。このクラス自体は例外を発射しません。
  * 
  * その他アクセスできる変数はget??というメソッドを参照してください。
- * isReadyRunを使うので、エラーは出しません。
+ * 正常にパケットを読めたか確認するにはisReadyRunを使います。
 */
 class PcapManager {
     private Pcap pcap;
@@ -146,23 +148,35 @@ class PcapManager {
     public boolean openURL(URL url) {
         System.err.println("openURL(" + url.toString() +")");
         boolean wasOK = false;
+        PipedOutputStream pw = new PipedOutputStream();
         try {
+            System.setIn(new PipedInputStream(pw));
             InputStream temp = url.openStream();
             if (url.toString().matches(".*\\.gz(?:ip)?$") ) {//URLで判断する？
                 GZIPInputStream in = new GZIPInputStream(temp);
-                System.setIn(in);
                 System.err.println("PcapManager.openURL opened GZinputstream");
-            }else if (false){ 
+
+                int nRead;
+                byte[] buf = new byte[16384];
+                int i=0;
+                while ((nRead = in.read(buf, i*buf.length, buf.length)) != -1) {
+                    System.err.printf(".");
+                    pw.write(buf, 0, nRead);
+                    i++;
+                }
+
+            } else if (false) { 
                 //ここで他の形式に対応させる
             } else {
                 InputStream in = temp;
-                System.setIn(in);
                 System.err.println("PcapManager.openURL opened inputstream");
+                pw.write(in.read());
             }
             wasOK = openFile("-");
             //in.closeする必要なかったかもしれんなあ
         } catch (Exception e) {
             System.err.println("Error in PcapManager.openURL");
+            e.printStackTrace();
         }
         return wasOK;
     }
