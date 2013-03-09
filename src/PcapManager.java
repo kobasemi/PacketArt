@@ -19,12 +19,26 @@ class PcapManager {
 
     private boolean fromFile = false;
     private File pcapFile;
+
     private boolean fromUrl = false;
     private URL pcapUrl;
+
     private boolean fromDev = false;
     private PcapIf pcapDev;
+    private final int snaplen = 64 * 1024;           // 大きなパケットも読む
+    private final int flags = Pcap.MODE_PROMISCUOUS; // プロミスキャスモード  
+    private final int timeout = 10 * 1000;// 10秒でタイムアウト？  
 
     private boolean readyRun = false;
+
+    public File getPcapFile() { return pcapFile;}
+    public URL getPcapUrl() { return pcapUrl;}
+    public PcapIf getPcapDev { return pcapDev; }
+    public boolean isFromFile() { return fromFile; } 
+    public boolean isFromUrl() { return fromUrl; } 
+    public boolean isfromDev() { return fromDev; } 
+    public boolean isReadyRun() { return readyRun; } 
+    public String getErrBuf() { return errBuf.toString(); }
 
     /**
      * @param name ファイル名もしくはデバイス名もしくはURL。万能コンストラクタ！
@@ -87,20 +101,32 @@ class PcapManager {
     }
 
     PcapManager(URL url) {
+        openURL(url);
     }
 
     PcapManager(File file) {
-        openOffline(file.getName());
+        openFile(file.getName());
     }
-    public void openOffline(String fname){
+
+    PcapManager(PcapIf dev) {
+        openDev(dev.getName());
+    }
+
+    public boolean openFile(String fname){
         pcap = Pcap.openOffline(fname,errBuf);
         if (pcap == null) {
             System.err.printf("Error while opening a file for capture: "
                 + errBuf.toString());
+            return false;
         }
+        pcapFile = new File(fname);//いらないかも
+        isFromFile = true;
+        return true;
     }
 
-    PcapManager(PcapIf dev) {
+    public boolean openFile(String devName) {
+        Pcap pcap =
+            Pcap.openLive(devName, snaplen, flags, timeout, errbuf);
     }
 
     public void run() {
