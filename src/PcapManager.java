@@ -1,5 +1,3 @@
-package src;
-
 import java.lang.StringBuilder;
 import java.net.URL;
 import java.io.File;
@@ -9,7 +7,7 @@ import java.util.ArrayList;
 import org.jnetpcap.Pcap;
 import org.jnetpcap.PcapIf;
 
-import PcapPacketHandlerBase.*;
+//import PcapPacketHandlerBase.*;
 
 /**
  * 完全にパケットアート用。
@@ -48,9 +46,12 @@ class PcapManager {
         if (name.matches(urlRegex) ) {
             //完全では無いが、URLっぽいのは確かだ・・・
             fromUrl = true;
-            pcapUrl = new URL(name);
-            //this(pcapUrl);
-            return;
+            try {
+                pcapUrl = new URL(name);
+                //this(pcapUrl);
+                return;
+            } catch (Exception e){
+            }//あれ、URLちゃう・・・
         }
 
         // name == "xx:xx:xx:xx:xx:xx" (mac address)
@@ -60,10 +61,13 @@ class PcapManager {
             System.err.printf("Can't read list of devices, error is %s", errBuf  
                 .toString());
         } else {
-            byte[] macAddr;
+            byte[] macAddr = null;
             String macAddress = "";
             for (PcapIf dev : alldevs){
-                macAddr = dev.getHardwareAddress();
+                try {
+                    macAddr = dev.getHardwareAddress();
+                } catch (Exception e) {
+                }//あれ、Macアドレス見られないんか。
                 for(byte b : macAddr){
                     macAddress += String.format("%02x",b);
                 }
