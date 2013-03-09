@@ -1,6 +1,7 @@
+import java.net.InetAddress;
+
 import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.packet.PcapPacketHandler;
-
 //*-----識別出来るプロトコル達-----*
 import org.jnetpcap.protocol.lan.Ethernet;
 import org.jnetpcap.protocol.network.Arp;
@@ -57,7 +58,10 @@ class PcapPacketHandlerBase implements PcapPacketHandler<String> {
      * @see org.jnetpcap.packet.Pcap#loop(int cnt, int id, PcapPacketHandler<T> handler, T user)
     */
     public void nextPacket(PcapPacket packet,String user) {
-        System.err.println("PcapPacketHandlerBase.NextPacket has been Called!");
+        protocolHandler(packet);
+    }
+
+    public void protocolHandler(PcapPacket packet) {
         try {
             //count++;
             if (packet.hasHeader(tcp) ) {  
@@ -95,68 +99,78 @@ class PcapPacketHandlerBase implements PcapPacketHandler<String> {
      * @see org.jnetpcap.protocol.tcpip.Tcp
     */
     public void tcpHandler(Tcp tcp) {
+        System.err.println("TCP has come!");
     }
 
     /**
      * @see org.jnetpcap.protocol.tcpip.Udp
     */
     public void udpHandler(Udp udp) {
+        System.err.println("UDP has come!");
     }
 
     /**
      * @see org.jnetpcap.protocol.network.Ip6
     */
     public void ip6Handler(Ip6 ip6) {
+        System.err.println("IPv6 has come!");
     }
 
     /**
      * @see org.jnetpcap.protocol.network.Ip4
     */
     public void ip4Handler(Ip4 ip4) {
+        System.err.println("IPv4 has come!");
         byte[] src = ip4.source();
         byte[] dst = ip4.destination();
-        String s = "";
-        String d = "";
-        for (int i=0; i<4; i++) {
-            s = s + String.format("%03d ", src[i]);
-            d = d + String.format("%03d ", dst[i]);
+        try {
+            String srcAddr = InetAddress.getByAddress(src).getHostAddress();
+            String dstAddr = InetAddress.getByAddress(dst).getHostAddress();
+            System.err.println( srcAddr + " => " + dstAddr);
+        } catch (Exception e) {
+            e.printStackTrace();//どうせでばっぐヨウデスシ
         }
-        System.err.println("From :" + s + "To :" + d);
     }
 
     /**
      * @see org.jnetpcap.protocol.wan.PPP
     */
     public void pppHandler(PPP ppp) {
+        System.err.println("PPP has come!");
     }
 
     /**
      * @see org.jnetpcap.protocol.vpn.PPP
     */
     public void l2tpHandler(L2TP lt2p) {
+        System.err.println("L2TP has come!");
     }
 
     /**
      * @see org.jnetpcap.protocol.network.Icmp
     */
     public void icmpHandler(Icmp icmp) {
+        System.err.println("ICMP has come!");
     }
 
     /**
      * @see org.jnetpcap.protocol.network.Arp
     */
     public void arpHandler(Arp arp) {
+        System.err.println("ARP has come!");
     }
 
     /**
      * @see org.jnetpcap.protocol.lan.Ethernet
     */
     public void ethernetHandler(Ethernet ethernet) {
+        System.err.println("Ethernet has come!");
     }
 
     /**
      * @see org.jnetpcap.packet.PcapPacket
     */
     public void otherPacketHandler(PcapPacket packet) {
+        System.err.println("other Protocol has come!");
     }
 }

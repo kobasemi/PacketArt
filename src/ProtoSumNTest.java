@@ -99,7 +99,7 @@ class ProtoSumN {
         myPcap = Pcap.openOffline(myFile, myErrbuf);//pcapファイルを開く
         //エラーを放出しない代わりにErrbufにエラー情報が書き込まれる。
         if (myPcap == null) {
-            System.err.printf("Error while opening a file for capture: "
+            System.err.println("Error while opening a file for capture: "
                 + myErrbuf.toString());
             System.exit(-2);
         }

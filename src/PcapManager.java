@@ -11,9 +11,11 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;//openURL用
 import org.jnetpcap.Pcap;
+import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.PcapIf;
 import org.jnetpcap.PcapAddr;
 import org.jnetpcap.PcapSockAddr;
+import org.jnetpcap.nio.JMemory;
 
 /**
  * 完全にパケットアート用。
@@ -26,10 +28,8 @@ import org.jnetpcap.PcapSockAddr;
  * 正常にパケットを読めたか確認するにはisReadyRunを使います。
 */
 class PcapManager {
-    private Pcap pcap;
     private final int INFINITE = 0;
-    private StringBuilder errBuf;
-    private PcapPacketHandlerBase packetHandler;
+    private static StringBuilder errBuf;
 
     private boolean fromFile = false;
     private File pcapFile;
@@ -44,8 +44,11 @@ class PcapManager {
     private final int timeout = 10 * 1000;// 10秒でタイムアウト？  
 
     private boolean readyRun = false;
+    
+    public Pcap pcap;
+    public PcapPacketHandlerBase packetHandler;
 
-    public File getPcapFile() { return pcapFile;}
+    public File getPcapFile() { return pcapFile; }
     public URL getPcapUrl() { return pcapUrl; }
     public PcapIf getPcapDev() { return pcapDev; }
     public boolean isFromFile() { return fromFile; } 
@@ -58,13 +61,14 @@ class PcapManager {
      * @param name ファイル名もしくはデバイス名もしくはURL。万能コンストラクタ！
     */
     PcapManager(String name) {
+        System.err.println("PcapManager(String " + name +")");
         errBuf = new StringBuilder();
         packetHandler = new PcapPacketHandlerBase();
 
         //name はFilePathか？
         pcapFile = new File(name);
         if (pcapFile.exists() ) {
-            System.err.println("It seems local file!");
+            System.err.println("*guess* " + name + " = File");
             fromFile = true;
             readyRun = openFile(name);
             return;
@@ -73,7 +77,7 @@ class PcapManager {
         //name はURLか？
         String urlRegex = "\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
         if (name.matches(urlRegex) ) {
-            System.err.println("It seems URL!");
+            System.err.println("*guess* " + name + " = URL");
             //完全では無いが、URLっぽいのは確かだ・・・
             fromUrl = true;
             try {
@@ -106,9 +110,8 @@ class PcapManager {
                     }
                 }
                 System.err.println(ipAddress);
-                System.err.println(name);
                 if (ipAddress.equals(name) ) {
-                    System.err.println("It seeems a IP Address of Device!");
+                    System.err.println("*guess* " + name + " = IPv4(6) Address");
                     fromDev = true;
                     pcapDev = dev;
                     readyRun = openDev(pcapDev.getName());
@@ -117,14 +120,48 @@ class PcapManager {
             }
         }
         //name == 無理ぽ・・・
-        System.err.println("Can't find how to work with String Constructor!");
+        System.err.println("PcapManager failed guess what the " + name + " is.");
         return;
+    }
+    
+    public static ArrayList<Tuple<ArrayList<String>,String>> getDeviceList() {
+
+        ArrayList<Tuple<ArrayList<String>,String>> ret = new ArrayList<Tuple<ArrayList<String>,String>>();
+        ArrayList<String> ipAddrs = new ArrayList<String>();
+        
+        List<PcapIf> alldevs = new ArrayList<PcapIf>();
+        int r = Pcap.findAllDevs(alldevs, errBuf);
+        if (r == Pcap.NOT_OK || alldevs.isEmpty()) {  
+            System.err.printf("Can't read list of devices, error is %s", errBuf.toString());
+        } else {
+            List<PcapAddr> pcapAddrs = null;
+            PcapSockAddr pcapSockAddr = null;
+            for (PcapIf dev : alldevs){
+                if (dev != null) {
+                    try {
+                        pcapAddrs = dev.getAddresses();
+                        for (PcapAddr pcapAddr : pcapAddrs ) {
+                            pcapSockAddr = pcapAddr.getAddr();
+                            String ipAddr = InetAddress.getByAddress(pcapSockAddr.getData()).getHostAddress();
+                            if(ipAddr != null) {
+                                ipAddrs.add(ipAddr);
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                ret.add(new Tuple(ipAddrs,dev.getName() + dev.getDescription()));
+                }
+            }
+        }
+        return ret;
     }
 
     /**
      * Web上のファイルからパケットを読み出す。
     */
     PcapManager(URL url) {
+        System.err.println("PcapManager(URL " + url.toString() +")");
         readyRun = openURL(url);
     }
 
@@ -132,6 +169,7 @@ class PcapManager {
      * ローカルのファイルからパケットを読み出す。
     */
     PcapManager(File file) {
+        System.err.println("PcapManager(File " + file.getName() +")");
         readyRun = openFile(file.getName());
     }
 
@@ -140,6 +178,7 @@ class PcapManager {
      * 
     */
     PcapManager(PcapIf dev) {
+        System.err.println("PcapManager(PcapIf " + dev.getName() +")");
         readyRun = openDev(dev.getName());
     }
 
@@ -149,6 +188,8 @@ class PcapManager {
      * だから、この関数でWeb上のパケットファイルを擬似的にロードする。
      * 例外は発生しない。
      * gzipファイルに対応している。他の圧縮形式に対応するにはこの関数を編集。
+     *
+     * 未実装
      *
      * @return wasOK 成功か失敗か。
     */
@@ -162,25 +203,15 @@ class PcapManager {
             if (url.toString().matches(".*\\.gz(?:ip)?$") ) {//URLで判断する？
                 GZIPInputStream in = new GZIPInputStream(temp);
                 System.err.println("PcapManager.openURL opened GZinputstream");
-
-                int nRead;
-                byte[] buf = new byte[16384];
-                int i=0;
-                while ((nRead = in.read(buf, i*buf.length, buf.length)) != -1) {
-                    System.err.printf(".");
-                    pw.write(buf, 0, nRead);
-                    i++;
-                }
-
+                System.setIn(in);
             } else if (false) { 
                 //ここで他の形式に対応させる
             } else {
                 InputStream in = temp;
                 System.err.println("PcapManager.openURL opened inputstream");
-                pw.write(in.read());
+                System.setIn(in);
             }
             wasOK = openFile("-");
-            //in.closeする必要なかったかもしれんなあ
         } catch (Exception e) {
             System.err.println("Error in PcapManager.openURL");
             e.printStackTrace();
@@ -199,7 +230,7 @@ class PcapManager {
         boolean wasOK = false;
         pcap = Pcap.openOffline(fname,errBuf);
         if (pcap == null) {
-            System.err.printf("Error while opening a file for capture: "
+            System.err.println("Error while opening a file for capture: "
                 + errBuf.toString());
             return wasOK;
         }
@@ -220,7 +251,7 @@ class PcapManager {
         boolean wasOK = false;
         pcap = Pcap.openLive(devName, snaplen, flags, timeout, errBuf);
         if (pcap == null) {
-            System.err.printf("Error while opening device for capture: "
+            System.err.println("Error while opening device for capture: "
                 + errBuf.toString());
             return wasOK;
         }
@@ -232,6 +263,7 @@ class PcapManager {
     /**
      * コンストラクタで指定されたpcapをPcapPacketHandlerBaseに与えます。
      * ループは「無限」にしてあります。
+     * 一気にロードします。
     */
     public void handlePackets() {
         try {
@@ -245,5 +277,21 @@ class PcapManager {
             //return pleaseCloseProgram;パケット読み終わったらどうする？（いわゆる、弾切れ）
         }
     }
-
+    /**
+     * 一個ずつロードします。
+    */
+    public PcapPacket nextPacket() {
+        PcapPacket packet = new PcapPacket(JMemory.POINTER);
+        if ( pcap.nextEx(packet) == Pcap.NEXT_EX_OK ) {
+            return new PcapPacket(packet);
+        } else {
+            return null;
+        }
+    }
+    /**
+     * ファイル、ロックを開放します。
+    */
+    public void close() {
+        pcap.close();
+    }
 }
