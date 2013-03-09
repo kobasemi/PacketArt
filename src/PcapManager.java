@@ -2,6 +2,7 @@
 
 import java.lang.StringBuilder;
 import java.net.URL;
+import java.net.InetAddress;
 import java.io.File;
 import java.io.InputStream;
 import java.io.PipedInputStream;//openURL用
@@ -11,6 +12,8 @@ import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;//openURL用
 import org.jnetpcap.Pcap;
 import org.jnetpcap.PcapIf;
+import org.jnetpcap.PcapAddr;
+import org.jnetpcap.PcapSockAddr;
 
 /**
  * 完全にパケットアート用。
@@ -58,7 +61,7 @@ class PcapManager {
         errBuf = new StringBuilder();
         packetHandler = new PcapPacketHandlerBase();
 
-        //name == FilePath
+        //name はFilePathか？
         pcapFile = new File(name);
         if (pcapFile.exists() ) {
             System.err.println("It seems local file!");
@@ -67,7 +70,7 @@ class PcapManager {
             return;
         }
 
-        //name == URL
+        //name はURLか？
         String urlRegex = "\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
         if (name.matches(urlRegex) ) {
             System.err.println("It seems URL!");
@@ -81,27 +84,31 @@ class PcapManager {
             }//あれ、URLちゃう・・・
         }
 
-        // name == "xx:xx:xx:xx:xx:xx" (mac address)
+        // name はIPアドレスか？
         List<PcapIf> alldevs = new ArrayList<PcapIf>();
         int r = Pcap.findAllDevs(alldevs, errBuf);
+        List<PcapAddr> pcapAddrs = null;
+        PcapSockAddr pcapSockAddr = null;
+        String ipAddress = "";
         if (r == Pcap.NOT_OK || alldevs.isEmpty()) {  
-            System.err.printf("Can't read list of devices, error is %s", errBuf  
-                .toString());
+            System.err.printf("Can't read list of devices, error is %s", errBuf.toString());
         } else {
-            byte[] macAddr = null;
-            String macAddress = "";
             for (PcapIf dev : alldevs){
-                try {
-                    macAddr = dev.getHardwareAddress();
-                } catch (Exception e) {
-                }//あれ、Macアドレス見られないんか。
-                for(byte b : macAddr){
-                    macAddress += String.format("%02x",b);
+                if (dev != null) {
+                    try {
+                        pcapAddrs = dev.getAddresses();
+                        for (PcapAddr pcapAddr : pcapAddrs ) {
+                            pcapSockAddr = pcapAddr.getAddr();
+                            ipAddress = InetAddress.getByAddress(pcapSockAddr.getData()).getHostAddress();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-                name = name.replace(":","");
-                name = name.replace("-","");
-                if(macAddress == name){
-                    System.err.println("It seeems a device MAC Address!");
+                System.err.println(ipAddress);
+                System.err.println(name);
+                if (ipAddress.equals(name) ) {
+                    System.err.println("It seeems a IP Address of Device!");
                     fromDev = true;
                     pcapDev = dev;
                     readyRun = openDev(pcapDev.getName());
