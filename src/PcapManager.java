@@ -58,6 +58,16 @@ class PcapManager {
     public String getErrBuf() { return errBuf.toString(); }
 
     /**
+     * 空コン
+     * openURL
+     * openFile
+     * openDev
+     * のいずれかを手動で使おう。
+    */
+    PcapManager() {
+    }
+
+    /**
      * @param name ファイル名もしくはデバイス名もしくはURL。万能コンストラクタ！
     */
     PcapManager(String name) {
