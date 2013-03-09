@@ -57,6 +57,7 @@ class PcapPacketHandlerBase implements PcapPacketHandler<String> {
      * @see org.jnetpcap.packet.Pcap#loop(int cnt, int id, PcapPacketHandler<T> handler, T user)
     */
     public void nextPacket(PcapPacket packet,String user) {
+        System.err.println("PcapPacketHandlerBase.NextPacket has been Called!");
         try {
             //count++;
             if (packet.hasHeader(tcp) ) {  

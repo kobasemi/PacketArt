@@ -12,6 +12,13 @@ import org.jnetpcap.PcapIf;
 
 /**
  * 完全にパケットアート用。
+ * 使い方:
+ * PcapManager pm = new PcapManager(new [URL,String,File])
+ * if (pm.isReadyRun) { pm.run(); }
+ * //run()ではPcapPacketHandlerBaseが動く
+ * 
+ * その他アクセスできる変数はget??というメソッドを参照してください。
+ * isReadyRunを使うので、エラーは出しません。
 */
 class PcapManager {
     private Pcap pcap;
@@ -52,19 +59,21 @@ class PcapManager {
         //name == FilePath
         pcapFile = new File(name);
         if (pcapFile.exists() ) {
+            System.err.printf("It seems local file!");
             fromFile = true;
-            openFile(name);
+            readyRun = openFile(name);
             return;
         }
 
         //name == URL
         String urlRegex = "\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
         if (name.matches(urlRegex) ) {
+            System.err.printf("It seems URL!");
             //完全では無いが、URLっぽいのは確かだ・・・
             fromUrl = true;
             try {
                 pcapUrl = new URL(name);
-                openURL(pcapUrl);
+                readyRun = openURL(pcapUrl);
                 return;
             } catch (Exception e){
             }//あれ、URLちゃう・・・
@@ -90,9 +99,10 @@ class PcapManager {
                 name = name.replace(":","");
                 name = name.replace("-","");
                 if(macAddress == name){
+                    System.err.printf("It seeems a device MAC Address!");
                     fromDev = true;
                     pcapDev = dev;
-                    openDev(pcapDev.getName());
+                    readyRun = openDev(pcapDev.getName());
                     return;
                 }
             }
@@ -106,14 +116,14 @@ class PcapManager {
      * Web上のファイルからパケットを読み出す。
     */
     PcapManager(URL url) {
-        openURL(url);
+        readyRun = openURL(url);
     }
 
     /**
      * ローカルのファイルからパケットを読み出す。
     */
     PcapManager(File file) {
-        openFile(file.getName());
+        readyRun = openFile(file.getName());
     }
 
     /**
@@ -121,7 +131,7 @@ class PcapManager {
      * 
     */
     PcapManager(PcapIf dev) {
-        openDev(dev.getName());
+        readyRun = openDev(dev.getName());
     }
 
     /**
@@ -136,7 +146,9 @@ class PcapManager {
         boolean wasOK = false;
         try{
             InputStream in = url.openStream();
+            System.err.println("PcapManager.openURL opened inputstream");
             System.setIn(in);
+            System.err.println("PcapManager.openURL set inputstream");
             wasOK = openFile("-");
         }catch (Exception e){
             System.err.println("Error in PcapManager.openURL");
@@ -183,6 +195,10 @@ class PcapManager {
         return wasOK;
     }
 
+    /**
+     * コンストラクタで指定されたpcapをPcapPacketHandlerBaseに与えます。
+     * ループは「無限」にしてあります。
+    */
     public void run() {
         try {
             pcap.loop(INFINITE, packetHandler,"DummyUserData");
@@ -191,7 +207,8 @@ class PcapManager {
             //全部読んだらこっちに引きこむ
             pcap.close();//開けたら、閉めるのを忘れない。
             System.err.println(errBuf );//最後にjnetpcap内部エラー情報を表示。
-            //PacketArt.close();パケット読み終わったらどうする？（いわゆる、弾切れ）
+            System.err.println("Closing PcapManager...");//デバッグ用。
+            //return pleaseCloseProgram;パケット読み終わったらどうする？（いわゆる、弾切れ）
         }
     }
 
