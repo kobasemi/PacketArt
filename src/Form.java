@@ -5,18 +5,28 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.lang.reflect.*;
 
+/**
+ * 利用者に表示される画面です。
+ * @author midolin
+ */
 public class Form extends JFrame{
 	String currentFormInstanceName = "";
 	// 各フォームのインスタンスはDictionaryを用いて名前で管理される
 	// Form(JFrame) > JComponent > FormBase extended　object の構造
 	Map<String, Tuple<FormBase, JComponent>> instances = new HashMap<String, Tuple<FormBase, JComponent>>();
 
-	// 時間管理用スレッド
-	TimerThread timer = new TimerThread();
+	CardLayout card;
 
-	Form(String startupFormName, FormBase startupFormInstance){
+	// 時間管理用スレッド 使いまわす
+	TimerThread timer;
+
+	Form(String startupFormName, Class<? extends FormBase> startupForm){
+		timer  = new TimerThread();
+		FormUtil.setForm(this);
+
 		// CardLayout
-		getContentPane().setLayout(new CardLayout());
+		card = new CardLayout();
+		getContentPane().setLayout(card);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Packet Art");
 		setSize(640, 480);
@@ -29,29 +39,21 @@ public class Form extends JFrame{
 		}
 		SwingUtilities.updateComponentTreeUI(this);
 
+		// フォームを生成
+		generateForm(startupFormName, startupForm);
 		currentFormInstanceName = startupFormName;
-		instances.put(startupFormName, new Tuple<FormBase, JComponent>(startupFormInstance, new JLayeredPane()));
-		getCurrentInstance().setBounds(0, 0, 640, 480);
-		getCurrentInstance().setParentFrame((JFrame)this);
-		getContentPane().setBounds(0, 0, 640, 480);
-		getCurrentComponent().setLayout(null);
-		getCurrentComponent().add(getCurrentInstance(), -1);
-		getContentPane().add(getCurrentComponent(), null);
 
 		System.out.println(getCurrentInstance());
 		System.out.println(getCurrentInstance().getContentPane().getClass().getName());
 
- 		show();
+		card.show(getContentPane(), startupFormName);
+		show();
 
 		// formの処理
 		getCurrentInstance().initialize();
-		try{
-			timer.addInvokeMethodForTick(getCurrentInstance(), getCurrentInstance().getClass().getMethod("update"));
-			timer.addInvokeMethodForTick(getCurrentInstance(), getCurrentInstance().getClass().getMethod("repaint"));
-		} catch (Exception e) {
-			// にぎりつぶす
-			e.printStackTrace();
-		}
+		// 実行するメソッドの登録
+		registerInvokeMethodsToTimer(getCurrentInstance());
+
  		timer.run();
  	}
 	// インスタンスを追加
@@ -71,17 +73,88 @@ public class Form extends JFrame{
 	public JComponent getCurrentComponent() {
 		return instances.get(currentFormInstanceName).y;
 	}
+
+	/**
+	 * nameに指定されたフォームに切り替えます。
+	 * @param formName 切り替える対象のフォームの名前。
+	 */
+	public synchronized void changeFormInstance(String formName) throws IllegalArgumentException{
+		// キーがおかしい場合例外を投げつける
+		if(formName == null || formName.equals("") || !instances.containsKey(formName))
+			throw new IllegalArgumentException("Invalid argument:" 
+				+ formName == null ? "Argument is null." : 
+					formName.equals("") ? "Please specify argument." : "Argument is not existed.");
+		
+		// Timerを切り替える
+		timer.tryWait();
+		while(timer.isWaiting()){
+			try{
+				Thread.sleep(1);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		timer.clearInvokeMethods();
+
+		// currentFormInstanceを変える
+		currentFormInstanceName = formName;
+		registerInvokeMethodsToTimer(getCurrentInstance());
+		card.show(getContentPane(), currentFormInstanceName);
+
+		// タイマー再開
+		timer.restart();
+	}
+
+	/**
+	 * 指定されたフォームを生成します。
+	 * 作成結果を反映させるには、ChangeFormInstanceメソッドを実行します。
+	 * @param name フォームの名前。この名前は一意に定まっている必要があります。
+	 * @param form FormBaseクラスを継承したフォーム。
+	 */
+	public synchronized void generateForm(String name, Class<? extends FormBase> form) throws IllegalArgumentException{
+		if(instances.containsKey(name))
+			throw new IllegalArgumentException("Specified argument is already existed.");
+
+		try{
+			instances.put(name, new Tuple<FormBase, JComponent>(form.newInstance(), new JLayeredPane()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		FormBase inst = instances.get(name).x;
+		JComponent comp = instances.get(name).y;
+
+		inst.setBounds(0, 0, getSize().width, getSize().height);
+		inst.setParentFrame((JFrame)this);
+		getContentPane().setBounds(0, 0, getSize().width, getSize().height);
+		comp.setLayout(null);
+		comp.add(inst, -1);	// -1指定で常に最背面
+		getContentPane().add(inst, null);
+	}
+
+	// updateとrepaintをtimerに登録
+	void registerInvokeMethodsToTimer(FormBase form){
+		try{
+			timer.addInvokeMethodForTick(form, form.getClass().getMethod("update"));
+			timer.addInvokeMethodForTick(form, form.getClass().getMethod("repaint"));
+		} catch (Exception e) {
+			// にぎりつぶす
+			e.printStackTrace();
+		}
+	}
 }
 
-// タイマークラス、クロック回路のような働き?
+// タイマークラス
 class TimerThread extends Thread {
 	boolean isTerminated;
+	boolean isWait;
 	long time;
 	ArrayList<Tuple3<Object, Method, Object[]>> methods;
 
 	TimerThread(){
 		time = 0;
 		isTerminated = false;
+		isWait = false;
 		methods = new ArrayList<Tuple3<Object, Method, Object[]>>();
 	}
 
@@ -90,13 +163,26 @@ class TimerThread extends Thread {
 	// 参考:http://javaappletgame.blog34.fc2.com/blog-entry-265.html
 	public void run(){
 		// TODO:メソッド呼び出しをスレッドプールを使って並列化させたい
-		// Executer executer = Executors.newFixedThreadPool(10);
+		// ↑update→paintの順で呼び出されるが、その呼び出し順が安定しなくなるため却下
 
 		long currentTime = System.currentTimeMillis();
 		long oldTime = currentTime;
 		long sleepTime = 16;
 		while(!isTerminated){
-			oldTime = currentTime;
+			// スレッドが止まることを要求されているなら止まる
+			if(isWait) {
+				try{
+					synchronized(this){
+						wait();
+					}			
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				// 待機状態から復帰したときの浦島太郎状態を正す
+				oldTime = System.currentTimeMillis();
+			}
+			else
+				oldTime = currentTime;
 
 			// 登録されたメソッドの実行
 			for(Tuple3<Object, Method,Object[]> value : methods) {
@@ -125,8 +211,28 @@ class TimerThread extends Thread {
 	}
 
 	// スレッドを止めることを試みる
-	public void stopTimer() {
+	public void tryStop() {
 		isTerminated = true;	
+	}
+	// スレッドの中断を試みる
+	public void tryWait(){
+		isWait = true;
+	}
+
+	public boolean isWaiting(){
+		return getState() == Thread.State.WAITING;
+	}
+
+	public void restart(){
+		try{
+			Thread.State state = getState();
+			if(state == Thread.State.WAITING)
+				notify();
+			else
+				System.out.println(state);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void addInvokeMethodForTick(Object parent, Method method) {
@@ -139,5 +245,16 @@ class TimerThread extends Thread {
 	// TODO:メソッドの削除を実装する
 	public void removeInvokeMethodTick(Method method) {
 		//methods.remove(method);
+	}
+
+	public synchronized void clearInvokeMethods(){
+		// methodsを使用している間に変なことをされないようにいったんスレッドを止めてから実行する
+		// タイミング調整も兼ねる
+		while(isWaiting())
+			isWait = true;
+
+		synchronized(methods){
+			methods.clear();
+		}
 	}
 }

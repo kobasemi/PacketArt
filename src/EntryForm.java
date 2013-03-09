@@ -2,9 +2,9 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-// このファイルがクラスの基本的な構造と使い方
 /**
  * 最初に表示されるフォームです.
+ * @author midolin
  */
 public class EntryForm extends FormBase {
 	long tick;
@@ -24,9 +24,9 @@ public class EntryForm extends FormBase {
 		cursor = new Point[50];
 		time = new int[50];
 
-		addMouseListener(this);
 		setBackground(Color.white);
 
+		// ファイルを開くボタンを指定する部分
 		loadButton = new JButton("ファイルを開く");
 		loadButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
@@ -38,6 +38,8 @@ public class EntryForm extends FormBase {
 			}
 		});
 		loadButton.setBounds((getSize().width / 3) , (getSize().height / 5) * 3, getSize().width / 3, getSize().height / 5);
+
+		// ファイルを開くボタンを配置する 0はレイヤー番号
 		getContentPane().add(loadButton, 0);
 
 	}
@@ -56,6 +58,10 @@ public class EntryForm extends FormBase {
 	// パケット解析などはこのメソッドからどうぞ
 	public void update() {
 		tick++;
+		if(tick > 3000){
+			FormUtil.getInstance().createForm("TemplateForm", TemplateForm.class);
+			FormUtil.getInstance().changeForm("TemplateForm");
+		}
 	}
 
 	// 使いたい入力イベントを実装、記述してください
@@ -81,7 +87,6 @@ public class EntryForm extends FormBase {
     }
 
     public void mouseMoved(MouseEvent e){
-
     }
     public void mouseDragged(MouseEvent e){
     }
@@ -91,5 +96,10 @@ public class EntryForm extends FormBase {
     public void keyReleased(KeyEvent e) {
     }
     public void keyTyped(KeyEvent e) {
+    }
+
+    public void onFormChanged(){
+    }
+    public void onClose(){
     }
 }
