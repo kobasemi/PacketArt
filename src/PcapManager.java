@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 import java.util.ArrayList;
-
+import java.util.zip.GZIPInputStream;
 import org.jnetpcap.Pcap;
 import org.jnetpcap.PcapIf;
 
@@ -59,7 +59,7 @@ class PcapManager {
         //name == FilePath
         pcapFile = new File(name);
         if (pcapFile.exists() ) {
-            System.err.printf("It seems local file!");
+            System.err.println("It seems local file!");
             fromFile = true;
             readyRun = openFile(name);
             return;
@@ -68,7 +68,7 @@ class PcapManager {
         //name == URL
         String urlRegex = "\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
         if (name.matches(urlRegex) ) {
-            System.err.printf("It seems URL!");
+            System.err.println("It seems URL!");
             //完全では無いが、URLっぽいのは確かだ・・・
             fromUrl = true;
             try {
@@ -99,7 +99,7 @@ class PcapManager {
                 name = name.replace(":","");
                 name = name.replace("-","");
                 if(macAddress == name){
-                    System.err.printf("It seeems a device MAC Address!");
+                    System.err.println("It seeems a device MAC Address!");
                     fromDev = true;
                     pcapDev = dev;
                     readyRun = openDev(pcapDev.getName());
@@ -139,18 +139,29 @@ class PcapManager {
      * 800MBものパケットファイルをいちいち全部ダウンロードするのは億劫。
      * だから、この関数でWeb上のパケットファイルを擬似的にロードする。
      * 例外は発生しない。
+     * gzipファイルに対応している。他の圧縮形式に対応するにはこの関数を編集。
      *
      * @return wasOK 成功か失敗か。
     */
-    public boolean openURL(URL url){
+    public boolean openURL(URL url) {
+        System.err.println("openURL(" + url.toString() +")");
         boolean wasOK = false;
-        try{
-            InputStream in = url.openStream();
-            System.err.println("PcapManager.openURL opened inputstream");
-            System.setIn(in);
-            System.err.println("PcapManager.openURL set inputstream");
+        try {
+            InputStream temp = url.openStream();
+            if (url.toString().matches(".*\\.gz(?:ip)?$") ) {//URLで判断する？
+                GZIPInputStream in = new GZIPInputStream(temp);
+                System.setIn(in);
+                System.err.println("PcapManager.openURL opened GZinputstream");
+            }else if (false){ 
+                //ここで他の形式に対応させる
+            } else {
+                InputStream in = temp;
+                System.setIn(in);
+                System.err.println("PcapManager.openURL opened inputstream");
+            }
             wasOK = openFile("-");
-        }catch (Exception e){
+            //in.closeする必要なかったかもしれんなあ
+        } catch (Exception e) {
             System.err.println("Error in PcapManager.openURL");
         }
         return wasOK;
@@ -163,6 +174,7 @@ class PcapManager {
      * @return wasOK 成功か失敗か。
     */
     public boolean openFile(String fname){
+        System.err.println("openFile(" + fname +")");
         boolean wasOK = false;
         pcap = Pcap.openOffline(fname,errBuf);
         if (pcap == null) {
@@ -183,6 +195,7 @@ class PcapManager {
      * @return wasOK 成功か失敗か。
     */
     public boolean openDev(String devName) {
+        System.err.println("openDev(" + devName +")");
         boolean wasOK = false;
         pcap = Pcap.openLive(devName, snaplen, flags, timeout, errBuf);
         if (pcap == null) {
