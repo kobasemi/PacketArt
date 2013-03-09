@@ -43,7 +43,7 @@ class PcapManager {
     private final int flags = Pcap.MODE_PROMISCUOUS; // プロミスキャスモード  
     private final int timeout = 10 * 1000;// 10秒でタイムアウト？  
 
-    private boolean readyRun = false;
+    private static boolean readyRun = false;
     
     public Pcap pcap;
     public PcapPacketHandlerBase packetHandler;
@@ -54,7 +54,7 @@ class PcapManager {
     public boolean isFromFile() { return fromFile; } 
     public boolean isFromUrl() { return fromUrl; } 
     public boolean isfromDev() { return fromDev; } 
-    public boolean isReadyRun() { return readyRun; } 
+    public static boolean isReadyRun() { return readyRun; } 
     public String getErrBuf() { return errBuf.toString(); }
 
     /**
