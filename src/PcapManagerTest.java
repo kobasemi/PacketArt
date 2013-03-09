@@ -10,7 +10,7 @@ class PcapManagerTest {
             System.err.println("");
             System.err.println("[*] isReadyRun: " + pm.isReadyRun());
             if(pm.isReadyRun()){
-                pm.run();
+                pm.handlePackets();
             }
         } catch (Exception e) {
             e.printStackTrace();

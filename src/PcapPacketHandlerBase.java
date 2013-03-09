@@ -113,6 +113,15 @@ class PcapPacketHandlerBase implements PcapPacketHandler<String> {
      * @see org.jnetpcap.protocol.network.Ip4
     */
     public void ip4Handler(Ip4 ip4) {
+        byte[] src = ip4.source();
+        byte[] dst = ip4.destination();
+        String s = "";
+        String d = "";
+        for (int i=0; i<4; i++) {
+            s = s + String.format("%03d ", src[i]);
+            d = d + String.format("%03d ", dst[i]);
+        }
+        System.err.println("From :" + s + "To :" + d);
     }
 
     /**

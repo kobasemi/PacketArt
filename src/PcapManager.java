@@ -15,7 +15,7 @@ import org.jnetpcap.PcapIf;
 /**
  * 完全にパケットアート用。
  * 使い方:
- * PcapManager pm = new PcapManager(new [URL,String,File])
+ * PcapManager pm = new PcapManager(new File(filename))
  * if (pm.isReadyRun) { pm.run(); }
  * //run()ではPcapPacketHandlerBaseが動く。このクラス自体は例外を発射しません。
  * 
@@ -226,7 +226,7 @@ class PcapManager {
      * コンストラクタで指定されたpcapをPcapPacketHandlerBaseに与えます。
      * ループは「無限」にしてあります。
     */
-    public void run() {
+    public void handlePackets() {
         try {
             pcap.loop(INFINITE, packetHandler,"DummyUserData");
             //ユーザー定義引数は今回は使わないので、適当に埋めている。
