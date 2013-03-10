@@ -279,6 +279,7 @@ class PcapManager {
                 readyRun = openURL(pcapUrl);
                 return readyRun;
             } catch (Exception e){
+                e.printStackTrace();
             }//あれ、URLちゃう・・・
         }
 

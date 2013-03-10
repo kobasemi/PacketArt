@@ -78,7 +78,7 @@ class ProtocolHandlerBase {
             //実際には
             //もっといい方法ありそうだけど。
         } catch (Exception e) {
-            //e.printStackTrace();
+            System.err.println("jnetpcapBug!!!!");
             //jnetpcapが解析できないパケットを受け取ったらここに飛ぶ
             //どうしようもない。なので、何もしない。
         }
@@ -87,61 +87,61 @@ class ProtocolHandlerBase {
     /**
      * @see org.jnetpcap.protocol.tcpip.Tcp
     */
-    private void tcpHandler(Tcp tcp) {
+    public void tcpHandler(Tcp tcp) {
     }
 
     /**
      * @see org.jnetpcap.protocol.tcpip.Udp
     */
-    private void udpHandler(Udp udp) {
+    public void udpHandler(Udp udp) {
     }
 
     /**
      * @see org.jnetpcap.protocol.network.Ip6
     */
-    private void ip6Handler(Ip6 ip6) {
+    public void ip6Handler(Ip6 ip6) {
     }
 
     /**
      * @see org.jnetpcap.protocol.network.Ip4
     */
-    private void ip4Handler(Ip4 ip4) {
+    public void ip4Handler(Ip4 ip4) {
     }
 
     /**
      * @see org.jnetpcap.protocol.wan.PPP
     */
-    private void pppHandler(PPP ppp) {
+    public void pppHandler(PPP ppp) {
     }
 
     /**
      * @see org.jnetpcap.protocol.vpn.PPP
     */
-    private void l2tpHandler(L2TP lt2p) {
+    public void l2tpHandler(L2TP lt2p) {
     }
 
     /**
      * @see org.jnetpcap.protocol.network.Icmp
     */
-    private void icmpHandler(Icmp icmp) {
+    public void icmpHandler(Icmp icmp) {
     }
 
     /**
      * @see org.jnetpcap.protocol.network.Arp
     */
-    private void arpHandler(Arp arp) {
+    public void arpHandler(Arp arp) {
     }
 
     /**
      * @see org.jnetpcap.protocol.lan.Ethernet
     */
-    private void ethernetHandler(Ethernet ethernet) {
+    public void ethernetHandler(Ethernet ethernet) {
     }
 
     /**
      * @see org.jnetpcap.packet.PcapPacket
     */
-    private void packetHandler(PcapPacket packet) {
+    public void packetHandler(PcapPacket packet) {
     }
 
 }

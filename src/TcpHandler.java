@@ -12,7 +12,8 @@ class TcpHandler extends ProtocolHandlerBase {
         tcp = null;
     }
 
-    private void tcpHandler(Tcp tcpPacket) {
+    public void tcpHandler(Tcp tcpPacket) {
+        System.err.println("TCP has come!!");
         tcp = tcpPacket;
     }
 
