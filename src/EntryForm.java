@@ -96,7 +96,7 @@ public class EntryForm extends FormBase {
             PcapPacket pkt = pcapManager.nextPacket();
             tcpHandler.inspect(pkt);
         } else {
-            System.err.println("GIVE ME MORE PCAP..");
+        //    System.err.println("GIVE ME MORE PCAP..");
             //再度pcapファイルを開くように促す
         }
 		tick++;
