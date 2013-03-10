@@ -63,6 +63,7 @@ class PcapManager {
      * のいずれかを手動で使おう。
     */
     PcapManager() {
+        errBuf = new StringBuilder();
     }
 
     /**
@@ -150,6 +151,7 @@ class PcapManager {
      *       openFile(temp.getName())
     */
     PcapManager(URL url) {
+        errBuf = new StringBuilder();
         System.err.println("PcapManager(URL " + url.toString() +")");
         readyRun = openURL(url);
     }
@@ -158,6 +160,7 @@ class PcapManager {
      * ローカルのファイルからパケットを読み出す。
     */
     PcapManager(File file) {
+        errBuf = new StringBuilder();
         System.err.println("PcapManager(File " + file.getName() +")");
         readyRun = openFile(file.getName());
     }
@@ -167,6 +170,7 @@ class PcapManager {
      * 
     */
     PcapManager(PcapIf dev) {
+        errBuf = new StringBuilder();
         System.err.println("PcapManager(PcapIf " + dev.getName() +")");
         readyRun = openDev(dev.getName());
     }
@@ -205,6 +209,7 @@ class PcapManager {
             System.err.println("Error in PcapManager.openURL");
             e.printStackTrace();
         }
+        readyRun = wasOK;
         return wasOK;
     }
 
@@ -226,6 +231,7 @@ class PcapManager {
         pcapFile = new File(fname);
         fromFile = true;
         wasOK = true;
+        readyRun = wasOK;
         return wasOK;
     }
 
@@ -246,6 +252,7 @@ class PcapManager {
         }
         fromDev = true;
         wasOK = true;
+        readyRun = wasOK;
         return wasOK;
     }
 
@@ -289,6 +296,7 @@ class PcapManager {
     }
 
     public PcapIf getDevByIP(String ip) {
+        System.err.println("getDevByIP(" + ip + ")");
         List<PcapIf> alldevs = new ArrayList<PcapIf>();
         int r = Pcap.findAllDevs(alldevs, errBuf);
         List<PcapAddr> pcapAddrs = null;

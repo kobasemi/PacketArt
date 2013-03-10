@@ -29,6 +29,8 @@ public class EntryForm extends FormBase {
 		limit = 50;
 		cursor = new Point[50];
 		time = new int[50];
+        pcapManager = new PcapManager();//TEST
+        tcpHandler = new TcpHandler();
 
 		addMouseListener(this);
 		setBackground(Color.white);
