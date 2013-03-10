@@ -282,6 +282,7 @@ class PcapManager {
         } finally {
             //全部読んだらこっちに引きこむ
             pcap.close();//開けたら、閉めるのを忘れない。
+            readyRun = false;
             System.err.println(errBuf );//最後にjnetpcap内部エラー情報を表示。
             System.err.println("Closing PcapManager...");//デバッグ用。
             //return pleaseCloseProgram;パケット読み終わったらどうする？（いわゆる、弾切れ）
@@ -295,6 +296,7 @@ class PcapManager {
         if ( pcap.nextEx(packet) == Pcap.NEXT_EX_OK ) {
             return new PcapPacket(packet);
         } else {
+            readyRun = false;
             return null;
         }
     }
