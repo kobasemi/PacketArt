@@ -2,7 +2,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-import java.util.ArrayList;
+import org.jnetpcap.packet.PcapPacket;
+import org.jnetpcap.PcapIf;
 
 // このファイルがクラスの基本的な構造と使い方
 /**
@@ -17,8 +18,8 @@ public class EntryForm extends FormBase {
 	String fileName;
 	JButton loadButton;
 	JButton loadButton2;//TEST
-    boolean hasInitialized = false;
-    PcapManager pcapManager = null;
+    PcapManager pcapManager = new PcapManager();//TEST
+    TcpHandler tcpHandler = new TcpHandler();
 
 	// あらゆるオブジェクトの初期化はここから(jnetpcap関連クラスなど)
 	// あくまでフォームなのでフォームを使ってなんでもやらないこと推奨
@@ -39,10 +40,14 @@ public class EntryForm extends FormBase {
 				if((int)chooser.showOpenDialog(getParent()) == JFileChooser.APPROVE_OPTION)
 					fileName = chooser.getSelectedFile().getAbsolutePath();
                     if (fileName != null) {
-                        pcapManager = new PcapManager(fileName);
-                    }
-                    if (pcapManager.isReadyRun() == true) {
-                         loadButton.setText("Pcapファイルが正しくロードされました。");
+                        if( pcapManager.isReadyRun() ) {
+                            loadButton.setText("すでにロードされています。");
+                        } else {
+                            pcapManager.openFile(fileName);
+                            if (pcapManager.isReadyRun() == true) {
+                                loadButton.setText("Pcapファイルが正しくロードされました。");
+                            }
+                        }
                     }
 			}
 		});
@@ -52,29 +57,23 @@ public class EntryForm extends FormBase {
         loadButton2 = new JButton("デバイスのIPアドレスから開く");//TEST
         loadButton2.addActionListener(new ActionListener(){//TEST
             public void actionPerformed(ActionEvent e){//TEST
-/*
-                    ArrayList<Tuple<ArrayList<String>,String>> deviceList = PcapManager.getDeviceList();
-                    for ( Tuple t : deviceList) {
-                        //for ( String ipAddr : t.x ) {使えなかった
-                        for(int i=0;i<t.x.length();i++){
-                            System.err.println(t.x.get(i) + " : " + t.y);
-                        }
-                    }
-*/
                     String ipAddress = JOptionPane.showInputDialog("IPアドレスを入力してください", "IPv4もしｋはIPv6");//TEST
                     if (ipAddress != null) {
-                        pcapManager = new PcapManager(ipAddress);//TEST
+                        if( pcapManager.isReadyRun() ) {
+                            loadButton2.setText("すでにロードされています。");
+                        } else {
+                            pcapManager.openString(ipAddress);
+                            if (pcapManager.isReadyRun() == true) {
+                                loadButton2.setText("Pcapファイルが正しくロードされました。");
+                            }
+                        }
                     }
-                    if (pcapManager.isReadyRun() == true) {//TEST
-                         loadButton2.setText("デバイスが正しく認識されました。");//TEST
-                    }//ボタン何回も押したらpcapManagerが２重で定義される・？
             }
         });
         loadButton2.setBounds((getSize().width / 4) , (getSize().height / 5) * 1, getSize().width / 2, getSize().height / 5);//TST
         getContentPane().add(loadButton2, 1);
         
-        hasInitialized = true;
-	}//PcapManager.closeを終了時に呼ぶならfinalizeがいる？
+	}
 
 	// 描画関連のコードはここに
 	public void paint(Graphics g) {
@@ -89,9 +88,12 @@ public class EntryForm extends FormBase {
 	// viewとlogicの分離を考えるときはcommandパターンのようなものでも使ってください
 	// パケット解析などはこのメソッドからどうぞ
 	public void update() {
-        if (hasInitialized && pcapManager != null && pcapManager.isReadyRun() ) {
-            pcapManager.packetHandler.protocolHandler(pcapManager.nextPacket() );
-        } 
+        if ( pcapManager.isReadyRun() ) {
+            PcapPacket pkt = pcapManager.nextPacket();
+            tcpHandler.inspect(pkt);
+        } else {
+            //再度pcapファイルを開くように促す
+        }
 		tick++;
 	}
 

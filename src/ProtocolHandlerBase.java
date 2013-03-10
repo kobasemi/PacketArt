@@ -1,8 +1,5 @@
-import java.net.InetAddress;
-
 import org.jnetpcap.packet.PcapPacket;
-import org.jnetpcap.packet.PcapPacketHandler;
-//*-----識別出来るプロトコル達-----*
+//*-----識別するプロトコル達-----*
 import org.jnetpcap.protocol.lan.Ethernet;
 import org.jnetpcap.protocol.network.Arp;
 import org.jnetpcap.protocol.network.Icmp;
@@ -12,18 +9,30 @@ import org.jnetpcap.protocol.network.Ip6;//Typeof IPv4
 import org.jnetpcap.protocol.vpn.L2TP;
 import org.jnetpcap.protocol.tcpip.Tcp;
 import org.jnetpcap.protocol.tcpip.Udp;
-//*-----使用出来るプロトコル達-----*
 //パケットアートで使わないプロトコルはインポートしていない。
+//他にはHTTPとか使えるので、知っておくと結構役に立つかもしれない。
 
 /**
- * このクラスはパケットアート用のパケットハンドラです。PcapPacketHandlerを継承。
- * ちなみにPcapPacketHandlerはnextPacket関数だけを上書きすればよいinterfaceです。
- * PcapPacketオブジェクトをnextPacket関数で一個ずつ貰い受けます。
- * jnetpcapのプロトコルの識別機能をパケットアート用に抽象的に提供します。
- * nextPacket関数ではプロトコルを識別し、それに対応した動作をします。（未）
- * 
+ * このクラスはパケットアート用のパケット識別クラスです。
+ * protocolHandlerではプロトコルの識別機能をパケットアート用に提供します。
+ * 例：もしTCPパケットが読み込まれたらtcpHandlerが呼ばれます。
+ * ＃＃＃＃この関数はスーパークラスとして使います。＃＃＃＃
+ * 使い方：
+ *  class TcpDport extends ProtocolHandlerBase {
+ *      public int dport;
+ *      public void tcpHandler(Tcp tcp) {
+ *          dport = tcp.getDestination();
+ *      }
+ *  }
+ * PcapManager pm = new PcapManager("filename");
+ * TcpDport td = new Test();
+ * PcapPacket pkt;
+ * pkt = pm.nextPacket();
+ * td.inspect(pkt);
+ * System.err.println("TCP.dport = " + td.dport * 1024);
+ *
 */
-class PcapPacketHandlerBase implements PcapPacketHandler<String> {
+class ProtocolHandlerBase {
 
     //パケット識別子兼、「受け皿」を宣言。
     private Ethernet ethernet = new Ethernet();
@@ -36,34 +45,15 @@ class PcapPacketHandlerBase implements PcapPacketHandler<String> {
     private Tcp tcp = new Tcp();  
     private Udp udp = new Udp();
 
-    /**
-     * デフォルトコンストラクタ。new PcapPacketHandlerBase();で呼び出される。
-     * @param user ユーザー定義。型はString。使わないならダミーで。
-    */
-    PcapPacketHandlerBase() {
-        super();
-    }
-    //userはパケットハンドラ呼び出し元がよこしたユーザー定義引数。
-    //他にも<Integer>とか色んなものをパケットハンドラに持ってこれるらしい。
-    //多分使わんと思うから、放置。
-
-    /**
-     * このクラスの核。Pcapから送り込まれたのが何のパケットかを判別する関数。
-     * この関数でjnetpcapがよく分からん例外を生成するが、頻度は低い。
-     * よって、例外は握りつぶすことにする。この関数は例外を一切放出しない。
-     * Pcap.loopによって自動で呼び出されるので、引数を気にする心配は無い。はず。
-     *
-     * @param packet Pcap.loopによって一個ずつ送り込まれる生パケット
-     * @param user 
-     * @see org.jnetpcap.packet.Pcap#loop(int cnt, int id, PcapPacketHandler<T> handler, T user)
-    */
-    public void nextPacket(PcapPacket packet,String user) {
-        protocolHandler(packet);
+    ProtocolHandlerBase() {
     }
 
-    public void protocolHandler(PcapPacket packet) {
+    /**
+     * この関数は、プロトコル毎に呼び出す関数を変えます。
+     * 最後に、一度関数を呼び出す猶予を与えています。
+    */
+    public void inspect(PcapPacket packet) {
         try {
-            //count++;
             if (packet.hasHeader(tcp) ) {  
                 tcpHandler(tcp);//40％ここに来る
             } else if (packet.hasHeader(udp) ) {  
@@ -82,16 +72,15 @@ class PcapPacketHandlerBase implements PcapPacketHandler<String> {
                 arpHandler(arp);//実際来ることは無いだろう。
             } else if ( packet.hasHeader(ethernet) ) {  
                 ethernetHandler(ethernet);
-            } else {
-                otherPacketHandler(packet);//ETHERNET_PACKETを含まないパケットって、なんだろ
             }
+            packetHandler(packet);//ETHERNET_PACKETを含まないパケットって、なんだろ
             //レイヤーが高い順にすることで、最上階のレイヤーを扱う。
             //実際には
             //もっといい方法ありそうだけど。
         } catch (Exception e) {
             //e.printStackTrace();
             //jnetpcapが解析できないパケットを受け取ったらここに飛ぶ
-            //何もしない。
+            //どうしようもない。なので、何もしない。
         }
     }
 
@@ -99,78 +88,60 @@ class PcapPacketHandlerBase implements PcapPacketHandler<String> {
      * @see org.jnetpcap.protocol.tcpip.Tcp
     */
     public void tcpHandler(Tcp tcp) {
-        System.err.println("TCP has come!");
     }
 
     /**
      * @see org.jnetpcap.protocol.tcpip.Udp
     */
     public void udpHandler(Udp udp) {
-        System.err.println("UDP has come!");
     }
 
     /**
      * @see org.jnetpcap.protocol.network.Ip6
     */
     public void ip6Handler(Ip6 ip6) {
-        System.err.println("IPv6 has come!");
     }
 
     /**
      * @see org.jnetpcap.protocol.network.Ip4
     */
     public void ip4Handler(Ip4 ip4) {
-        System.err.println("IPv4 has come!");
-        byte[] src = ip4.source();
-        byte[] dst = ip4.destination();
-        try {
-            String srcAddr = InetAddress.getByAddress(src).getHostAddress();
-            String dstAddr = InetAddress.getByAddress(dst).getHostAddress();
-            System.err.println( srcAddr + " => " + dstAddr);
-        } catch (Exception e) {
-            e.printStackTrace();//どうせでばっぐヨウデスシ
-        }
     }
 
     /**
      * @see org.jnetpcap.protocol.wan.PPP
     */
     public void pppHandler(PPP ppp) {
-        System.err.println("PPP has come!");
     }
 
     /**
      * @see org.jnetpcap.protocol.vpn.PPP
     */
     public void l2tpHandler(L2TP lt2p) {
-        System.err.println("L2TP has come!");
     }
 
     /**
      * @see org.jnetpcap.protocol.network.Icmp
     */
     public void icmpHandler(Icmp icmp) {
-        System.err.println("ICMP has come!");
     }
 
     /**
      * @see org.jnetpcap.protocol.network.Arp
     */
     public void arpHandler(Arp arp) {
-        System.err.println("ARP has come!");
     }
 
     /**
      * @see org.jnetpcap.protocol.lan.Ethernet
     */
     public void ethernetHandler(Ethernet ethernet) {
-        System.err.println("Ethernet has come!");
     }
 
     /**
      * @see org.jnetpcap.packet.PcapPacket
     */
-    public void otherPacketHandler(PcapPacket packet) {
-        System.err.println("other Protocol has come!");
+    public void packetHandler(PcapPacket packet) {
     }
+
 }

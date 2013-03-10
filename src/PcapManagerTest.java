@@ -8,14 +8,14 @@ class PcapManagerTest {
             }
             String name = args[0];
             PcapManager pm = new PcapManager(name);
+            TcpHandler th = new TcpHandler();
             System.err.println("");
             System.err.println("[*] isReadyRun: " + pm.isReadyRun());
-            if(pm.isReadyRun()){
-                System.err.println("********RUN********");
-                //pm.handlePackets();
-                PcapPacket p = pm.nextPacket();
-                pm.packetHandler.protocolHandler(p);
-            }
+            System.err.println("Waiting Packets....");
+            PcapPacket pkt = pm.nextPacket();
+            System.err.printf("********RUN********");
+            th.inspect(pkt);
+            System.err.println("*******************");
         } catch (Exception e) {
             e.printStackTrace();
         }
