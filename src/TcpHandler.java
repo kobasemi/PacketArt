@@ -1,9 +1,30 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
 import org.jnetpcap.protocol.tcpip.Tcp;
 
 class TcpHandler extends ProtocolHandlerBase {
+//http://jnetpcap.com/docs/javadocs/jnetpcap-1.3/org/jnetpcap/protocol/tcpip/Tcp.html#destination%28%29
 
-    public void tcpHandler(Tcp tcp) {
-        System.err.println("TCP has come!");
+    private Tcp tcp;
+    TcpHandler() {
+        tcp = null;
     }
+
+    private void tcpHandler(Tcp tcpPacket) {
+        tcp = tcpPacket;
+    }
+
+    public void paint(Graphics g,Point[] cursor) {
+        System.err.println(tcp.destination());
+        for (int i = 0; i < 50 ; i++) {
+            if(cursor[i] != null) {
+                g.setColor(Color.getHSBColor(360.0f / (tcp.destination() % 360.0f), 0.8f, 0.8f));
+                g.fillOval((int)cursor[i].getX() - 25, (int)cursor[i].getY() - 25, 50, 50);
+                }
+            }
+        }
+
 
 }

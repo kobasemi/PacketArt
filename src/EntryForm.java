@@ -30,7 +30,7 @@ public class EntryForm extends FormBase {
 		cursor = new Point[50];
 		time = new int[50];
         pcapManager = new PcapManager();//TEST
-        tcpHandler = new TcpHandler();
+        tcpHandler = new TcpHandler();//TEST
 
 		addMouseListener(this);
 		setBackground(Color.white);
@@ -79,12 +79,14 @@ public class EntryForm extends FormBase {
 
 	// 描画関連のコードはここに
 	public void paint(Graphics g) {
+    /*
 		for (int i = 0; i < 50 ; i++) {
 			if(cursor[i] != null) {
 				g.setColor(Color.getHSBColor(360.0f / (time[i] % 360.0f), 0.8f, 0.8f));
 				g.fillOval((int)cursor[i].getX() - 25, (int)cursor[i].getY() - 25, 50, 50);
 			}
-		}
+		}*/
+        tcpHandler.paint(g,cursor);
 	}
 
 	// viewとlogicの分離を考えるときはcommandパターンのようなものでも使ってください

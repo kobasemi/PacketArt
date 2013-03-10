@@ -87,61 +87,61 @@ class ProtocolHandlerBase {
     /**
      * @see org.jnetpcap.protocol.tcpip.Tcp
     */
-    public void tcpHandler(Tcp tcp) {
+    private void tcpHandler(Tcp tcp) {
     }
 
     /**
      * @see org.jnetpcap.protocol.tcpip.Udp
     */
-    public void udpHandler(Udp udp) {
+    private void udpHandler(Udp udp) {
     }
 
     /**
      * @see org.jnetpcap.protocol.network.Ip6
     */
-    public void ip6Handler(Ip6 ip6) {
+    private void ip6Handler(Ip6 ip6) {
     }
 
     /**
      * @see org.jnetpcap.protocol.network.Ip4
     */
-    public void ip4Handler(Ip4 ip4) {
+    private void ip4Handler(Ip4 ip4) {
     }
 
     /**
      * @see org.jnetpcap.protocol.wan.PPP
     */
-    public void pppHandler(PPP ppp) {
+    private void pppHandler(PPP ppp) {
     }
 
     /**
      * @see org.jnetpcap.protocol.vpn.PPP
     */
-    public void l2tpHandler(L2TP lt2p) {
+    private void l2tpHandler(L2TP lt2p) {
     }
 
     /**
      * @see org.jnetpcap.protocol.network.Icmp
     */
-    public void icmpHandler(Icmp icmp) {
+    private void icmpHandler(Icmp icmp) {
     }
 
     /**
      * @see org.jnetpcap.protocol.network.Arp
     */
-    public void arpHandler(Arp arp) {
+    private void arpHandler(Arp arp) {
     }
 
     /**
      * @see org.jnetpcap.protocol.lan.Ethernet
     */
-    public void ethernetHandler(Ethernet ethernet) {
+    private void ethernetHandler(Ethernet ethernet) {
     }
 
     /**
      * @see org.jnetpcap.packet.PcapPacket
     */
-    public void packetHandler(PcapPacket packet) {
+    private void packetHandler(PcapPacket packet) {
     }
 
 }
