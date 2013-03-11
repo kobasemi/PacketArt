@@ -15,8 +15,11 @@ class PcapManagerTest {
             System.err.println("[*] isReadyRun: " + pm.isReadyRun());
             System.err.println("Waiting Packets....");
             System.err.println("********RUN********");
-            while (( pkt = pm.nextPacket() ) != null )
+            while (( pkt = pm.nextPacket() ) != null ) {
+                System.err.printf(".");
                 th.inspect(pkt);
+            }
+            System.in.read();
             System.err.println("*******************");
         } catch (Exception e) {
             e.printStackTrace();

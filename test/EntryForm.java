@@ -18,8 +18,9 @@ public class EntryForm extends FormBase {
 	String fileName;
 	JButton loadButton;
 	JButton loadButton2;//TEST
-    PcapManager pcapManager = new PcapManager();//TEST
-    TcpHandler tcpHandler = new TcpHandler();
+    PcapManager pcapManager;//TEST
+    TcpHandler tcpHandler;
+    MusicStation musicStation;
 
 	// あらゆるオブジェクトの初期化はここから(jnetpcap関連クラスなど)
 	// あくまでフォームなのでフォームを使ってなんでもやらないこと推奨
@@ -31,6 +32,7 @@ public class EntryForm extends FormBase {
 		time = new int[50];
         pcapManager = new PcapManager();//TEST
         tcpHandler = new TcpHandler();//TEST
+        musicStation = new MusicStation();//TEST
 
 		setBackground(Color.white);
 
@@ -100,6 +102,7 @@ public class EntryForm extends FormBase {
         if ( pcapManager.isReadyRun() ) {
             PcapPacket pkt = pcapManager.nextPacket();
             tcpHandler.inspect(pkt);
+            musicStation.inspect(pkt);
         } else {
             loadButton2.setVisible(true);
             loadButton.setVisible(true);
