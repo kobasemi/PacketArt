@@ -37,6 +37,7 @@ public class FormUtil {
 
 		try{
 			targetForm.generateForm(name, form);
+			System.out.println(name + " create " + (targetForm.isExistForm(name) ? "successful." : "UNSUCCESSFUL."));
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -44,6 +45,7 @@ public class FormUtil {
 
 	public void changeForm(String name){
 		try{
+			System.out.println("Form change to " + name);
 			targetForm.changeFormInstance(name);
 		} catch(Exception e){
 			e.printStackTrace();

@@ -41,14 +41,16 @@ public class EntryForm extends FormBase {
 
 		// ファイルを開くボタンを配置する 0はレイヤー番号
 		getContentPane().add(loadButton, 0);
-
 	}
 
 	// 描画関連のコードはここに
 	public void paint(Graphics g) {
-		for (int i = 0; i < 50 ; i++) {
+		g.setColor(Color.getHSBColor(360.0f / (tick % 360.0f), 0.5f, 1.0f));
+		g.fillRect(-25, -25, 50, 50);
+
+		for (int i = 0; i < limit ; i++) {
 			if(cursor[i] != null) {
-				g.setColor(Color.getHSBColor(360.0f / (time[i] % 360.0f), 0.8f, 0.8f));
+				g.setColor(Color.getHSBColor(360.0f / (time[i] % 360.0f), 0.5f, 0.9f));
 				g.fillOval((int)cursor[i].getX() - 25, (int)cursor[i].getY() - 25, 50, 50);
 			}
 		}
@@ -68,16 +70,19 @@ public class EntryForm extends FormBase {
 	// Eventを切り離すときれいに見えますがめんどくさくなります
 	// TODO:謎のダブルクリック問題を解消する(シングルクリックが2回反応する)
 	public void mouseClicked(MouseEvent e) {
+
+    }
+    public void mousePressed(MouseEvent e) {
 		System.out.println(count);
 
-		time[count] = (int)tick;
-		cursor[count] = e.getPoint();
-		if(count >= limit)
+		synchronized(cursor){
+			time[count] = (int)tick;
+			cursor[count] = e.getPoint();
+		}
+		if(count > limit)
 			count = 0;
 		else
 			count++;
-    }
-    public void mousePressed(MouseEvent e) {
     }
     public void mouseReleased(MouseEvent e) {
     }
