@@ -1,4 +1,5 @@
 import org.jnetpcap.packet.PcapPacket;
+
 class PcapManagerTest {
     public static void main(String[] args) {
         try{
@@ -8,13 +9,14 @@ class PcapManagerTest {
             }
             String name = args[0];
             PcapManager pm = new PcapManager(name);
-            TcpHandler th = new TcpHandler();
+            MusicStation th = new MusicStation();
+            PcapPacket pkt = null;
             System.err.println("");
             System.err.println("[*] isReadyRun: " + pm.isReadyRun());
             System.err.println("Waiting Packets....");
-            PcapPacket pkt = pm.nextPacket();
             System.err.println("********RUN********");
-            th.inspect(pkt);
+            while (( pkt = pm.nextPacket() ) != null )
+                th.inspect(pkt);
             System.err.println("*******************");
         } catch (Exception e) {
             e.printStackTrace();
