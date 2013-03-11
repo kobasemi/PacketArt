@@ -92,7 +92,7 @@ public class EntryForm extends FormBase {
 				g.fillOval((int)cursor[i].getX() - 25, (int)cursor[i].getY() - 25, 50, 50);
 			}
 		}*/
-        tcpHandler.paint(g,cursor);
+        tcpHandler.paint(g,cursor,getSize().width,getSize().height);
 	}
 
 	// viewとlogicの分離を考えるときはcommandパターンのようなものでも使ってください
