@@ -13,26 +13,31 @@ import org.jnetpcap.protocol.tcpip.Udp;
 //他にはHTTPとか使えるので、知っておくと結構役に立つかもしれない。
 
 /**
- * このクラスはパケットアート用のパケット識別クラスです。
- * protocolHandlerではプロトコルの識別機能をパケットアート用に提供します。
- * 例：もしTCPパケットが読み込まれたらtcpHandlerが呼ばれます。
- * ＃＃＃＃この関数はスーパークラスとして使います。＃＃＃＃
- * 使い方：
- *  class TcpDport extends ProtocolHandlerBase {
- *      public int dport;
- *      public void tcpHandler(Tcp tcp) {
- *          dport = tcp.getDestination();
- *      }
- *  }
- * PcapManager pm = new PcapManager("filename");
- * TcpDport td = new Test();
- * PcapPacket pkt;
- * pkt = pm.nextPacket();
- * td.inspect(pkt);
- * System.err.println("TCP.dport = " + td.dport * 1024);
+ * このクラスはパケットアート用のパケット識別クラスです。<br>
+ * protocolHandlerではプロトコルの識別機能をパケットアート用に提供します。<br>
+ * 例：もしTCPパケットが読み込まれたらtcpHandlerが呼ばれます。<br>
+ * ＃＃＃＃この関数はスーパークラスとして使います。＃＃＃＃<br>
+ * 使い方：<br>
+ * <code>
+ * class TcpDport extends ProtocolHandlerBase {<br>
+ *     private tcp = null;<br>
+ *     public void tcpHandler(Tcp t) {<br>
+           tcp = t;<br>
+ *     }<br>
+ * }<br>
+ * PcapManager pm = new PcapManager("filename");<br>
+ * TcpDport td = new Test();<br>
+ * PcapPacket pkt;<br>
+ * pkt = pm.nextPacket();<br>
+ * td.inspect(pkt);<br>
+ * System.err.println("TCP.dport = " + td.tcp.destination() * 1024);<br>
+ * </code>
+ * @author syake
  *
+ *
+ * 
 */
-class ProtocolHandlerBase {
+public class ProtocolHandlerBase {
 
     //パケット識別子兼、「受け皿」を宣言。
     private Ethernet ethernet = new Ethernet();
@@ -51,6 +56,10 @@ class ProtocolHandlerBase {
     /**
      * この関数は、プロトコル毎に呼び出す関数を変えます。
      * 最後に、一度関数を呼び出す猶予を与えています。
+     * 
+     * @param packet PcapManager.nextPacket()で読みだしたパケット
+     * 
+     * @see org.jnetpcap.packet.PcapPacket
     */
     public void inspect(PcapPacket packet) {
         try {
@@ -78,7 +87,11 @@ class ProtocolHandlerBase {
             //実際には
             //もっといい方法ありそうだけど。
         } catch (Exception e) {
-            System.err.println("jnetpcapBug!!!!");
+            if (packet == null) {
+                //System.err.println("GIVE MORE PCAP!");
+            } else {
+                System.err.println("jnetpcapBug!!!!");
+            }
             //jnetpcapが解析できないパケットを受け取ったらここに飛ぶ
             //どうしようもない。なので、何もしない。
         }

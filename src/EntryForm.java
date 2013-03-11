@@ -46,8 +46,11 @@ public class EntryForm extends FormBase {
                             loadButton.setText("すでにロードされています。");
                         } else {
                             pcapManager.openFile(fileName);
+                            fileName = null;
                             if (pcapManager.isReadyRun() == true) {
-                                loadButton.setText("Pcapファイルが正しくロードされました。");
+                                //loadButton.setText("Pcapファイルが正しくロードされました。");
+                                loadButton2.setVisible(false);
+                                loadButton.setVisible(false);
                             }
                         }
                     }
@@ -65,8 +68,11 @@ public class EntryForm extends FormBase {
                             loadButton2.setText("すでにロードされています。");
                         } else {
                             pcapManager.openString(ipAddress);
+                            ipAddress = null;
                             if (pcapManager.isReadyRun() == true) {
-                                loadButton2.setText("Pcapファイルが正しくロードされました。");
+                                //loadButton2.setText("Pcapファイルが正しくロードされました。");
+                                loadButton2.setVisible(false);
+                                loadButton.setVisible(false);
                             }
                         }
                     }
@@ -96,6 +102,8 @@ public class EntryForm extends FormBase {
             PcapPacket pkt = pcapManager.nextPacket();
             tcpHandler.inspect(pkt);
         } else {
+            loadButton2.setVisible(true);
+            loadButton.setVisible(true);
         //    System.err.println("GIVE ME MORE PCAP..");
             //再度pcapファイルを開くように促す
         }
