@@ -13,7 +13,7 @@ class MusicStation extends ProtocolHandlerBase {
 
     public void init() {
         try {
-            Receiver receiver = MidiSystem.getReceiver();
+            receiver = MidiSystem.getReceiver();
             message = new ShortMessage();
         } catch(Exception e) {
             e.printStackTrace();
