@@ -32,7 +32,6 @@ public class EntryForm extends FormBase {
         pcapManager = new PcapManager();//TEST
         tcpHandler = new TcpHandler();//TEST
 
-		addMouseListener(this);
 		setBackground(Color.white);
 
 		loadButton = new JButton("ファイルを開く");
