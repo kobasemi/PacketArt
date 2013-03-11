@@ -22,6 +22,7 @@ public class Form extends JFrame{
 
 	Form(String startupFormName, Class<? extends FormBase> startupForm){
 		timer  = new TimerThread();
+		timer.setName("TimerThread");
 		FormUtil.setForm(this);
 
 		// CardLayout
@@ -47,16 +48,16 @@ public class Form extends JFrame{
 		System.out.println(getCurrentInstance().getContentPane().getClass().getName());
 
 		card.show(getContentPane(), startupFormName);
-		show();
+		//show();
 
 		// formの処理
 		getCurrentInstance().initialize();
 		// 実行するメソッドの登録
 		registerInvokeMethodsToTimer(getCurrentInstance());
 
-		System.out.println("before:" + timer.getState());
  		timer.start();
-		System.out.println("after:" + timer.getState());
+ 		System.out.println("Thread: " + timer.toString());
+ 		System.out.println("Thread: " + Thread.currentThread().toString());
  	}
 	// インスタンスを追加
 	public void addCurrentInstance (String name, FormBase instance) {
@@ -80,7 +81,7 @@ public class Form extends JFrame{
 	 * nameに指定されたフォームに切り替えます。
 	 * @param formName 切り替える対象のフォームの名前。
 	 */
-	public synchronized void changeFormInstance(String formName) throws IllegalArgumentException{
+	public void changeFormInstance(String formName) throws IllegalArgumentException{
 		// キーがおかしい場合例外を投げつける
 		if(formName == null || formName.equals("") || !instances.containsKey(formName))
 			throw new IllegalArgumentException("Invalid argument:" 
@@ -89,14 +90,20 @@ public class Form extends JFrame{
 		
 		// Timerを切り替える
 		System.out.println("form changing... \t" + timer.getState());
-		timer.tryWait();
-		while(timer.isWaiting()){
-			try{
-				Thread.sleep(1);
-			} catch (Exception e) {
-				e.printStackTrace();
+		System.out.println("isWaiting:" + (timer.isWaiting() ? "true" : "false"));
+		System.out.println(Thread.currentThread().getName() + "　to sleep...");
+		synchronized(timer) {
+			while(!timer.isWaiting()){
+				try{
+					timer.wait();
+					Thread.currentThread().sleep(1000);
+					System.out.println(timer.isWaiting());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
+		System.out.println("isWaiting:" + (timer.isWaiting() ? "true" : "false"));
 		timer.clearInvokeMethods();
 
 		// currentFormInstanceを変える
@@ -114,7 +121,7 @@ public class Form extends JFrame{
 	 * @param name フォームの名前。この名前は一意に定まっている必要があります。
 	 * @param form FormBaseクラスを継承したフォーム。
 	 */
-	public synchronized void generateForm(String name, Class<? extends FormBase> form) throws IllegalArgumentException{
+	public void generateForm(String name, Class<? extends FormBase> form) throws IllegalArgumentException{
 		if(instances.containsKey(name))
 			throw new IllegalArgumentException("Specified argument is already existed.");
 
@@ -132,7 +139,7 @@ public class Form extends JFrame{
 		getContentPane().setBounds(0, 0, getSize().width, getSize().height);
 		comp.setLayout(null);
 		comp.add(inst, -1);	// -1指定で常に最背面
-		getContentPane().add(inst, null);
+		getContentPane().add(comp, null);
 	}
 
 	public boolean isExistForm(String formName) {

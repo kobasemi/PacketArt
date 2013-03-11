@@ -45,8 +45,12 @@ public class EntryForm extends FormBase {
 
 	// 描画関連のコードはここに
 	public void paint(Graphics g) {
+		// アンチエイリアス
+		((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+			getAntiAlias() ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
+
 		g.setColor(Color.getHSBColor(360.0f / (tick % 360.0f), 0.5f, 1.0f));
-		g.fillRect(-25, -25, 50, 50);
+		g.fillRect(0, 0, 25, 25);
 
 		for (int i = 0; i < limit ; i++) {
 			if(cursor[i] != null) {
@@ -60,6 +64,7 @@ public class EntryForm extends FormBase {
 	// パケット解析などはこのメソッドからどうぞ
 	public void update() {
 		tick++;
+		// 5秒のはず 正確に時間を取りたい場合は別スレッドで動かすこと
 		if(tick > 3000){
 			FormUtil.getInstance().createForm("TemplateForm", TemplateForm.class);
 			FormUtil.getInstance().changeForm("TemplateForm");

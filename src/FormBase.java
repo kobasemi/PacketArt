@@ -14,7 +14,6 @@ public abstract class FormBase extends Canvas implements MouseListener, KeyListe
 	Image offscreen = null;
 	boolean enableAntiAlias;
 	JFrame parentForm;
-	JLayerdPane pane;
 
 	/**
 	 * フォームオブジェクトを生成します。このメソッド内で例外が発生しないように善処してください。

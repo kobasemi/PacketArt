@@ -1,5 +1,6 @@
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.Collection;
 import java.lang.reflect.*;
 // タイマークラス
 public class TimerThread extends Thread {
@@ -7,52 +8,45 @@ public class TimerThread extends Thread {
 	boolean isWait;
 	boolean methodsLock;
 	long time;
-	ArrayList<Tuple3<Object, Method, Object[]>> methods;
+	List<Tuple3<Object, Method, Object[]>> methods;
 
 	TimerThread(){
 		time = 0;
 		isTerminated = false;
 		isWait = false;
 		methodsLock = false;
-		methods = new ArrayList<Tuple3<Object, Method, Object[]>>();
+		methods = Collections.synchronizedList(
+			new ArrayList<Tuple3<Object, Method, Object[]>>()
+		);
 	}
 
 	// 60fpsで動作させる(秒間60回、指定のメソッドが実行される→だいたい16msに一回)
 	// 遅くなる場合は知らない
 	// 参考:http://javaappletgame.blog34.fc2.com/blog-entry-265.html
 	public void run(){
-		// TODO:メソッド呼び出しをスレッドプールを使って並列化させたい
-		// ↑update→paintの順で呼び出されるが、その呼び出し順が安定しなくなるため却下
-
+		System.out.println("This thread is " + Thread.currentThread().getName());
 		long currentTime = System.currentTimeMillis();
 		long oldTime = currentTime;
 		long sleepTime = 16;
 		while(!isTerminated){
 			// スレッドが止まることを要求されているなら止まる
+			System.out.print(isWait ? ";" : ".");
 			if(isWait) {
+				System.out.println("Waiting...");
 				try{
 					synchronized(this){
-						System.out.println("Waiting...");
 						wait();
-					}			
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				// 待機状態から復帰したときの浦島太郎状態を正す
 				oldTime = System.currentTimeMillis();
-			}
-			else
+			} else {
 				oldTime = currentTime;
+			}
 
 			// 登録されたメソッドの実行
-			while(methodsLock){
-				try{
-					Thread.sleep(1);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			methodsLock = true;
 			synchronized(methods){
 				for(Tuple3<Object, Method,Object[]> value : methods) {
 					try{
@@ -65,7 +59,6 @@ public class TimerThread extends Thread {
 					}
 				}
 			}
-			methodsLock = false;
 
 			// スレッドを一時停止させる時間の計算と停止
 			currentTime = System.currentTimeMillis();
@@ -87,7 +80,9 @@ public class TimerThread extends Thread {
 	}
 	// スレッドの中断を試みる
 	public void tryWait(){
+		//System.out.println(isWait);
 		isWait = true;
+		//System.out.println(isWait);
 	}
 
 	public boolean isWaiting(){
@@ -123,7 +118,6 @@ public class TimerThread extends Thread {
 		// タイミング調整も兼ねる
 		while(isWaiting())
 			isWait = true;
-
 
 		System.out.print("registed methods removing is... ");
 		synchronized(methods){
