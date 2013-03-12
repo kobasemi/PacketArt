@@ -44,7 +44,7 @@ class PcapManager {
 
     private static boolean readyRun = false;
     
-    public Pcap pcap;
+    protected Pcap pcap;
 
     public File getPcapFile() { return pcapFile; }
     public URL getPcapUrl() { return pcapUrl; }
@@ -336,12 +336,13 @@ class PcapManager {
         if ( pcap.nextEx(packet) == Pcap.NEXT_EX_OK ) {
             return new PcapPacket(packet);
         } else {
-            pcap.close();
+            close();
             readyRun = false;
             return null;
         }
     }
 
     public void close() {
+            pcap.close();
     }
 }

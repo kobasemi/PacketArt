@@ -20,7 +20,8 @@ public class EntryForm extends FormBase {
 	JButton loadButton2;//TEST
     PcapManager pcapManager;//TEST
     TcpHandler tcpHandler;
-    MusicStation musicStation;
+    Liner liner;
+    PcapPacket pkt;
 
 	// あらゆるオブジェクトの初期化はここから(jnetpcap関連クラスなど)
 	// あくまでフォームなのでフォームを使ってなんでもやらないこと推奨
@@ -31,8 +32,8 @@ public class EntryForm extends FormBase {
 		cursor = new Point[50];
 		time = new int[50];
         pcapManager = new PcapManager();//TEST
-        tcpHandler = new TcpHandler();//TEST
-        musicStation = new MusicStation();//TEST
+        liner = new Liner(getSize().width,getSize().height);
+        pkt = null;
 
 		setBackground(Color.white);
 
@@ -76,6 +77,9 @@ public class EntryForm extends FormBase {
                                 loadButton.setVisible(false);
                             }
                         }
+                    } else {//デバッグ用。「いいえ」を押すと1000.capを読む。
+                        if( ! pcapManager.isReadyRun() )
+                            pcapManager.openString("1000.cap");
                     }
             }
         });
@@ -93,22 +97,25 @@ public class EntryForm extends FormBase {
 				g.fillOval((int)cursor[i].getX() - 25, (int)cursor[i].getY() - 25, 50, 50);
 			}
 		}*/
-        tcpHandler.paint(g,cursor,getSize().width,getSize().height);
+        liner.paint(g,cursor);
 	}
 
 	// viewとlogicの分離を考えるときはcommandパターンのようなものでも使ってください
 	// パケット解析などはこのメソッドからどうぞ
 	public void update() {
         if ( pcapManager.isReadyRun() ) {
-            PcapPacket pkt = pcapManager.nextPacket();
-            tcpHandler.inspect(pkt);
-            musicStation.inspect(pkt);
+            if (tick % 100 == 0) {
+                pkt = pcapManager.nextPacket();//あんまり出し過ぎない。
+            }
+            if (pkt != null)
+                liner.inspect(pkt);
         } else {
             loadButton2.setVisible(true);
             loadButton.setVisible(true);
         //    System.err.println("GIVE ME MORE PCAP..");
             //再度pcapファイルを開くように促す
         }
+        pkt = null;
 		tick++;
 	}
 
