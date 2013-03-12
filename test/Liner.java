@@ -49,7 +49,7 @@ class Liner extends ProtocolHandlerBase {
             message = new ShortMessage();
             message.setMessage(
                 ShortMessage.PROGRAM_CHANGE,
-                100,
+                0,
                 0
             );
             receiver.send(message, -1);
@@ -94,7 +94,9 @@ class Liner extends ProtocolHandlerBase {
                 public void run(){
                     receiver.send(message, -1);
                     try{
-                        Thread.sleep(100);
+                        Thread.sleep(1000);
+                        message = new ShortMessage();
+                        message.setMessage(ShortMessage.NOTE_OFF, 60, 60);
                     } catch(Exception e) {
                     }
                 }
