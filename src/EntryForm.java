@@ -135,9 +135,7 @@ public class EntryForm extends FormBase {
 
 	// 使いたい入力イベントを実装、記述してください
 	// Eventを切り離すときれいに見えますがめんどくさくなります
-	// TODO:謎のダブルクリック問題を解消する(シングルクリックが2回反応する)
 	public void mouseClicked(MouseEvent e) {
-
     }
     public void mousePressed(MouseEvent e) {
 		System.out.print(count);

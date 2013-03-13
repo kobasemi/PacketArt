@@ -56,6 +56,7 @@ class MusicStation {
                         //途中で音途切れないようにする。
                         message = new ShortMessage();
                         message.setMessage(ShortMessage.NOTE_OFF, 0, onkai, volume);
+                        receiver.send(message, -1);
                     } catch(Exception e) {
                         e.printStackTrace();
                     }
