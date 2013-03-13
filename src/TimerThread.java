@@ -4,17 +4,14 @@ import java.util.Collection;
 import java.lang.reflect.*;
 // タイマークラス
 public class TimerThread extends Thread {
-	boolean isTerminated;
-	boolean isWait;
-	boolean methodsLock;
-	long time;
+	boolean isTerminated = false;
+	boolean isWait = false;
+	boolean methodsLock = false;
+	long time = 0;
 	List<Tuple3<Object, Method, Object[]>> methods;
 
-	TimerThread(){
-		time = 0;
-		isTerminated = false;
-		isWait = false;
-		methodsLock = false;
+	TimerThread(String threadName){
+		setName(threadName);
 		methods = Collections.synchronizedList(
 			new ArrayList<Tuple3<Object, Method, Object[]>>()
 		);
@@ -28,23 +25,25 @@ public class TimerThread extends Thread {
 		long currentTime = System.currentTimeMillis();
 		long oldTime = currentTime;
 		long sleepTime = 16;
+
 		while(!isTerminated){
 			// スレッドが止まることを要求されているなら止まる
 			System.out.print(isWait ? ";" : ".");
+			/*
 			if(isWait) {
 				System.out.println("Waiting...");
 				try{
 					synchronized(this){
-						wait();
+						//wait();
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				// 待機状態から復帰したときの浦島太郎状態を正す
 				oldTime = System.currentTimeMillis();
-			} else {
+			} else {*/
 				oldTime = currentTime;
-			}
+			//}
 
 			// 登録されたメソッドの実行
 			synchronized(methods){
@@ -86,16 +85,20 @@ public class TimerThread extends Thread {
 	}
 
 	public boolean isWaiting(){
-		return getState() == Thread.State.WAITING;
+		Thread.State state = getState();
+		if(state == Thread.State.WAITING
+			|| state == Thread.State.TIMED_WAITING)
+			return true;
+		else
+			return false;
 	}
 
 	public void restart(){
 		try{
-			Thread.State state = getState();
-			if(state == Thread.State.WAITING)
+			if(isWaiting())
 				notify();
 			else
-				System.out.println("restarting state... " + state);
+				System.out.println("restarting state... " + getState());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -116,13 +119,18 @@ public class TimerThread extends Thread {
 	public void clearInvokeMethods(){
 		// methodsを使用している間に変なことをされないようにいったんスレッドを止めてから実行する
 		// タイミング調整も兼ねる
-		while(isWaiting())
-			isWait = true;
+		//while(isWaiting())
+		//	isWait = true;
 
 		System.out.print("registed methods removing is... ");
 		synchronized(methods){
 			methods.clear();
 		}
 		System.out.println(methods.size() == 0 ? "success." : "FAILED.");
+	}
+
+	public void showInvokeMethods(){
+		for(Tuple3<Object, Method, Object[]> value : methods)
+			System.out.println(value.x + "." + value.y.getName());
 	}
 }

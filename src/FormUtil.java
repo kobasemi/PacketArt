@@ -37,7 +37,7 @@ public class FormUtil {
 
 		try{
 			targetForm.generateForm(name, form);
-			System.out.println(name + " create " + (targetForm.isExistForm(name) ? "successful." : "UNSUCCESSFUL."));
+			System.out.println(name + " create " + (targetForm.isExistForm(name) ? "successful." : "unsuccessful."));
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -46,10 +46,26 @@ public class FormUtil {
 	public void changeForm(String name){
 		try{
 			System.out.println("Form change to " + name);
-			targetForm.changeFormInstance(name);
+			new Thread(new ChangeThread(targetForm, name)).start();
+			
 		} catch(Exception e){
 			e.printStackTrace();
 		}
+	}
+
+}
+
+class ChangeThread implements Runnable{
+	Form form;
+	String name;
+
+	ChangeThread(Form form, String name){
+		this.name = name;
+		this.form = form;
+	}
+
+	public void run(){
+		form.changeFormInstance(name);
 	}
 
 }

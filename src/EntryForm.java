@@ -14,6 +14,7 @@ public class EntryForm extends FormBase {
 	int count;
 	String fileName;
 	JButton loadButton;
+	boolean isChanging;
 
 	// あらゆるオブジェクトの初期化はここから(jnetpcap関連クラスなど)
 	// あくまでフォームなのでフォームを使ってなんでもやらないこと推奨
@@ -65,7 +66,8 @@ public class EntryForm extends FormBase {
 	public void update() {
 		tick++;
 		// 5秒のはず 正確に時間を取りたい場合は別スレッドで動かすこと
-		if(tick > 3000){
+		if(tick > 3000 && !isChanging){
+			isChanging = true;
 			FormUtil.getInstance().createForm("TemplateForm", TemplateForm.class);
 			FormUtil.getInstance().changeForm("TemplateForm");
 		}
@@ -78,7 +80,8 @@ public class EntryForm extends FormBase {
 
     }
     public void mousePressed(MouseEvent e) {
-		System.out.println(count);
+		System.out.print(count);
+		System.out.println(Thread.currentThread());
 
 		synchronized(cursor){
 			time[count] = (int)tick;

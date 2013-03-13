@@ -21,8 +21,7 @@ public class Form extends JFrame{
 	TimerThread timer;
 
 	Form(String startupFormName, Class<? extends FormBase> startupForm){
-		timer  = new TimerThread();
-		timer.setName("TimerThread");
+		timer  = new TimerThread("TimerThread");
 		FormUtil.setForm(this);
 
 		// CardLayout
@@ -47,7 +46,7 @@ public class Form extends JFrame{
 		System.out.println(getCurrentInstance());
 		System.out.println(getCurrentInstance().getContentPane().getClass().getName());
 
-		card.show(getContentPane(), startupFormName);
+		//card.show(getContentPane(), startupFormName);
 		//show();
 
 		// formの処理
@@ -55,12 +54,21 @@ public class Form extends JFrame{
 		// 実行するメソッドの登録
 		registerInvokeMethodsToTimer(getCurrentInstance());
 
- 		timer.start();
+ 		//timer.start();
  		System.out.println("Thread: " + timer.toString());
  		System.out.println("Thread: " + Thread.currentThread().toString());
+ 		timer.showInvokeMethods();
+
+ 		try{
+	 		//SwingUtilities.invokeLater(new Runnable(){public void run(){timer.start();}});
+	 		timer.start();
+	 	} catch(Exception e){
+	 		e.printStackTrace();
+	 	}
  	}
+
 	// インスタンスを追加
-	public void addCurrentInstance (String name, FormBase instance) {
+	public void addInstance(String name, FormBase instance) {
 		instances.put(name, new Tuple<FormBase, JComponent>(instance, new JLayeredPane()));
 	}
 
@@ -81,7 +89,7 @@ public class Form extends JFrame{
 	 * nameに指定されたフォームに切り替えます。
 	 * @param formName 切り替える対象のフォームの名前。
 	 */
-	public void changeFormInstance(String formName) throws IllegalArgumentException{
+	public synchronized void changeFormInstance(String formName) throws IllegalArgumentException{
 		// キーがおかしい場合例外を投げつける
 		if(formName == null || formName.equals("") || !instances.containsKey(formName))
 			throw new IllegalArgumentException("Invalid argument:" 
@@ -89,30 +97,42 @@ public class Form extends JFrame{
 					formName.equals("") ? "Please specify argument." : "Argument is not existed.");
 		
 		// Timerを切り替える
+		System.out.println("Current thread is " + Thread.currentThread().getName());
 		System.out.println("form changing... \t" + timer.getState());
 		System.out.println("isWaiting:" + (timer.isWaiting() ? "true" : "false"));
-		System.out.println(Thread.currentThread().getName() + "　to sleep...");
-		synchronized(timer) {
+		//System.out.println(Thread.currentThread().getName() + " to sleep...");
+		//synchronized(timer) {
 			while(!timer.isWaiting()){
 				try{
-					timer.wait();
-					Thread.currentThread().sleep(1000);
+					synchronized(timer){
+						timer.wait();
+					}
+					//SwingUtilities.invokeLater(timer.tryWait());
+					//Thread.currentThread().sleep(1);
 					System.out.println(timer.isWaiting());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-		}
+		//}
 		System.out.println("isWaiting:" + (timer.isWaiting() ? "true" : "false"));
 		timer.clearInvokeMethods();
 
 		// currentFormInstanceを変える
 		currentFormInstanceName = formName;
+		System.out.println(getCurrentInstance());
 		registerInvokeMethodsToTimer(getCurrentInstance());
-		card.show(getContentPane(), currentFormInstanceName);
+		timer.showInvokeMethods();
+
+		getCurrentInstance().initialize();
 
 		// タイマー再開
-		timer.restart();
+		synchronized(timer){
+			timer.notifyAll();
+		}
+		System.out.println(currentFormInstanceName);
+		card.show(getContentPane(), currentFormInstanceName);
+		//getContentPane().repaint();
 	}
 
 	/**
@@ -126,7 +146,7 @@ public class Form extends JFrame{
 			throw new IllegalArgumentException("Specified argument is already existed.");
 
 		try{
-			instances.put(name, new Tuple<FormBase, JComponent>(form.newInstance(), new JLayeredPane()));
+			addInstance(name, form.newInstance());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -134,12 +154,27 @@ public class Form extends JFrame{
 		FormBase inst = instances.get(name).x;
 		JComponent comp = instances.get(name).y;
 
+		System.out.println();
+
 		inst.setBounds(0, 0, getSize().width, getSize().height);
 		inst.setParentFrame((JFrame)this);
-		getContentPane().setBounds(0, 0, getSize().width, getSize().height);
+		//getContentPane().setBounds(0, 0, getSize().width, getSize().height);
 		comp.setLayout(null);
+		comp.setVisible(true);
+		comp.show();
+		System.out.println(inst);
+		System.out.println(comp);
 		comp.add(inst, -1);	// -1指定で常に最背面
-		getContentPane().add(comp, null);
+		System.out.println("\r\nbefore:");
+		for(Component item : getContentPane().getComponents())
+			System.out.println(item);
+		getContentPane().add(comp, name);
+		System.out.println("\r\nafter:");
+		for(Component item : getContentPane().getComponents())
+			System.out.println(item);
+		System.out.println(getContentPane().getLayout());
+		showInstances();
+		SwingUtilities.updateComponentTreeUI(this);
 	}
 
 	public boolean isExistForm(String formName) {
@@ -154,5 +189,11 @@ public class Form extends JFrame{
 			// にぎりつぶす
 			e.printStackTrace();
 		}
+	}
+
+	public void showInstances(){
+		System.out.println("Form has instances:");
+		for(Tuple<FormBase, JComponent> item : instances.values())
+			System.out.println(item.x + " are contained by " + item.y);
 	}
 }
