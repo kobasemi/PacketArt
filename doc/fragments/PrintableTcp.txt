@@ -1,0 +1,14 @@
+class PrintableTcp implements Printable{
+	Tcp tcp;
+	PrintableTcp(Tcp tcp){
+		this.tcp = tcp;
+		/* */
+	}
+
+	print(Graphics g){
+	}
+
+	getTcpCheckSum(){
+		tcp.getTcpCheckSum();
+	}
+}
