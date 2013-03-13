@@ -112,7 +112,7 @@ public class EntryForm extends FormBase {
 	// パケット解析などはこのメソッドからどうぞ
 	public void update() {
         if ( pcapManager.isReadyRun() ) {
-            if (tick % 3000 == 0) {
+            if (tick % 1000 == 0) {
             PcapPacket pkt = pcapManager.nextPacket();
          //   tcpHandler.inspect(pkt);
             liner.inspect(pkt);

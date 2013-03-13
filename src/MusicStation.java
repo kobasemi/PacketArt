@@ -67,8 +67,31 @@ class MusicStation {
         }
     }
 
+    public void playSound(final int sec, final int onkai, final int volume) {
+        try {
+            message = new ShortMessage();
+            message.setMessage(ShortMessage.NOTE_ON, 0, onkai, volume);
+            new Thread(new Runnable(){
+                public void run(){
+                    receiver.send(message, -1);
+                    try{
+                        Thread.sleep(sec * 1000);
+                        //途中で音途切れないようにする。
+                        message = new ShortMessage();
+                        message.setMessage(ShortMessage.NOTE_OFF, 0, onkai, volume);
+                        receiver.send(message, -1);
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void playSound() {
-        playSound(60,60);
+        playSound(1, 60, 60);
     }
 
 }
