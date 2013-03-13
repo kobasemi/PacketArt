@@ -5,9 +5,9 @@ import javax.swing.*;
 import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.PcapIf;
 
-// このファイルがクラスの基本的な構造と使い方
 /**
  * 最初に表示されるフォームです.
+ * @author midolin
  */
 public class EntryForm extends FormBase {
 	long tick;
@@ -20,6 +20,8 @@ public class EntryForm extends FormBase {
 	JButton loadButton2;//TEST
     PcapManager pcapManager = new PcapManager();//TEST
     TcpHandler tcpHandler = new TcpHandler();
+	boolean isChanging;
+
 
 	// あらゆるオブジェクトの初期化はここから(jnetpcap関連クラスなど)
 	// あくまでフォームなのでフォームを使ってなんでもやらないこと推奨
@@ -34,6 +36,7 @@ public class EntryForm extends FormBase {
 
 		setBackground(Color.white);
 
+		// ファイルを開くボタンを指定する部分
 		loadButton = new JButton("ファイルを開く");
 		loadButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
@@ -80,17 +83,26 @@ public class EntryForm extends FormBase {
         loadButton2.setBounds((getSize().width / 4) , (getSize().height / 5) * 1, getSize().width / 2, getSize().height / 5);//TST
         getContentPane().add(loadButton2, 1);
         
+		// ファイルを開くボタンを配置する 0はレイヤー番号
+		getContentPane().add(loadButton, 0);
+
 	}
 
 	// 描画関連のコードはここに
 	public void paint(Graphics g) {
-    /*
-		for (int i = 0; i < 50 ; i++) {
+		// アンチエイリアス
+		((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+			getAntiAlias() ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
+
+		g.setColor(Color.getHSBColor(360.0f / (tick % 360.0f), 0.5f, 1.0f));
+		g.fillRect(0, 0, 25, 25);
+
+		for (int i = 0; i < limit ; i++) {
 			if(cursor[i] != null) {
-				g.setColor(Color.getHSBColor(360.0f / (time[i] % 360.0f), 0.8f, 0.8f));
+				g.setColor(Color.getHSBColor(360.0f / (time[i] % 360.0f), 0.5f, 0.9f));
 				g.fillOval((int)cursor[i].getX() - 25, (int)cursor[i].getY() - 25, 50, 50);
 			}
-		}*/
+		}
         tcpHandler.paint(g,cursor,getSize().width,getSize().height);
 	}
 
@@ -107,22 +119,32 @@ public class EntryForm extends FormBase {
             //再度pcapファイルを開くように促す
         }
 		tick++;
+		// 5秒のはず 正確に時間を取りたい場合は別スレッドで動かすこと
+		if(tick > 3000 && !isChanging){
+			isChanging = true;
+			FormUtil.getInstance().createForm("TemplateForm", TemplateForm.class);
+			FormUtil.getInstance().changeForm("TemplateForm");
+		}
 	}
 
 	// 使いたい入力イベントを実装、記述してください
 	// Eventを切り離すときれいに見えますがめんどくさくなります
 	// TODO:謎のダブルクリック問題を解消する(シングルクリックが2回反応する)
 	public void mouseClicked(MouseEvent e) {
-		System.out.println(count);
 
-		time[count] = (int)tick;
-		cursor[count] = e.getPoint();
-		if(count >= limit)
+    }
+    public void mousePressed(MouseEvent e) {
+		System.out.print(count);
+		System.out.println(Thread.currentThread());
+
+		synchronized(cursor){
+			time[count] = (int)tick;
+			cursor[count] = e.getPoint();
+		}
+		if(count > limit)
 			count = 0;
 		else
 			count++;
-    }
-    public void mousePressed(MouseEvent e) {
     }
     public void mouseReleased(MouseEvent e) {
     }
@@ -132,7 +154,6 @@ public class EntryForm extends FormBase {
     }
 
     public void mouseMoved(MouseEvent e){
-
     }
     public void mouseDragged(MouseEvent e){
     }
@@ -142,5 +163,10 @@ public class EntryForm extends FormBase {
     public void keyReleased(KeyEvent e) {
     }
     public void keyTyped(KeyEvent e) {
+    }
+
+    public void onFormChanged(){
+    }
+    public void onClose(){
     }
 }
