@@ -94,11 +94,24 @@ public class ProtocolHandlerBase {
             } else if ( packet.hasHeader(ethernet) ) {  
                 ethernetHandler(ethernet);
             }
-            packetHandler(packet);//ETHERNET_PACKETを含まないパケットって、なんだろ
+            packetHandler(packet);
             //レイヤーが高い順にすることで、最上階のレイヤーを扱う。
-            //実際には
-            //もっといい方法ありそうだけど。
+
+            //pktを上書き。次のパケットが来れば参照は切断される。
             pkt = new PcapPacket(packet);
+
+            //参照を切断し、次のパケットがどんなプロトコルであっても
+            //メモリ解放を促す。
+            ethernet = null;
+            arp = null;
+            l2tp = null;
+            ppp = null;
+            icmp = null;
+            ip4 = null;
+            ip6 = null;
+            tcp = null;  
+            udp = null;
+
         } catch (Exception e) {
             if (packet == null) {
                 //System.err.println("GIVE MORE PCAP!");
