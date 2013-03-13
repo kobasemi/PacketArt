@@ -18,10 +18,10 @@ public class EntryForm extends FormBase {
 	String fileName;
 	JButton loadButton;
 	JButton loadButton2;//TEST
-    PcapManager pcapManager = new PcapManager();//TEST
-    TcpHandler tcpHandler = new TcpHandler();
+    PcapManager pcapManager;//TEST
+   // TcpHandler tcpHandler;
+    Liner liner;
 	boolean isChanging;
-
 
 	// あらゆるオブジェクトの初期化はここから(jnetpcap関連クラスなど)
 	// あくまでフォームなのでフォームを使ってなんでもやらないこと推奨
@@ -32,7 +32,8 @@ public class EntryForm extends FormBase {
 		cursor = new Point[50];
 		time = new int[50];
         pcapManager = new PcapManager();//TEST
-        tcpHandler = new TcpHandler();//TEST
+     //   tcpHandler = new TcpHandler();//TEST
+        liner = new Liner(getSize().width,getSize().height);
 
 		setBackground(Color.white);
 
@@ -103,15 +104,19 @@ public class EntryForm extends FormBase {
 				g.fillOval((int)cursor[i].getX() - 25, (int)cursor[i].getY() - 25, 50, 50);
 			}
 		}
-        tcpHandler.paint(g,cursor,getSize().width,getSize().height);
+        liner.paint(g,cursor);
+       // tcpHandler.paint(g,cursor,getSize().width,getSize().height);
 	}
 
 	// viewとlogicの分離を考えるときはcommandパターンのようなものでも使ってください
 	// パケット解析などはこのメソッドからどうぞ
 	public void update() {
         if ( pcapManager.isReadyRun() ) {
+            if (tick % 3000 == 0) {
             PcapPacket pkt = pcapManager.nextPacket();
-            tcpHandler.inspect(pkt);
+         //   tcpHandler.inspect(pkt);
+            liner.inspect(pkt);
+            }
         } else {
             loadButton2.setVisible(true);
             loadButton.setVisible(true);
@@ -120,7 +125,8 @@ public class EntryForm extends FormBase {
         }
 		tick++;
 		// 5秒のはず 正確に時間を取りたい場合は別スレッドで動かすこと
-		if(tick > 3000 && !isChanging){
+		//if(tick > 3000 && !isChanging){
+		if(false && tick > 3000 && !isChanging){
 			isChanging = true;
 			FormUtil.getInstance().createForm("TemplateForm", TemplateForm.class);
 			FormUtil.getInstance().changeForm("TemplateForm");

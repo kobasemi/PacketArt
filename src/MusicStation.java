@@ -54,6 +54,8 @@ class MusicStation {
                     try{
                         Thread.sleep(1000);
                         //途中で音途切れないようにする。
+                        message = new ShortMessage();
+                        message.setMessage(ShortMessage.NOTE_OFF, 0, onkai, volume);
                     } catch(Exception e) {
                         e.printStackTrace();
                     }

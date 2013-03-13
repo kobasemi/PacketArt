@@ -17,7 +17,6 @@ class PcapManagerTest {
             System.err.println("********RUN********");
             while (( pkt = pm.nextPacket() ) != null ) {
                 System.err.printf(".");
-                th.inspect(pkt);
             }
             System.in.read();
             System.err.println("*******************");

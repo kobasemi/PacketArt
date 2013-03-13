@@ -13,33 +13,44 @@ import org.jnetpcap.protocol.tcpip.Udp;
 //他にはHTTPとか使えるので、知っておくと結構役に立つかもしれない。
 
 /**
- * このクラスはパケットアート用のパケット識別クラスです。<br>
- * protocolHandlerではプロトコルの識別機能をパケットアート用に提供します。<br>
- * 例：もしTCPパケットが読み込まれたらtcpHandlerが呼ばれます。<br>
- * ＃＃＃＃この関数はスーパークラスとして使います。＃＃＃＃<br>
- * 使い方：<br>
- * <code>
- * class TcpDport extends ProtocolHandlerBase {<br>
- *     private tcp = null;<br>
- *     public void tcpHandler(Tcp t) {<br>
-           tcp = t;<br>
- *     }<br>
- * }<br>
- * PcapManager pm = new PcapManager("filename");<br>
- * TcpDport td = new Test();<br>
- * PcapPacket pkt;<br>
- * pkt = pm.nextPacket();<br>
- * td.inspect(pkt);<br>
- * System.err.println("TCP.dport = " + td.tcp.destination() * 1024);<br>
- * </code>
+ * ############このクラスは継承して使います##############
+ * このクラスはパケットアート用のパケット保持クラスです。
+ * jnetpcapが特殊なメモリ管理をしており、 受け皿を使いまわすことで
+ * メモリ使用量を増やさないようにすることができます。
+ * そのため、このクラスは一つのパケットしか保持できません。
+ * 新たにパケットをこのクラスに保持させるにはinspectメソッドを使います。
+ * inspectメソッドではパケットアートとjnetpcapで扱える、
+ * 最もレイヤーの高いプロトコルを識別し、対応するハンドラを自動で呼び出します。
+ * 例：
+ *     もしTCPパケットがinspectメソッドで読み込まれたらtcpHandlerが呼ばれます。
+ *     次に「inspectが呼び出された」ということを認識させる用に、
+ *     packetHandlerが呼ばれます。最後に保持用にパケットがpktに代入されます。
+ *     pktを保持するので、inspect後もgetTcp()を使う事でTCPのデータを取得することができます。
+ * 使い方：
+ * class Unko extends ProtocolHandlerBase {
+ *     public void tcpHandler(Tcp t) {
+ *         Syste.err.println("TCP COMES!!");
+ *     }
+ * }
+ * PcapManager pm = new PcapManager("filename");
+ * Unko unko = new Unko();
+ * PcapPacket pkt;
+ * pkt = pm.nextPacket();
+ * unko.inspect(pkt);
+ * Ip4 ip4;
+ * int addr = 0;
+ * if ( (ip4 = unko.getIp4()) != null) {
+ *      addr = ip4.destinationToInt();
+ * }
+ *
  * @author syake
  *
- *
- * 
 */
 public class ProtocolHandlerBase {
 
     //パケット識別子兼、「受け皿」を宣言。
+    //メモリの効率化を図るため
+    //「受け皿」を使いまわす関数しか用意しない。
     private Ethernet ethernet = new Ethernet();
     private Arp arp = new Arp();
     private L2TP l2tp = new L2TP();
@@ -49,6 +60,7 @@ public class ProtocolHandlerBase {
     private Ip6 ip6 = new Ip6();
     private Tcp tcp = new Tcp();  
     private Udp udp = new Udp();
+    private PcapPacket pkt;
 
     ProtocolHandlerBase() {
     }
@@ -57,7 +69,7 @@ public class ProtocolHandlerBase {
      * この関数は、プロトコル毎に呼び出す関数を変えます。
      * 最後に、一度関数を呼び出す猶予を与えています。
      * 
-     * @param packet PcapManager.nextPacket()で読みだしたパケット
+     * @param packet PcapManager.nextPacket()で読みだしたパケット。
      * 
      * @see org.jnetpcap.packet.PcapPacket
     */
@@ -86,6 +98,7 @@ public class ProtocolHandlerBase {
             //レイヤーが高い順にすることで、最上階のレイヤーを扱う。
             //実際には
             //もっといい方法ありそうだけど。
+            pkt = new PcapPacket(packet);
         } catch (Exception e) {
             if (packet == null) {
                 //System.err.println("GIVE MORE PCAP!");
@@ -146,4 +159,134 @@ public class ProtocolHandlerBase {
      * @see org.jnetpcap.packet.PcapPacket
     */
     public void packetHandler(PcapPacket packet){};
+
+    public Tcp getTcp(PcapPacket packet) {
+        if (packet != null && packet.hasHeader(tcp) ) {
+            return tcp;
+        } else {
+            return null;
+        }
+    }
+    public Tcp getTcp() {
+        if (pkt != null && pkt.hasHeader(tcp) ) {
+            return tcp;
+        } else {
+            return null;
+        }
+    }
+    public Udp getUdp(PcapPacket packet) {
+        if (packet != null && packet.hasHeader(udp) ) {
+            return udp;
+        } else {
+            return null;
+        }
+    }
+    public Udp getUdp() {
+        if (pkt != null && pkt.hasHeader(udp) ) {
+            return udp;
+        } else {
+            return null;
+        }
+    }
+    public Ip6 getIp6(PcapPacket packet) {
+        if (packet != null && packet.hasHeader(ip6) ) {
+            return ip6;
+        } else {
+            return null;
+        }
+    }
+    public Ip6 getIp6() {
+        if (pkt != null && pkt.hasHeader(ip6) ) {
+            return ip6;
+        } else {
+            return null;
+        }
+    }
+    public Ip4 getIp4(PcapPacket packet) {
+        if (packet != null && packet.hasHeader(ip4) ) {
+            return ip4;
+        } else {
+            return null;
+        }
+    }
+    public Ip4 getIp4() {
+        if (pkt != null && pkt.hasHeader(ip4) ) {
+            return ip4;
+        } else {
+            return null;
+        }
+    }
+    public PPP getPPP(PcapPacket packet) {
+        if (packet != null && packet.hasHeader(ppp) ) {
+            return ppp;
+        } else {
+            return null;
+        }
+    }
+    public PPP getPPP() {
+        if (pkt != null && pkt.hasHeader(ppp) ) {
+            return ppp;
+        } else {
+            return null;
+        }
+    }
+    public L2TP getL2TP(PcapPacket packet) {
+        if (packet != null && packet.hasHeader(l2tp) ) {
+            return l2tp;
+        } else {
+            return null;
+        }
+    }
+    public L2TP getL2TP() {
+        if (pkt != null && pkt.hasHeader(l2tp) ) {
+            return l2tp;
+        } else {
+            return null;
+        }
+    }
+    public Icmp getIcmp(PcapPacket packet) {
+        if (packet != null && packet.hasHeader(icmp) ) {
+            return icmp;
+        } else {
+            return null;
+        }
+    }
+    public Icmp getIcmp() {
+        if (pkt != null && pkt.hasHeader(icmp) ) {
+            return icmp;
+        } else {
+            return null;
+        }
+    }
+    public Arp getArp(PcapPacket packet) {
+        if (packet != null && packet.hasHeader(arp) ) {
+            return arp;
+        } else {
+            return null;
+        }
+    }
+    public Arp getArp() {
+        if (pkt != null && pkt.hasHeader(arp) ) {
+            return arp;
+        } else {
+            return null;
+        }
+    }
+    public Ethernet getEthernet(PcapPacket packet) {
+        if (packet != null && packet.hasHeader(ethernet) ) {
+            return ethernet;
+        } else {
+            return null;
+        }
+    }
+    public Ethernet getEthernet() {
+        if (pkt != null && pkt.hasHeader(ethernet) ) {
+            return ethernet;
+        } else {
+            return null;
+        }
+    }
+    public PcapPacket getPacket() {
+        return pkt;
+    }
 }
