@@ -1,68 +1,37 @@
-import javax.sound.midi.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.util.ArrayList;
 import org.jnetpcap.protocol.tcpip.Tcp;
-import java.lang.Thread; 
-import java.lang.Runnable; 
 
 class Liner extends ProtocolHandlerBase {
 
     private int xMax;
     private int yMax;
     private int x;
-    private Receiver receiver;//デバイスをこのクラスで占有してしまう・・ロック・・
-    private ShortMessage message;
     private Tcp tcp;
+    private MusicStation ms;
 
     Liner(int width, int height) {
         xMax = width;//画面横
         yMax = height;//画面縦
         x = 0;
         tcp = null;
-        init();
+        ms = new MusicStation();
     }
 
     public void tcpHandler(Tcp tcpPacket) {
         tcp = tcpPacket;
-        changeSound();
-    }
-
-    public void changeSound() {
-        message = new ShortMessage();
-        try {
-            System.err.println("CHANGING GAKKI :" + tcp.source()*tcp.destination()%128);
-            message.setMessage(
-                ShortMessage.PROGRAM_CHANGE,
-                tcp.source()*tcp.destination()%128,//ココがパケットアート！
-                0
-            );
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        receiver.send(message, -1);
-    }
-
-    public void init() {
-        try {
-            receiver = MidiSystem.getReceiver();
-            message = new ShortMessage();
-            message.setMessage(
-                ShortMessage.PROGRAM_CHANGE,
-                0,
-                0
-            );
-            receiver.send(message, -1);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+        int instrument = tcp.checksum();
+        instrument = ms.changeSound(instrument);
+        System.err.println("SOUND CHINGE! => " + instrument);
     }
 
     public void paint(Graphics g,Point[] cursor) {
         marble(g,cursor);
         sound(cursor);
         walk(g);
-        tcp = null;//前のTCPパケットは放棄する。
+ //       tcp = null;//前のTCPパケットは放棄する。
     }
 
     public void marble(Graphics g,Point[] cursor) {
@@ -81,28 +50,9 @@ class Liner extends ProtocolHandlerBase {
         }
     }
 
-
-    public void sound(Point[] cursor) {
-        if ( isOverLine(cursor) != true) {
-            return;
-        }
-        try {
-            //message.setMessage(ShortMessage.PROGRAM_CHANGE, num%127, 0);
-            message = new ShortMessage();
-            message.setMessage(ShortMessage.NOTE_ON, 60, 60);
-            new Thread(new Runnable(){
-                public void run(){
-                    receiver.send(message, -1);
-                    try{
-                        Thread.sleep(1000);
-                        message = new ShortMessage();
-                        message.setMessage(ShortMessage.NOTE_OFF, 60, 60);
-                    } catch(Exception e) {
-                    }
-                }
-            }).start();
-        } catch (Exception e) {
-            e.printStackTrace();
+    private void sound(Point[] cursor) {
+        for( Point point : getPointsOverLine(cursor) ) {
+            ms.playSound(1000);
         }
     }
 
@@ -115,13 +65,13 @@ class Liner extends ProtocolHandlerBase {
         x++;
     }
 
-    private boolean isOverLine(Point[] cursor) {
+    private ArrayList<Point> getPointsOverLine(Point[] cursor) {
+        ArrayList<Point> pointsOverLine = new ArrayList<Point>();
         for (Point point : cursor) {
             if (point != null && (int)point.getX() == x) {
-                return true;
+                pointsOverLine.add(point);
             }
         }
-        return false;
+        return pointsOverLine;
     }
-
 }
