@@ -1,21 +1,24 @@
 //package ...
 
-import java.lang.StringBuilder;
-import java.net.URL;
-import java.net.InetAddress;
 import java.io.File;
 import java.io.InputStream;
-import java.io.PipedInputStream;//openURL用
-import java.io.PipedOutputStream;//openURL用
-import java.util.List;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.net.InetAddress;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.zip.GZIPInputStream;//openURL用
+import java.util.List;
+import java.util.zip.GZIPInputStream;
+
 import org.jnetpcap.Pcap;
-import org.jnetpcap.packet.PcapPacket;
-import org.jnetpcap.PcapIf;
 import org.jnetpcap.PcapAddr;
+import org.jnetpcap.PcapIf;
 import org.jnetpcap.PcapSockAddr;
 import org.jnetpcap.nio.JMemory;
+import org.jnetpcap.packet.PcapPacket;
+//openURL用
+//openURL用
+//openURL用
 
 /**
  * 完全にパケットアート用。
@@ -46,13 +49,16 @@ class PcapManager {
     
     public Pcap pcap;
 
-    public File getPcapFile() { return pcapFile; }
+    public int infinite() {
+		return INFINITE;
+	}
+	public File getPcapFile() { return pcapFile; }
     public URL getPcapUrl() { return pcapUrl; }
     public PcapIf getPcapDev() { return pcapDev; }
     public boolean isFromFile() { return fromFile; } 
     public boolean isFromUrl() { return fromUrl; } 
     public boolean isfromDev() { return fromDev; } 
-    public static boolean isReadyRun() { return readyRun; } 
+    public boolean isReadyRun() { return readyRun; } 
     public String getErrBuf() { return errBuf.toString(); }
 
     /**
@@ -197,9 +203,9 @@ class PcapManager {
                 GZIPInputStream in = new GZIPInputStream(temp);
                 System.err.println("PcapManager.openURL opened GZinputstream");
                 System.setIn(in);
-            } else if (false) { 
+            } else /*if (false) { 
                 //ここで他の形式に対応させる
-            } else {
+            } else*/ {
                 InputStream in = temp;
                 System.err.println("PcapManager.openURL opened inputstream");
                 System.setIn(in);

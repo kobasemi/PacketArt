@@ -1,9 +1,4 @@
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import java.util.*;
-import java.util.concurrent.*;
-import java.lang.reflect.*;
+
 /**
  * フォームのユーティリティークラスです。このクラスはsingletonなので、このクラスを利用するにはgetInstanceを利用してください。
  * また、このクラスを使用しなくなった場合はnullを代入し、参照を削除しててください。メモリリークの原因になります。

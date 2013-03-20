@@ -1,9 +1,13 @@
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import java.util.*;
-import java.util.concurrent.*;
-import java.lang.reflect.*;
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 /**
  * 利用者に表示される画面です。
@@ -161,7 +165,7 @@ public class Form extends JFrame{
 		//getContentPane().setBounds(0, 0, getSize().width, getSize().height);
 		comp.setLayout(null);
 		comp.setVisible(true);
-		comp.show();
+		//comp.show();
 		System.out.println(inst);
 		System.out.println(comp);
 		comp.add(inst, -1);	// -1指定で常に最背面

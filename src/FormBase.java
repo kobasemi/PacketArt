@@ -1,6 +1,16 @@
-import java.awt.*;
-import javax.swing.*;
-import java.awt.event.*;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+
+import javax.swing.JFrame;
 
 /**
  * 描画を行うためのフォームの基底となる抽象クラスです。<br>
@@ -62,7 +72,7 @@ public abstract class FormBase extends Canvas implements MouseListener, KeyListe
 
 	// http://www.ecst.csuchico.edu/~amk/classes/csciOOP/double-buffering.html
 	public void update(Graphics g) {
-		Dimension d = size();
+		Dimension d = getSize();
 
 		// create the offscreen buffer and associated Graphics
 		offscreen = createImage(d.width, d.height);

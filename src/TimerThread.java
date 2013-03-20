@@ -1,7 +1,7 @@
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.Collection;
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 // タイマークラス
 public class TimerThread extends Thread {
 	boolean isTerminated = false;

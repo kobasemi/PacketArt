@@ -1,6 +1,6 @@
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 
 /* このファイルがクラスの基本的な構造と使い方 
  * テンプレートをコピー→メソッドを編集

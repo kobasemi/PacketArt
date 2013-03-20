@@ -1,9 +1,18 @@
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import org.jnetpcap.packet.PcapPacket;
-import org.jnetpcap.PcapIf;
 
 /**
  * 最初に表示されるフォームです.
@@ -126,11 +135,13 @@ public class EntryForm extends FormBase {
 		tick++;
 		// 5秒のはず 正確に時間を取りたい場合は別スレッドで動かすこと
 		//if(tick > 3000 && !isChanging){
+		/*
 		if(false && tick > 3000 && !isChanging){
 			isChanging = true;
 			FormUtil.getInstance().createForm("TemplateForm", TemplateForm.class);
 			FormUtil.getInstance().changeForm("TemplateForm");
 		}
+		*/
 	}
 
 	// 使いたい入力イベントを実装、記述してください
@@ -141,14 +152,16 @@ public class EntryForm extends FormBase {
 		System.out.print(count);
 		System.out.println(Thread.currentThread());
 
-		synchronized(cursor){
-			time[count] = (int)tick;
-			cursor[count] = e.getPoint();
-		}
 		if(count > limit)
 			count = 0;
 		else
 			count++;
+		
+		synchronized(cursor){
+			time[count] = (int)tick;
+			cursor[count] = e.getPoint();
+		}
+
     }
     public void mouseReleased(MouseEvent e) {
     }
