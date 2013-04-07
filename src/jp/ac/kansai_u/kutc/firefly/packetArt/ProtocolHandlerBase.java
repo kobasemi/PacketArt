@@ -1,3 +1,4 @@
+package jp.ac.kansai_u.kutc.firefly.packetArt;
 import org.jnetpcap.packet.PcapPacket;
 //*-----識別するプロトコル達-----*
 import org.jnetpcap.protocol.lan.Ethernet;

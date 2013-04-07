@@ -1,3 +1,4 @@
+package jp.ac.kansai_u.kutc.firefly.packetArt;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +29,7 @@ public class TimerThread extends Thread {
 
 		while(!isTerminated){
 			// スレッドが止まることを要求されているなら止まる
-			System.out.print(isWait ? ";" : ".");
+			//System.out.print(isWait ? ";" : ".");
 			/*
 			if(isWait) {
 				System.out.println("Waiting...");
@@ -61,7 +62,7 @@ public class TimerThread extends Thread {
 
 			// スレッドを一時停止させる時間の計算と停止
 			currentTime = System.currentTimeMillis();
-			sleepTime = 16 - currentTime - oldTime;
+			sleepTime = sleepTime - currentTime - oldTime;
 			if(sleepTime < 2)
 				sleepTime = 2;
 

@@ -1,3 +1,4 @@
+package jp.ac.kansai_u.kutc.firefly.packetArt;
 //package ...
 
 import java.io.File;
@@ -29,7 +30,7 @@ import org.jnetpcap.packet.PcapPacket;
  * その他アクセスできる変数はget??というメソッドを参照してください。
  * 正常にパケットを読めたか確認するにはisReadyRunを使います。
 */
-class PcapManager {
+public class PcapManager {
     private final int INFINITE = 0;
     private static StringBuilder errBuf;
 
@@ -68,14 +69,14 @@ class PcapManager {
      * openDev
      * のいずれかを手動で使おう。
     */
-    PcapManager() {
+    public PcapManager() {
         errBuf = new StringBuilder();
     }
 
     /**
      * @param name ファイル名もしくはデバイス名もしくはURL。万能コンストラクタ！
     */
-    PcapManager(String name) {
+    public PcapManager(String name) {
         System.err.println("PcapManager(String " + name +")");
         errBuf = new StringBuilder();
 
@@ -156,7 +157,7 @@ class PcapManager {
      * TODO: URL.openStream→gzipIn+Buffered→FileWrite(temp)
      *       openFile(temp.getName())
     */
-    PcapManager(URL url) {
+    public PcapManager(URL url) {
         errBuf = new StringBuilder();
         System.err.println("PcapManager(URL " + url.toString() +")");
         readyRun = openURL(url);
@@ -165,7 +166,7 @@ class PcapManager {
     /**
      * ローカルのファイルからパケットを読み出す。
     */
-    PcapManager(File file) {
+    public PcapManager(File file) {
         errBuf = new StringBuilder();
         System.err.println("PcapManager(File " + file.getName() +")");
         readyRun = openFile(file.getName());
@@ -175,7 +176,7 @@ class PcapManager {
      * ローカルのデバイスからパケットを読み出す。
      * 
     */
-    PcapManager(PcapIf dev) {
+    public PcapManager(PcapIf dev) {
         errBuf = new StringBuilder();
         System.err.println("PcapManager(PcapIf " + dev.getName() +")");
         readyRun = openDev(dev.getName());

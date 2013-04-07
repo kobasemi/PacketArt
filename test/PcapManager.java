@@ -1,3 +1,4 @@
+package jp.ac.kansai_u.kutc.firefly.packetArt;
 //package ...
 
 import java.lang.StringBuilder;
@@ -26,7 +27,7 @@ import org.jnetpcap.nio.JMemory;
  * その他アクセスできる変数はget??というメソッドを参照してください。
  * 正常にパケットを読めたか確認するにはisReadyRunを使います。
 */
-class PcapManager {
+public class PcapManager {
     private final int INFINITE = 0;
     private static StringBuilder errBuf;
 

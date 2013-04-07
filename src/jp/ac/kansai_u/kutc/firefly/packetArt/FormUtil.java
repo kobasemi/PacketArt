@@ -1,3 +1,4 @@
+package jp.ac.kansai_u.kutc.firefly.packetArt;
 
 /**
  * フォームのユーティリティークラスです。このクラスはsingletonなので、このクラスを利用するにはgetInstanceを利用してください。
