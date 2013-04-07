@@ -49,6 +49,25 @@ case "$1" in
         [ "$RET" == "0" ] && exit 0;
         exit -1;
     ;;
+    "sym" | "s" | "symlink")
+        pushd . > /dev/null;
+        cd "${THIS_DIR}"
+        for filename in ${FULLPATH}/*.java;
+        do
+            [ ! -e `basename $filename` ] && ln -s $filename `basename $filename`;
+        done
+        popd > /dev/null;
+    ;;
+    "dsym" | "delsym")
+        pushd . > /dev/null;
+        cd "${THIS_DIR}"
+        for filename in ${FULLPATH}/*.java;
+        do
+            FILENAME=`basename $filename`;
+            [ -e "$FILENAME" ] && rm -f $FILENAME > /dev/null;
+        done
+        popd > /dev/null;
+    ;;
     *)
         usage;
     ;;
