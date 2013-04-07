@@ -1,3 +1,4 @@
+package jp.ac.kansai_u.kutc.firefly.packetArt;
 // 参考:http://stackoverflow.com/questions/2670982/using-tuples-in-java
 /**
  * タプル。 2組の値を格納するクラスです。

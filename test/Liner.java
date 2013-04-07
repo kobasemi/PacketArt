@@ -1,7 +1,7 @@
+package jp.ac.kansai_u.kutc.firefly.packetArt;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import java.util.ArrayList;
 import org.jnetpcap.protocol.tcpip.Tcp;
 
 class Liner extends ProtocolHandlerBase {
@@ -22,16 +22,14 @@ class Liner extends ProtocolHandlerBase {
 
     public void tcpHandler(Tcp tcpPacket) {
         tcp = tcpPacket;
-        int instrument = tcp.checksum();
-        instrument = ms.changeSound(instrument);
-        System.err.println("SOUND CHINGE! => " + instrument);
+        ms.changeSound(tcp.checksum());
     }
 
     public void paint(Graphics g,Point[] cursor) {
         marble(g,cursor);
         sound(cursor);
         walk(g);
- //       tcp = null;//前のTCPパケットは放棄する。
+        tcp = null;//前のTCPパケットは放棄する。
     }
 
     public void marble(Graphics g,Point[] cursor) {
@@ -50,10 +48,12 @@ class Liner extends ProtocolHandlerBase {
         }
     }
 
-    private void sound(Point[] cursor) {
-        for( Point point : getPointsOverLine(cursor) ) {
-            ms.playSound(1000);
+
+    public void sound(Point[] cursor) {
+        if ( isOverLine(cursor) != true) {
+            return;
         }
+        ms.playSound();
     }
 
     private void walk(Graphics g) {
@@ -65,13 +65,13 @@ class Liner extends ProtocolHandlerBase {
         x++;
     }
 
-    private ArrayList<Point> getPointsOverLine(Point[] cursor) {
-        ArrayList<Point> pointsOverLine = new ArrayList<Point>();
+    private boolean isOverLine(Point[] cursor) {
         for (Point point : cursor) {
             if (point != null && (int)point.getX() == x) {
-                pointsOverLine.add(point);
+                return true;
             }
         }
-        return pointsOverLine;
+        return false;
     }
+
 }

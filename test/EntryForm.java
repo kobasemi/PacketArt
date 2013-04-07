@@ -1,9 +1,19 @@
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+package jp.ac.kansai_u.kutc.firefly.packetArt;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import org.jnetpcap.packet.PcapPacket;
-import org.jnetpcap.PcapIf;
 
 /**
  * 最初に表示されるフォームです.
@@ -61,7 +71,7 @@ public class EntryForm extends FormBase {
 		});
 		loadButton.setBounds((getSize().width / 3) , (getSize().height / 5) * 3, getSize().width / 3, getSize().height / 5);
 		getContentPane().add(loadButton, 0);
-		
+
         loadButton2 = new JButton("デバイスのIPアドレスから開く");//TEST
         loadButton2.addActionListener(new ActionListener(){//TEST
             public void actionPerformed(ActionEvent e){//TEST
@@ -83,7 +93,7 @@ public class EntryForm extends FormBase {
         });
         loadButton2.setBounds((getSize().width / 4) , (getSize().height / 5) * 1, getSize().width / 2, getSize().height / 5);//TST
         getContentPane().add(loadButton2, 1);
-        
+
 		// ファイルを開くボタンを配置する 0はレイヤー番号
 		getContentPane().add(loadButton, 0);
 
@@ -92,7 +102,7 @@ public class EntryForm extends FormBase {
 	// 描画関連のコードはここに
 	public void paint(Graphics g) {
 		// アンチエイリアス
-		((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+		((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 			getAntiAlias() ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
 
 		g.setColor(Color.getHSBColor(360.0f / (tick % 360.0f), 0.5f, 1.0f));
@@ -112,7 +122,7 @@ public class EntryForm extends FormBase {
 	// パケット解析などはこのメソッドからどうぞ
 	public void update() {
         if ( pcapManager.isReadyRun() ) {
-            if (tick % 500 == 0) {//0.5秒に一回パケットを頂きます。
+            if (tick % 1000 == 0) {
             PcapPacket pkt = pcapManager.nextPacket();
          //   tcpHandler.inspect(pkt);
             liner.inspect(pkt);
@@ -126,51 +136,47 @@ public class EntryForm extends FormBase {
 		tick++;
 		// 5秒のはず 正確に時間を取りたい場合は別スレッドで動かすこと
 		//if(tick > 3000 && !isChanging){
+		/*
 		if(false && tick > 3000 && !isChanging){
 			isChanging = true;
 			FormUtil.getInstance().createForm("TemplateForm", TemplateForm.class);
 			FormUtil.getInstance().changeForm("TemplateForm");
 		}
+		*/
 	}
 
 	// 使いたい入力イベントを実装、記述してください
 	// Eventを切り離すときれいに見えますがめんどくさくなります
-	public void mouseClicked(MouseEvent e) {
-    }
+	// MouseClickedとMousePressedの違い:
+	// Clicked:押して、離してから反応、ダブルクリックにも対応
+	// Pressed:押したら反応
+	public void mouseClicked(MouseEvent e) { }
     public void mousePressed(MouseEvent e) {
 		System.out.print(count);
 		System.out.println(Thread.currentThread());
+
+		if(count > limit)
+			count = 0;
+		else
+			count++;
 
 		synchronized(cursor){
 			time[count] = (int)tick;
 			cursor[count] = e.getPoint();
 		}
-		if(count > limit)
-			count = 0;
-		else
-			count++;
-    }
-    public void mouseReleased(MouseEvent e) {
-    }
-    public void mouseEntered(MouseEvent e) {
-    }
-    public void mouseExited(MouseEvent e) {
-    }
 
-    public void mouseMoved(MouseEvent e){
     }
-    public void mouseDragged(MouseEvent e){
-    }
+    public void mouseReleased(MouseEvent e) { }
+    public void mouseEntered(MouseEvent e) { }
+    public void mouseExited(MouseEvent e) { }
 
-    public void keyPressed(KeyEvent e) {
-    }
-    public void keyReleased(KeyEvent e) {
-    }
-    public void keyTyped(KeyEvent e) {
-    }
+    public void mouseMoved(MouseEvent e){ }
+    public void mouseDragged(MouseEvent e){ }
 
-    public void onFormChanged(){
-    }
-    public void onClose(){
-    }
+    public void keyPressed(KeyEvent e) { }
+    public void keyReleased(KeyEvent e) { }
+    public void keyTyped(KeyEvent e) { }
+
+    public void onFormChanged(){ }
+    public void onClose(){ }
 }
