@@ -12,16 +12,20 @@ import org.junit.Test;
 import jp.ac.kansai_u.kutc.firefly.packetArt.*;
 
 /**
+ * パケリスの動きをテストするクラスです。
  * @author midolin
  *
  */
 public class PacektArtModelTest {
+	PacketrisModel model;
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@Before
 	public void setUp() throws Exception {
+		model = new PacketrisModel();
+		model.initialize();
 	}
 
 	/**
@@ -31,12 +35,52 @@ public class PacektArtModelTest {
 	public void tearDown() throws Exception {
 	}
 
+	/**
+	 * 盤面状況を取得できるかどうかを確認するテスト
+	 */
 	@Test
 	public void getBoardTest() {
-		
+		assertNotNull(model.getBoard());
+	}
+	
+	/**
+	 * 0,0が壁かどうかを確かめるテスト
+	 */
+	@Test
+	public void pickZeroZeroBlockTest(){
+		assertTrue(model.getBoardBlock(0, 0).getBlockType() == BlockType.Wall);
+		assertTrue(model.getBoardBlock(0, 0).getLocation().equals(new Location(0, 0)));
 	}
 	
 	@Test
-	public void pickZeroZeroBlockTest(){
+	/**
+	 * ミノを回転させるテスト
+	 */
+	public void RotationTest(){
+		fail("test is not implemented.");
+	}
+	
+	/**
+	 * 行を消すテスト
+	 */
+	@Test
+	public void DeleteLineTest(){
+		fail("test is not implemented.");
+	}
+	
+	/**
+	 * ゲームオーバーのテスト
+	 */
+	@Test
+	public void GameOverTest(){
+		fail("test is not implemented.");
+	}
+	
+	/**
+	 * ハードドロップのテスト
+	 */
+	@Test
+	public void HardDropTest(){
+		fail("test is not implemented.");
 	}
 }

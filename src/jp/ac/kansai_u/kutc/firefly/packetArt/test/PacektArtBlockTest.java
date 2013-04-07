@@ -15,7 +15,7 @@ public class PacektArtBlockTest {
 	@Before
 	public void setUp() throws Exception {
 		block = new Block(new Location(14, 29), PentoMino.T);
-		pcapMngr = new PcapManager("");
+		pcapMngr = new PcapManager("/home/midolin/git/PacketArt/src/jp/ac/kansai_u/kutc/firefly/packetArt/test/1.cap");
 	}
 
 	@After

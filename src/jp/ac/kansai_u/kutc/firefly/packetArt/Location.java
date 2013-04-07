@@ -43,4 +43,10 @@ public class Location {
 		return getX() == ((Location) comparison).getX()
 				&& getY() == ((Location) comparison).getY();
 	}
+	
+	@Override
+	public String toString(){
+		return "[" + getX() + ", " + getY() + "]";
+		
+	}
 }
