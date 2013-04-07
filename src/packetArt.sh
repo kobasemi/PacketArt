@@ -8,7 +8,7 @@ THIS_FILE=`basename $0`;
 THIS_DIR=`dirname $0`;
 
 alert(){
-    echo -e This Script Must be run as PacketArt/src/${THIS_FILE};
+    echo -e "This Script Must be run as PacketArt/src/${THIS_FILE}";
     exit -1;
 }
 
