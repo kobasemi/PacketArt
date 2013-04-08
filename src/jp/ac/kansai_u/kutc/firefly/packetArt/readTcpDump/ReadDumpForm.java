@@ -2,7 +2,6 @@ package jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump;
 
 import java.lang.Runnable;
 import java.io.File;
-
 //import java.awt.Color;
 import java.awt.Graphics;
 /*import java.awt.Graphics2D;
@@ -12,9 +11,10 @@ import java.awt.RenderingHints;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+
+import org.jnetpcap.packet.PcapPacket;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.PcapManager;
@@ -32,11 +32,23 @@ public class ReadDumpForm extends FormBase {
     private String fileName;
     private Runnable fileButton_OnActed;
 
+
+    /**
+     * @return fileName PcapManagerが最後に参照したファイル名をフルパスで返す。
+    */
     public String getFileName() { return fileName; }
+    /**
+     * @return pkt 現在PcapManagerが吐き出すPcapPacketを返す。無い時NULL。
+    */
+    public PcapPacket pickPacket() {
+        //TODO: ここで、PcapManagerとある程度の兼ね合いをしたい。
+        //特に、NULLが帰ってきた場合、次のtcpdumpファイルの入力を促す必要もある
+        PcapPacket pkt = pcapManager.nextPacket();
+        return pkt;
+    }
 
     public void initialize() {
         pcapManager = new PcapManager();
-
         fileButton_OnActed = new Runnable(){
             public void run(){
                 tempFileName = fileButton.getFileName();
@@ -102,6 +114,7 @@ public class ReadDumpForm extends FormBase {
     public void onFormChanged(){
     }
     public void onClose(){
+        pcapManager.close();
     }
 
 }
