@@ -27,9 +27,7 @@ public class EntryForm extends FormBase {
 	int count;
 	String fileName;
 	JButton loadButton;
-	JButton loadButton2;//TEST
     PcapManager pcapManager;//TEST
-   // TcpHandler tcpHandler;
     Liner liner;
 	boolean isChanging;
 
@@ -62,7 +60,6 @@ public class EntryForm extends FormBase {
                             fileName = null;
                             if (pcapManager.isReadyRun() == true) {
                                 //loadButton.setText("Pcapファイルが正しくロードされました。");
-                                loadButton2.setVisible(false);
                                 loadButton.setVisible(false);
                             }
                         }
@@ -70,31 +67,6 @@ public class EntryForm extends FormBase {
 			}
 		});
 		loadButton.setBounds((getSize().width / 3) , (getSize().height / 5) * 3, getSize().width / 3, getSize().height / 5);
-		getContentPane().add(loadButton, 0);
-
-        loadButton2 = new JButton("デバイスのIPアドレスから開く");//TEST
-        loadButton2.addActionListener(new ActionListener(){//TEST
-            public void actionPerformed(ActionEvent e){//TEST
-                    String ipAddress = JOptionPane.showInputDialog("IPアドレスを入力してください", "IPv4もしｋはIPv6");//TEST
-                    if (ipAddress != null) {
-                        if( pcapManager.isReadyRun() ) {
-                            loadButton2.setText("すでにロードされています。");
-                        } else {
-                            pcapManager.openString(ipAddress);
-                            ipAddress = null;
-                            if (pcapManager.isReadyRun() == true) {
-                                //loadButton2.setText("Pcapファイルが正しくロードされました。");
-                                loadButton2.setVisible(false);
-                                loadButton.setVisible(false);
-                            }
-                        }
-                    }
-            }
-        });
-        loadButton2.setBounds((getSize().width / 4) , (getSize().height / 5) * 1, getSize().width / 2, getSize().height / 5);//TST
-        getContentPane().add(loadButton2, 1);
-
-		// ファイルを開くボタンを配置する 0はレイヤー番号
 		getContentPane().add(loadButton, 0);
 
 	}
@@ -128,7 +100,6 @@ public class EntryForm extends FormBase {
             liner.inspect(pkt);
             }
         } else {
-            loadButton2.setVisible(true);
             loadButton.setVisible(true);
         //    System.err.println("GIVE ME MORE PCAP..");
             //再度pcapファイルを開くように促す
