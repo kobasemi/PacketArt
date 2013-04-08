@@ -1,10 +1,14 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump;
-import java.awt.Color;
+
+import java.lang.Runnable;
+import java.io.File;
+
+//import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
+/*import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
+*/import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -13,44 +17,63 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
-
-/* このファイルがクラスの基本的な構造と使い方 
- * テンプレートをコピー→メソッドを編集
- */
+import jp.ac.kansai_u.kutc.firefly.packetArt.PcapManager;
 
 /**
- * フォームです.
+ * このフォームはユーザからファイル名を受けとる用です。
+ * ファイル名はgetFileName()で取得してください。
+ * このフォームってファイル名受け取ったら要らない子だよね。
  */
 public class ReadDumpForm extends FormBase {
 
-    private JButton loadButton;
-    private String fileName;
+    private LoadDumpFileButton fileButton;
+    private PcapManager pcapManager;
     private String tempFileName;
+    private String fileName;
+    private Runnable fileButton_OnActed;
 
     public String getFileName() { return fileName; }
 
     public void initialize() {
-        loadButton = new JButton("ファイルを開く");
-        loadButton.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                JFileChooser chooser = new JFileChooser();
-                if((int)chooser.showOpenDialog(getParent()) == JFileChooser.APPROVE_OPTION)
-                    tempFileName = chooser.getSelectedFile().getAbsolutePath();
-                if (tempFileName != null) {
-                    loadButton.setText(tempFileName);
-                    fileName = tempFileName;
-                    //loadButton.setVisible(false);
+        pcapManager = new PcapManager();
+
+        fileButton_OnActed = new Runnable(){
+            public void run(){
+                tempFileName = fileButton.getFileName();
+                File f = new File(tempFileName);
+                if ( f.exists()) {
+                    pcapManager.openFile(tempFileName);
+                    if ( pcapManager.isReadyRun() ) {
+                        fileName = tempFileName;
+                        //このファイル名は、現在PcapManagerが保持しているものである
+                    } else {
+                        //TODO: エラーメッセージをこのFormのどこかに表示
+                        //エラー内容：Fileのオープンに失敗しました。
+                    }
                 }
             }
-        });
-        loadButton.setBounds((getSize().width / 3) , (getSize().height / 5) * 3, getSize().width / 3, getSize().height / 5);
-        getContentPane().add(loadButton, 0);
-    }
-
-    public void paint(Graphics g) {
+        };
+        fileButton = new LoadDumpFileButton("tcpdumpファイルを開く",
+            null, fileButton_OnActed);
+        //TODO: 既に読み込んでいて、パケットも使い切ってない場合は？
+        fileButton.setBounds((getSize().width / 3), (getSize().height / 5) * 3,
+                                 getSize().width / 3, getSize().height / 5);
+        getContentPane().add(fileButton, 0);
     }
 
     public void update() {
+        if (fileName != null) {
+            if( pcapManager.isReadyRun() ) {
+                fileButton.setText("すでにロードされています。");
+                //fileButton.setVisible(false);
+            } else if (pcapManager.isReadyRun() == false) {
+                     //fileButton.setText("Pcapファイルが正しくロードされました。");
+                     fileButton.setText("次のtcpdumpファイルが要ります。");
+            }
+        }
+    }
+
+    public void paint(Graphics g) {
     }
 
     public void mouseClicked(MouseEvent e) {
