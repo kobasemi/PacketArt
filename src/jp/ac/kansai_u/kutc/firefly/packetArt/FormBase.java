@@ -29,7 +29,7 @@ public abstract class FormBase extends Canvas implements MouseListener, KeyListe
 	/**
 	 * フォームオブジェクトを生成します。このメソッド内で例外が発生しないように善処してください。
 	 */
-	FormBase(){
+	protected FormBase(){
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		addKeyListener(this);

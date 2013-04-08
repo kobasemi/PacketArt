@@ -1,4 +1,4 @@
-package jp.ac.kansai_u.kutc.firefly.packetArt;
+package jp.ac.kansai_u.kutc.firefly.packetArt.playing;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -7,20 +7,19 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
+import jp.ac.kansai_u.kutc.firefly.packetArt.PacketrisPacketHandler;
+
 /**
  * パケットを利用したテトリスを表示、処理するフォームです。
  * @author midolin
  */
-public class PaketrisForm extends FormBase {
-	PacketrisPacketHandler pktHandler;
+public class PlayForm extends FormBase {
 	LinkedList<Integer> keyQueue;
 	HashMap<Integer, Long> keyPressedTime;
 	int keySensitivity = 10;
 	long tick;
 
-	// Tetrisは10*20、外枠を含めて12*22
-	int height = 22,width = 12 ;
-    int[][] board;
 	
 	public int getKeySensitivity() {
 		return keySensitivity;
@@ -43,14 +42,12 @@ public class PaketrisForm extends FormBase {
 		this.keySensitivity = keySensitivity;
 	}
 
-    public PaketrisForm() {
+    public PlayForm() {
     	keyQueue = new LinkedList<Integer>();
     }
 
     @Override
     public void initialize() {
-        // TODO 自動生成されたメソッド・スタブ
-        board = new int[height][width];
     }
 
     @Override
@@ -58,16 +55,6 @@ public class PaketrisForm extends FormBase {
         // TODO 自動生成されたメソッド・スタブ
 
     }
-
-	/**
-	 * 指定された座標を左上として、ブロックを描画します。
-	 * @param g
-	 * @param x
-	 * @param y
-	 */
-	void drawBlock(Graphics g, int x, int y){
-
-	}
 
     @Override
     public void update() {
@@ -82,13 +69,6 @@ public class PaketrisForm extends FormBase {
     	}
     	
     	tick++;
-    }
-
-    /**
-     * 行を削除
-     */
-    void elase(){
-
     }
 
     @Override
