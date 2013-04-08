@@ -15,15 +15,11 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.PacketrisPacketHandler;
  * @author midolin
  */
 public class PlayForm extends FormBase {
-	PacketrisPacketHandler pktHandler;
 	LinkedList<Integer> keyQueue;
 	HashMap<Integer, Long> keyPressedTime;
 	int keySensitivity = 10;
 	long tick;
 
-	// Tetrisは10*20、外枠を含めて12*22
-	int height = 22,width = 12 ;
-    int[][] board;
 	
 	public int getKeySensitivity() {
 		return keySensitivity;
@@ -52,8 +48,6 @@ public class PlayForm extends FormBase {
 
     @Override
     public void initialize() {
-        // TODO 自動生成されたメソッド・スタブ
-        board = new int[height][width];
     }
 
     @Override
@@ -61,16 +55,6 @@ public class PlayForm extends FormBase {
         // TODO 自動生成されたメソッド・スタブ
 
     }
-
-	/**
-	 * 指定された座標を左上として、ブロックを描画します。
-	 * @param g
-	 * @param x
-	 * @param y
-	 */
-	void drawBlock(Graphics g, int x, int y){
-
-	}
 
     @Override
     public void update() {
@@ -85,13 +69,6 @@ public class PlayForm extends FormBase {
     	}
     	
     	tick++;
-    }
-
-    /**
-     * 行を削除
-     */
-    void elase(){
-
     }
 
     @Override
