@@ -42,17 +42,16 @@ case "$1" in
     "compile" | "c" | "compi" | "make" | "mak")
         pushd . > /dev/null;
         cd "${THIS_DIR}"
-        cd "${FULLPATH}";
-        javac ${JAVAC_OPTIONS} ./*.java;
-        RET="$?";
+        for filename in `find "${FULLPATH}" -name "*.java"`
+        do
+            javac ${JAVAC_OPTIONS} "$filename";
+        done
         popd > /dev/null;
-        [ "$RET" == "0" ] && exit 0;
-        exit -1;
     ;;
     "sym" | "s" | "symlink")
         pushd . > /dev/null;
         cd "${THIS_DIR}"
-        for filename in ${FULLPATH}/*.java;
+        for filename in `find "${FULLPATH}" -name "*.java"`;
         do
             [ ! -e `basename $filename` ] && ln -s $filename `basename $filename`;
         done
@@ -61,7 +60,7 @@ case "$1" in
     "dsym" | "delsym")
         pushd . > /dev/null;
         cd "${THIS_DIR}"
-        for filename in ${FULLPATH}/*.java;
+        for filename in `find "${FULLPATH}" -name "*.java"`;
         do
             FILENAME=`basename $filename`;
             [ -e "$FILENAME" ] && rm -f $FILENAME > /dev/null;
