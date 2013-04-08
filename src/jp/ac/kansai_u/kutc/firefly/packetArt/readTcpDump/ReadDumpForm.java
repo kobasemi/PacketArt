@@ -1,7 +1,16 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump;
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 
@@ -13,23 +22,38 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
  * フォームです.
  */
 public class ReadDumpForm extends FormBase {
-	// あらゆるオブジェクトの初期化はここから(jnetpcap関連クラスなど)
-	// あくまでフォームなのでフォームを使ってなんでもやらないこと推奨
-	public void initialize() {
-	}
 
-	// 描画関連のコードはここに
-	public void paint(Graphics g) {
-	}
+    private JButton loadButton;
+    private String fileName;
+    private String tempFileName;
 
-	// viewとlogicの分離を考えるときはcommandパターンのようなものでも使ってください
-	// パケット解析などはこのメソッドからどうぞ
-	public void update() {
-	}
+    public String getFileName() { return fileName; }
 
-	// 使いたい入力イベントを実装、記述してください
-	// Eventを切り離すときれいに見えますがめんどくさくなります
-	public void mouseClicked(MouseEvent e) {
+    public void initialize() {
+        loadButton = new JButton("ファイルを開く");
+        loadButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                JFileChooser chooser = new JFileChooser();
+                if((int)chooser.showOpenDialog(getParent()) == JFileChooser.APPROVE_OPTION)
+                    tempFileName = chooser.getSelectedFile().getAbsolutePath();
+                if (tempFileName != null) {
+                    loadButton.setText(tempFileName);
+                    fileName = tempFileName;
+                    //loadButton.setVisible(false);
+                }
+            }
+        });
+        loadButton.setBounds((getSize().width / 3) , (getSize().height / 5) * 3, getSize().width / 3, getSize().height / 5);
+        getContentPane().add(loadButton, 0);
+    }
+
+    public void paint(Graphics g) {
+    }
+
+    public void update() {
+    }
+
+    public void mouseClicked(MouseEvent e) {
     }
     public void mousePressed(MouseEvent e) {
     }

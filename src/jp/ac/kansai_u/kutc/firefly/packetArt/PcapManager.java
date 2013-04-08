@@ -1,5 +1,4 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt;
-//package ...
 
 import java.io.File;
 import java.io.InputStream;
@@ -11,15 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
+
 import org.jnetpcap.Pcap;
 import org.jnetpcap.PcapAddr;
 import org.jnetpcap.PcapIf;
 import org.jnetpcap.PcapSockAddr;
 import org.jnetpcap.nio.JMemory;
 import org.jnetpcap.packet.PcapPacket;
-//openURL用
-//openURL用
-//openURL用
 
 /**
  * 完全にパケットアート用。
@@ -348,6 +345,13 @@ public class PcapManager {
             return null;
         }
     }
+    //TODO:
+    /*public float nokoriPacket() {
+        int MTU = 1500;
+        int FILESIZE = File.getSize();
+        int howManyPackets = FILESIZE/MTU;
+        float ret = count / howManyPackets;
+    }*/
 
     public void close() {
     }
