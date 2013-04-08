@@ -1,4 +1,4 @@
-package jp.ac.kansai_u.kutc.firefly.packetArt;
+package jp.ac.kansai_u.kutc.firefly.packetArt.playing;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -7,11 +7,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
+import jp.ac.kansai_u.kutc.firefly.packetArt.PacketrisPacketHandler;
+
 /**
  * パケットを利用したテトリスを表示、処理するフォームです。
  * @author midolin
  */
-public class PaketrisForm extends FormBase {
+public class PlayForm extends FormBase {
 	PacketrisPacketHandler pktHandler;
 	LinkedList<Integer> keyQueue;
 	HashMap<Integer, Long> keyPressedTime;
@@ -43,7 +46,7 @@ public class PaketrisForm extends FormBase {
 		this.keySensitivity = keySensitivity;
 	}
 
-    public PaketrisForm() {
+    public PlayForm() {
     	keyQueue = new LinkedList<Integer>();
     }
 

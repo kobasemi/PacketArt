@@ -2,6 +2,10 @@ package jp.ac.kansai_u.kutc.firefly.packetArt.test;
 
 import static org.junit.Assert.*;
 import jp.ac.kansai_u.kutc.firefly.packetArt.*;
+import jp.ac.kansai_u.kutc.firefly.packetArt.playing.Block;
+import jp.ac.kansai_u.kutc.firefly.packetArt.playing.BlockType;
+import jp.ac.kansai_u.kutc.firefly.packetArt.playing.PentoMino;
+import jp.ac.kansai_u.kutc.firefly.packetArt.playing.TetroMino;
 
 import org.jnetpcap.packet.PcapPacket;
 import org.junit.After;

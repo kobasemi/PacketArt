@@ -10,6 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.*;
+import jp.ac.kansai_u.kutc.firefly.packetArt.playing.BlockType;
+import jp.ac.kansai_u.kutc.firefly.packetArt.playing.PacketrisModel;
 
 /**
  * パケリスの動きをテストするクラスです。

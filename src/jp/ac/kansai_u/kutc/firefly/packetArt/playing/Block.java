@@ -1,4 +1,6 @@
-package jp.ac.kansai_u.kutc.firefly.packetArt;
+package jp.ac.kansai_u.kutc.firefly.packetArt.playing;
+
+import jp.ac.kansai_u.kutc.firefly.packetArt.Location;
 
 import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.protocol.network.Arp.ProtocolType;

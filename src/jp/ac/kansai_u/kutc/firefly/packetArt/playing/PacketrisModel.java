@@ -1,4 +1,4 @@
-package jp.ac.kansai_u.kutc.firefly.packetArt;
+package jp.ac.kansai_u.kutc.firefly.packetArt.playing;
 
 public class PacketrisModel {
 	final int row = 30;
