@@ -5,11 +5,11 @@ import javax.swing.*;
 
 import org.jnetpcap.protocol.tcpip.Tcp;
 
-class TcpHandler extends ProtocolHandlerBase {
+public class TcpHandler extends ProtocolHandlerBase {
 //http://jnetpcap.com/docs/javadocs/jnetpcap-1.3/org/jnetpcap/protocol/tcpip/Tcp.html#destination%28%29
 
     private Tcp tcp;
-    TcpHandler() {
+    public TcpHandler() {
         tcp = null;
     }
 
