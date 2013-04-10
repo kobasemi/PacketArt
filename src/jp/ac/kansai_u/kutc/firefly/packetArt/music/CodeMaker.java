@@ -1,3 +1,5 @@
+package jp.ac.kansai_u.kutc.firefly.packetArt.music;
+
 
 //コロブチカ風BGMのコード生成を担当するクラス．
 public class CodeMaker {
