@@ -1,18 +1,16 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump;
 
-import java.io.File;
-import java.net.InetAddress;
+import java.io.File;//File.existsに必要
+import java.net.InetAddress;//getDevByIPのIPからStringの変換に必要
 import java.util.ArrayList;
 import java.util.List;
 
-
-import org.jnetpcap.Pcap;
+import org.jnetpcap.Pcap;//こいつが心臓
 import org.jnetpcap.PcapAddr;
 import org.jnetpcap.PcapIf;
 import org.jnetpcap.PcapSockAddr;
 import org.jnetpcap.nio.JMemory;
 import org.jnetpcap.packet.PcapPacket;
-
 
 /*
 
@@ -53,23 +51,16 @@ import org.jnetpcap.packet.PcapPacket;
  * 正常にパケットを読めたか確認するにはisReadyRunを使います。
 */
 public class PcapManager {
-    private final int INFINITE = 0;
-    private final int SNAPLEN = 64 * 1024;           // 大きなパケットも読む
-    private final int FLAGS = Pcap.MODE_PROMISCUOUS; // プロミスキャスモード  
-    private final int TIMEOUT = 10 * 1000;// 10秒でタイムアウト  
 
     private static StringBuilder errBuf;//libpcapからのエラーをここに
-
     private File pcapFile;
     private PcapIf pcapDev;
+    private boolean fromFile;
+    private boolean fromDev;
+    private boolean readyRun;
+    private Pcap pcap;//jnetpcapの核。
 
-    private boolean fromFile = false;
-    private boolean fromDev = false;
-    private boolean readyRun = false;
-    
-    public Pcap pcap;
-
-	public File getPcapFile() { return pcapFile; }
+    public File getPcapFile() { return pcapFile; }
     public PcapIf getPcapDev() { return pcapDev; }
     public boolean isFromFile() { return fromFile; } 
     public boolean isfromDev() { return fromDev; } 
@@ -77,32 +68,45 @@ public class PcapManager {
     public String getErrBuf() { return errBuf.toString(); }
 
     /**
-     * 空コン
-     * openFile
-     * openDev
-     * のいずれかを手動で使おう。
+     * 空のコンストラクタ。使わないで！
     */
     public PcapManager() {
+        init();
         System.err.println("PcapManager()");
-        System.err.println("CALL open !!!!");
-        readyRun = false;
-        errBuf = new StringBuilder();
+    }
+
+
+    /**
+     * ローカルのファイルからパケットを読み出す。
+    */
+    public PcapManager(File file) {
+        init();
+        System.err.println("PcapManager(File " + file.getName() +")");
+        openFile(file.getName());
+    }
+
+    /**
+     * ローカルのデバイスからパケットを読み出す。
+    */
+    public PcapManager(PcapIf dev) {
+        init();
+        System.err.println("PcapManager(PcapIf " + dev.getName() +")");
+        openDev(dev.getName());
     }
 
     /**
      * Linuxならeth0だが、WindowsでデバイスIDを取得するのはタイヘン。
      * そこで、様々な文字列からお目当てのパケットを取得できるようにする。
+     * 使うなら絶対このコンストラクタ！
      *
-     * @param name ファイル名もしくはデバイスのIPを、文字列で。
+     * @param name ファイル名フルパスもしくはデバイスのIPを、Stringで。
     */
     public PcapManager(String name) {
-        System.err.println("PcapManager(String " + name +")");
-        errBuf = new StringBuilder();
+        System.err.println("PcapManager(String " + name +") -> ***GUESS***");
 
         //name はFilePathか？
         pcapFile = new File(name);
         if (pcapFile.exists() ) {
-            System.err.println("*guess* " + name + " = File");
             this(pcapFile);
             return;
         }
@@ -115,32 +119,25 @@ public class PcapManager {
         }
         //name == 無理ぽ・・・
         System.err.println("PcapManager failed guess what the " + name + " is.");
+        this();
         return;
     }
 
     /**
-     * ローカルのファイルからパケットを読み出す。
-    * existsチェックしてません。
+     * どのコンストラクタでも最初に呼ばれます。
+     * 何のエラーも引数も返り値もありません。
     */
-    public PcapManager(File file) {
+    public void init(){
+        System.err.println("PcapManager.init()");
+        File pcapFile = null;
+        PcapIf pcapDev = null;
+        pcap = null;
+        fromFile = false;
+        fromDev = false;
+        readyRun = false;
         errBuf = new StringBuilder();
-        System.err.println("PcapManager(File " + file.getName() +")");
-        readyRun = openFile(file.getName());
-        fromFile = readyRun;
     }
 
-    /**
-     * ローカルのデバイスからパケットを読み出す。
-     * existsチェックしてません。
-    */
-    public PcapManager(PcapIf dev) {
-        errBuf = new StringBuilder();
-        System.err.println("PcapManager(PcapIf " + dev.getName() +")");
-        readyRun = openDev(dev.getName());
-        fromDev = readyRun;
-    }
-
-        
     /*
     public static ArrayList<Tuple<ArrayList<String>,String>> getDeviceList() {
 
@@ -207,7 +204,7 @@ public class PcapManager {
     public boolean openDev(String devName) {
         System.err.println("openDev(" + devName +")");
         boolean wasOK = false;
-        pcap = Pcap.openLive(devName, snaplen, flags, timeout, errBuf);
+        pcap = Pcap.openLive(devName, Pcap.DEFAULT_SNAPLEN, Pcap.MODE_PROMISCUOUS, Pcap.DEFAULT_TIMEOUT, errBuf);
         if (pcap == null) {
             System.err.println("Error while opening device for capture: "
                 + errBuf.toString());
@@ -221,7 +218,7 @@ public class PcapManager {
 
     /**
      * デバイスのIPからデバイスID（PcapIf）を取得します。
-     *
+     * コンストラクタでも使うので、エラーは出しません。
      * @param ip デバイスの持つIPアドレス。
      * @return dev デバイスオブジェクト。該当無しならNULL。
     */
@@ -233,7 +230,8 @@ public class PcapManager {
         PcapSockAddr pcapSockAddr = null;
         String ipAddress = "";
         if (r == Pcap.NOT_OK || alldevs.isEmpty()) {  
-            System.err.printf("Can't read list of devices, error is %s", errBuf.toString());
+            System.err.printf("Couldn't read list of devices, error is %s",
+                    errBuf.toString());
         } else {
             for (PcapIf dev : alldevs){
                 if (dev != null) {
@@ -270,6 +268,7 @@ public class PcapManager {
             return null;
         }
     }
+
     //TODO:
     /*public float nokoriPacket() {
         int MTU = 1500;
