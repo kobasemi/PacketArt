@@ -12,5 +12,5 @@
 #*.cap
 /bin
 
-.classpath#
-.project#
+.classpath
+.project
