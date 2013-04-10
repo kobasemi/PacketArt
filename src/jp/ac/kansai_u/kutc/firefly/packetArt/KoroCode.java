@@ -1,3 +1,5 @@
+package jp.ac.kansai_u.kutc.firefly.packetArt;
+
 
 //コロブチカのコード進行を定義するクラス．
 public class KoroCode{
