@@ -1,3 +1,5 @@
+package jp.ac.kansai_u.kutc.firefly.packetArt.music;
+
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;

@@ -1,3 +1,5 @@
+package jp.ac.kansai_u.kutc.firefly.packetArt;
+
 import java.util.Random;
 
 import javax.sound.midi.InvalidMidiDataException;

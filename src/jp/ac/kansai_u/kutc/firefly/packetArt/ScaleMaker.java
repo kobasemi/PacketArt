@@ -1,5 +1,7 @@
+package jp.ac.kansai_u.kutc.firefly.packetArt;
 
-//キーボード(鍵盤)を生成するクラス
+
+//キーボード(鍵盤)を生成するクラス!
 public class ScaleMaker {
 	public static void main(String[] args){
 		ScaleMaker.eMinorBassScale();
