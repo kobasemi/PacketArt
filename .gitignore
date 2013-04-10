@@ -11,3 +11,6 @@
 # Capture files #
 #*.cap
 /bin
+
+.classpath#
+.project#

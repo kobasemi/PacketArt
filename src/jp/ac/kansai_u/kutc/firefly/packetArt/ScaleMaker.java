@@ -1,3 +1,5 @@
+package jp.ac.kansai_u.kutc.firefly.packetArt;
+
 
 //キーボード(鍵盤)を生成するクラス
 public class ScaleMaker {
