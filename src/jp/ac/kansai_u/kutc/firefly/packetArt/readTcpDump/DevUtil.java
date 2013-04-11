@@ -47,4 +47,24 @@ public class DevUtil {
         }
         return null;
     }
+
+
+
+    public static void main(String[] args) {
+        StringBuilder a = new StringBuilder();
+        ArrayList<DeviceInfo> ar = (new DevUtil(a)).getAllDevInfo();
+        
+        for (DeviceInfo dev : ar ) {
+            System.out.println(dev.name);
+            System.out.println(dev.description);
+            System.out.println(dev.macAddr);
+            System.out.println(dev.ipAddr);
+            System.out.println(dev.ip6Addr);
+            System.out.println(dev.loopback);
+            System.out.println("----------");
+            System.out.println(a);
+            System.out.println("----------");
+            
+        }
+    }
 }
