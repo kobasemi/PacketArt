@@ -14,35 +14,37 @@ import org.jnetpcap.protocol.tcpip.Udp;
 //他にはHTTPとか使えるので、知っておくと結構役に立つかもしれない。
 
 /**
- * ############このクラスは継承して使います##############
- * このクラスはパケットアート用のパケット保持クラスです。
- * jnetpcapが特殊なメモリ管理をしており、 受け皿を使いまわすことで
- * メモリ使用量を増やさないようにすることができます。
- * そのため、このクラスは一つのパケットしか保持できません。
- * 新たにパケットをこのクラスに保持させるにはinspectメソッドを使います。
- * inspectメソッドではパケットアートとjnetpcapで扱える、
- * 最もレイヤーの高いプロトコルを識別し、対応するハンドラを自動で呼び出します。
- * 例：
- *     もしTCPパケットがinspectメソッドで読み込まれたらtcpHandlerが呼ばれます。
- *     次に「inspectが呼び出された」ということを認識させる用に、
- *     packetHandlerが呼ばれます。最後に保持用にパケットがpktに代入されます。
- *     pktを保持するので、inspect後もgetTcp()を使う事でTCPのデータを取得することができます。
+ * ############このクラスは継承して使います##############<br>
+ * このクラスはパケットアート用のパケット保持クラスです。<br>
+ * jnetpcapが特殊なメモリ管理をしており、 受け皿を使いまわすことで<br>
+ * メモリ使用量を増やさないようにすることができます。<br>
+ * そのため、このクラスは一つのパケットしか保持できません。<br>
+ * 新たにパケットをこのクラスに保持させるにはinspectメソッドを使います。<br>
+ * inspectメソッドではパケットアートとjnetpcapで扱える、<br>
+ * 最もレイヤーの高いプロトコルを識別し、対応するハンドラを自動で呼び出します。<br>
+ * 例：<br>
+ *     もしTCPパケットがinspectメソッドで読み込まれたらtcpHandlerが呼ばれます。<br>
+ *     次に「inspectが呼び出された」ということを認識させる用に、<br>
+ *     packetHandlerが呼ばれます。最後に保持用にパケットがpktに代入されます。<br>
+ *     pktを保持するので、inspect後もgetTcp()を使う事でTCPのデータを取得することができます。<br>
  * 使い方：
- * class Unko extends ProtocolHandlerBase {
+ * <code>
+ * class ExtendedProtocolHandler extends ProtocolHandlerBase {
  *     public void tcpHandler(Tcp t) {
  *         Syste.err.println("TCP COMES!!");
  *     }
  * }
  * PcapManager pm = new PcapManager("filename");
- * Unko unko = new Unko();
+ * ExtendedProtocolHandler extendedProtocolHandler = new ExtendedProtocolHandler();
  * PcapPacket pkt;
  * pkt = pm.nextPacket();
- * unko.inspect(pkt);
+ * ExtendedProtocolHandler.inspect(pkt);
  * Ip4 ip4;
  * int addr = 0;
- * if ( (ip4 = unko.getIp4()) != null) {
+ * if ( (ip4 = extendedProtocolHandler.getIp4()) != null) {
  *      addr = ip4.destinationToInt();
  * }
+ * </code>
  *
  * @author syake
  *

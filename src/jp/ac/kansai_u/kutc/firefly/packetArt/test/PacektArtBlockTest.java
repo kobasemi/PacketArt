@@ -56,6 +56,7 @@ public class PacektArtBlockTest {
 		assertNull(block.getPacket());
 
 		PcapPacket pkt = pcapMngr.nextPacket();
+		System.out.println(pkt);
 		
 		block.setPacket(new PcapPacket(pkt));
 		assertNotNull(block.getPacket());
