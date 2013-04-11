@@ -63,7 +63,7 @@ public class ProtocolHandlerBase {
     private Udp udp = new Udp();
     private PcapPacket pkt;
 
-    ProtocolHandlerBase() {
+    protected ProtocolHandlerBase() {
     }
 
     /**
