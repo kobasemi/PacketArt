@@ -15,7 +15,7 @@ import org.jnetpcap.packet.PcapPacket;
 /*
 
     TODO: デバイスからの読み込み{
-        デバイス名、IPアドレスから内部デバイスIDを取得できるようにする
+        デバイス名、IPアドレス、MACアドレスから内部デバイスIDを取得できるようにする
         IPアドレスから取得しようとすると、IPv6トンネルが優先的に表示されるけど
         ゲートウェイへのデバイスとしては問題ない。jnetpcapの仕様として、放置。
     }
@@ -102,24 +102,23 @@ public class PcapManager {
      * @param name ファイル名フルパスもしくはデバイスのIPを、Stringで。
     */
     public PcapManager(String name) {
+        init();
         System.err.println("PcapManager(String " + name +") -> ***GUESS***");
 
         //name はFilePathか？
         pcapFile = new File(name);
         if (pcapFile.exists() ) {
-            this(pcapFile);
+            openFile(pcapFile);
             return;
         }
 
-        //nameはIP(IPaddress)か？
-        pcapDev = getDevByIP(name);
-        if (pcapDev != null) {
-            this(pcapDev);
+        //nameはデバイスIDか？
+        if (name != null) {
+            openDev(name);
             return;
         }
-        //name == 無理ぽ・・・
+        //nameは・・・・何コレ？
         System.err.println("PcapManager failed guess what the " + name + " is.");
-        this();
         return;
     }
 
@@ -136,42 +135,8 @@ public class PcapManager {
         fromDev = false;
         readyRun = false;
         errBuf = new StringBuilder();
+        devUtil = new DevUtil(errBuf);
     }
-
-    /*
-    public static ArrayList<Tuple<ArrayList<String>,String>> getDeviceList() {
-
-        ArrayList<Tuple<ArrayList<String>,String>> ret = new ArrayList<Tuple<ArrayList<String>,String>>();
-        ArrayList<String> ipAddrs = new ArrayList<String>();
-        
-        List<PcapIf> alldevs = new ArrayList<PcapIf>();
-        int r = Pcap.findAllDevs(alldevs, errBuf);
-        if (r == Pcap.NOT_OK || alldevs.isEmpty()) {  
-            System.err.printf("Can't read list of devices, error is %s", errBuf.toString());
-        } else {
-            List<PcapAddr> pcapAddrs = null;
-            PcapSockAddr pcapSockAddr = null;
-            for (PcapIf dev : alldevs){
-                if (dev != null) {
-                    try {
-                        pcapAddrs = dev.getAddresses();
-                        for (PcapAddr pcapAddr : pcapAddrs ) {
-                            pcapSockAddr = pcapAddr.getAddr();
-                            String ipAddr = InetAddress.getByAddress(pcapSockAddr.getData()).getHostAddress();
-                            if(ipAddr != null) {
-                                ipAddrs.add(ipAddr);
-                            }
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                ret.add(new Tuple(ipAddrs,dev.getName() + dev.getDescription()));
-                }
-            }
-        }
-        return ret;
-    }
-    */
 
     /**
      * Fileがコンストラクタの引数の場合に呼ばれる。
@@ -214,45 +179,6 @@ public class PcapManager {
         wasOK = true;
         readyRun = wasOK;
         return wasOK;
-    }
-
-    /**
-     * デバイスのIPからデバイスID（PcapIf）を取得します。
-     * コンストラクタでも使うので、エラーは出しません。
-     * @param ip デバイスの持つIPアドレス。
-     * @return dev デバイスオブジェクト。該当無しならNULL。
-    */
-    public PcapIf getDevByIP(String ip) {
-        System.err.println("getDevByIP(" + ip + ")");
-        List<PcapIf> alldevs = new ArrayList<PcapIf>();
-        int r = Pcap.findAllDevs(alldevs, errBuf);
-        List<PcapAddr> pcapAddrs = null;
-        PcapSockAddr pcapSockAddr = null;
-        String ipAddress = "";
-        if (r == Pcap.NOT_OK || alldevs.isEmpty()) {  
-            System.err.printf("Couldn't read list of devices, error is %s",
-                    errBuf.toString());
-        } else {
-            for (PcapIf dev : alldevs){
-                if (dev != null) {
-                    try {
-                        pcapAddrs = dev.getAddresses();
-                        for (PcapAddr pcapAddr : pcapAddrs ) {
-                            pcapSockAddr = pcapAddr.getAddr();
-                            ipAddress = InetAddress.getByAddress(pcapSockAddr.getData()).getHostAddress();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                System.err.println(ipAddress);
-                if (ipAddress.equals(ip) ) {
-                    System.err.println("*guess* " + ip + " = IPv4(6) Address");
-                    return dev;
-                }
-            }
-        }
-        return null;
     }
 
     /**
