@@ -10,7 +10,7 @@ public class DevUtil {
 
     private static StringBuilder errBuf;//libpcapからのエラーをここに
     private List<PcapIf> allDevs;
-    private ArrayList<DeviceInfo> allDevinfo;
+    private ArrayList<DeviceInfo> allDevInfo;
     private boolean gotError;
 
     public ArrayList getAllDevInfo(){return allDevInfo;}
@@ -20,6 +20,7 @@ public class DevUtil {
     public DevUtil(StringBuilder errorbuffer) {
         errBuf = errorbuffer;
         allDevs = new ArrayList<PcapIf>();
+        allDevInfo = new ArrayList<DeviceInfo>();
         if ( Pcap.findAllDevs(allDevs, errBuf) == Pcap.NOT_OK
             || allDevs.isEmpty() ) {
             System.err.printf("Couldn't read list of devices, error is %s",
