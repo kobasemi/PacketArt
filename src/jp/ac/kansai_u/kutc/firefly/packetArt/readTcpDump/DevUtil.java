@@ -13,9 +13,18 @@ public class DevUtil {
     private ArrayList<DeviceInfo> allDevInfo;
     private boolean gotError;
 
-    public ArrayList getAllDevInfo(){return allDevInfo;}
-    public boolean hasError(){return gotError;}
-    public StringBuilder getErrBuf(){return errBuf;}
+    /**
+     *
+    */
+    public ArrayList getAllDevInfo() {
+        return allDevInfo;
+    }
+    public boolean hasError() {
+        return gotError;
+    }
+    public StringBuilder getErrBuf() {
+        return errBuf;
+    }
 
     public DevUtil(StringBuilder errorbuffer) {
         errBuf = errorbuffer;
@@ -36,7 +45,7 @@ public class DevUtil {
     /**
      * デバイスのIPからデバイス名を取得します。
      * エラーは出しません。
-     * @param ip デバイスの持つIPアドレス。
+     * @param ip デバイスの持つIPアドレス。IPv6でもOK。
      * @return name デバイス名。該当無しならnull。
     */
     public String getDevNameByIP(String ip) {
@@ -48,23 +57,18 @@ public class DevUtil {
         return null;
     }
 
-
-
-    public static void main(String[] args) {
-        StringBuilder a = new StringBuilder();
-        ArrayList<DeviceInfo> ar = (new DevUtil(a)).getAllDevInfo();
-        
-        for (DeviceInfo dev : ar ) {
-            System.out.println(dev.name);
-            System.out.println(dev.description);
-            System.out.println(dev.macAddr);
-            System.out.println(dev.ipAddr);
-            System.out.println(dev.ip6Addr);
-            System.out.println(dev.loopback);
-            System.out.println("----------");
-            System.out.println(a);
-            System.out.println("----------");
-            
+    /**
+     * デバイスのMACアドレスからデバイス名を取得します。
+     * エラーは出しません。
+     * @param macAddr デバイスの持つMACアドレス。
+     * @return name デバイス名。該当無しならnull。
+    */
+    public String getDevNameByMacAddr(String macAddr) {
+        for (DeviceInfo devInfo : allDevInfo) {
+            if (macAddr == devInfo.macAddr) {
+                return devInfo.name;
+            }
         }
+        return null;
     }
 }
