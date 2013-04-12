@@ -16,7 +16,7 @@ public class DevUtil {
 
     private StringBuilder errBuf;//libpcapからのエラーをここに
     private List<PcapIf> allDevs;
-    private ArrayList<DeviceInfo> allDevInfo;
+    private ArrayList<DevInfo> allDevInfo;
     private boolean gotError;
 
     /**
@@ -47,7 +47,7 @@ public class DevUtil {
     public DevUtil() {
         errBuf = new StringBuilder();
         allDevs = new ArrayList<PcapIf>();
-        allDevInfo = new ArrayList<DeviceInfo>();
+        allDevInfo = new ArrayList<DevInfo>();
         if ( Pcap.findAllDevs(allDevs, errBuf) == Pcap.NOT_OK
             || allDevs.isEmpty() ) {
             System.err.printf("Couldn't read list of devices, error is %s",
@@ -55,7 +55,7 @@ public class DevUtil {
             gotError = true;
         } else {
             for (PcapIf pcapIf : allDevs) {
-                allDevInfo.add(new DeviceInfo(pcapIf));
+                allDevInfo.add(new DevInfo(pcapIf));
             }
         }
     }
@@ -75,7 +75,7 @@ public class DevUtil {
      * @return name デバイス名。該当無しならnull。
     */
     public String getDevNameByIP(String ip) {
-        for (DeviceInfo devInfo : allDevInfo) {
+        for (DevInfo devInfo : allDevInfo) {
             if (ip == devInfo.ipAddr || devInfo.ip6Addr.contains(ip)) {
                 return devInfo.name;
             }
@@ -90,7 +90,7 @@ public class DevUtil {
      * @return name デバイス名。該当無しならnull。
     */
     public String getDevNameByMacAddr(String macAddr) {
-        for (DeviceInfo devInfo : allDevInfo) {
+        for (DevInfo devInfo : allDevInfo) {
             if (macAddr == devInfo.macAddr) {
                 return devInfo.name;
             }

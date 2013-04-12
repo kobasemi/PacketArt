@@ -14,7 +14,7 @@ import java.io.IOException;
  * このクラスはPcapIfのバイナリな情報を文字列に変え、保持するクラスです
  * ただの構造体です。必要な情報しか保持しません。
 */
-public class DeviceInfo {
+public class DevInfo {
 
     public PcapIf device;
     //いわゆる、主キー。Map使わんでも、NICを100個つけてる人とかいないしね。
@@ -30,7 +30,7 @@ public class DeviceInfo {
     /**
      * @param pcapIf まんま。バイトな情報を文字列な情報に変換したいデバイスのクラス
     */
-    DeviceInfo(PcapIf pcapIf) {
+    DevInfo(PcapIf pcapIf) {
         ip6Addr = new ArrayList<String>();
         if (pcapIf != null) {
             this.device = pcapIf;
