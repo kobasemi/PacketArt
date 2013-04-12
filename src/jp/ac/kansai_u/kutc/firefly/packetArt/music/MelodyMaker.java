@@ -1,21 +1,20 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.music;
-
 import java.util.Random;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiEvent;
+import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 
-
-//コロブチカ風BGMのメロディを作成するクラス
+//BGMのメロディを作成するクラス
 public class MelodyMaker {
 
 	public static void main(String[] args) {
 	}
 
-	public static Sequence koroMelodyMaker() throws InvalidMidiDataException{
+	public static Sequence setMelodyLine(int velo) throws InvalidMidiDataException, MidiUnavailableException{
 
 		//使用するSequenceを定義．以降すべてに於いてこれを使いまわす．
 		Sequence sequence = new Sequence(Sequence.PPQ, 24, 3);
@@ -24,10 +23,10 @@ public class MelodyMaker {
 		Track track0 = sequence.createTrack();
 
 		int channel = 0; //トラックチャンネル
-		int velocity = 127; //音の強さ
+		int velocity = VelocityModulator.setVelocity(velo);; //音の強さ
 		int instrument = 80; //音色の種類：リード
 		
-		int[] melody = MelodyAlgorithm.koroMelodyArgorithm();
+		int[] melody = MelodyAlgorithm.melodyAlgorithm();
 		
 		int i = 0;
 		ShortMessage[] message = new ShortMessage[24];
@@ -47,9 +46,8 @@ public class MelodyMaker {
 			message[i].setMessage(ShortMessage.NOTE_OFF, channel, melody[i], velocity);
 			track0.add(new MidiEvent(message[i], a + 24));
 			
-			
 			//再抽選
-			melody = MelodyAlgorithm.koroMelodyArgorithm();
+			melody = MelodyAlgorithm.melodyAlgorithm();
 			Random rnd = new Random();
 			int tmp = rnd.nextInt(3);
 			
@@ -63,11 +61,10 @@ public class MelodyMaker {
 				message[i].setMessage(ShortMessage.NOTE_OFF, channel, melody[i], velocity);
 				track0.add(new MidiEvent(message[i], a + 36));
 				
-				
 				if((melody[i] + count) == 64 || (melody[i] + count) == 66 || (melody[i] + count) == 67
-				|| (melody[i] + count) == 69 || (melody[i] + count) == 72
-				|| (melody[i] + count) == 74 || (melody[i] + count) == 76 || (melody[i] + count) == 78
-				|| (melody[i] + count) == 79){
+					|| (melody[i] + count) == 69 || (melody[i] + count) == 72
+					|| (melody[i] + count) == 74 || (melody[i] + count) == 76 || (melody[i] + count) == 78
+					|| (melody[i] + count) == 79){
 					message[i] = new ShortMessage();
 					message[i].setMessage(ShortMessage.NOTE_ON, channel, melody[i] + count, velocity);
 					track0.add(new MidiEvent(message[i], a + 36));
@@ -94,7 +91,6 @@ public class MelodyMaker {
 				message[i] = new ShortMessage();
 				message[i].setMessage(ShortMessage.NOTE_OFF, channel, melody[i], velocity);
 				track0.add(new MidiEvent(message[i], a + 48));
-
 			}
 			
 			if(count == 2){
@@ -103,10 +99,8 @@ public class MelodyMaker {
 				count = count + 4;
 			}
 			a = a + 48;
-			System.out.println(melody[i]);
 		}
-		//次はベースライン(KoroBassMaker)生成へ．
+		//次はベースライン(BassMaker)生成へ．
 		return sequence;
 	}
-	
 }
