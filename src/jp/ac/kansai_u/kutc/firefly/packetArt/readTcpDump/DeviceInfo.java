@@ -27,6 +27,9 @@ public class DeviceInfo {
     public ArrayList<String> ip6Addr;//IPv4とIPv6の両方が割り当てられている場合が多い。
     public boolean loopback;//ループバックかどうか。なんの役に立つかは不明
 
+    /**
+     * @param pcapIf まんま。バイトな情報を文字列な情報に変換したいデバイスのクラス
+    */
     DeviceInfo(PcapIf pcapIf) {
         ip6Addr = new ArrayList<String>();
         if (pcapIf != null) {
@@ -65,6 +68,9 @@ public class DeviceInfo {
         }
     }
 
+    /**
+     * 初期化します。
+    */
     public void decomplete() {
         name = "";
         description = "";

@@ -6,28 +6,46 @@ import java.lang.StringBuilder;
 import org.jnetpcap.Pcap;
 import org.jnetpcap.PcapIf;
 
+/**
+ * Pcap.openLive()で使うdevNameを人間の分かる方法で取得できる。
+ * 使い方：
+ * StringBuilder errBuf = new StringBuilder();
+ * DevUtil devUtil = new DevUtil(errBuf);
+*/
 public class DevUtil {
 
-    private static StringBuilder errBuf;//libpcapからのエラーをここに
+    private StringBuilder errBuf;//libpcapからのエラーをここに
     private List<PcapIf> allDevs;
     private ArrayList<DeviceInfo> allDevInfo;
     private boolean gotError;
 
     /**
-     *
+     * すべてのNICの情報を取得します。
     */
     public ArrayList getAllDevInfo() {
         return allDevInfo;
     }
+
+    /**
+     * findAllDevsでエラーが出たかどうかを判定する。
+     * エラーが出ている場合、get??By??系関数は使えない。
+     * @return gotError デバイス情報の取得にエラーが出たか否か。
+    */
     public boolean hasError() {
         return gotError;
     }
+
+    /**
+     * String型と違って、プリミティブじゃないから、この関数不要だと思うんだけど
+     * 一応。hasErrorでエラー出た時に呼んでみるよいいかも。
+     * @return errBuf libpcapからもらったエラーのString。
+    */
     public StringBuilder getErrBuf() {
         return errBuf;
     }
 
-    public DevUtil(StringBuilder errorbuffer) {
-        errBuf = errorbuffer;
+    public DevUtil() {
+        errBuf = new StringBuilder();
         allDevs = new ArrayList<PcapIf>();
         allDevInfo = new ArrayList<DeviceInfo>();
         if ( Pcap.findAllDevs(allDevs, errBuf) == Pcap.NOT_OK
@@ -40,6 +58,14 @@ public class DevUtil {
                 allDevInfo.add(new DeviceInfo(pcapIf));
             }
         }
+    }
+
+    /**
+     * @param errorBuffer 呼び出し元からコピーしたエラーバッファー
+    */
+    public DevUtil(StringBuilder errorBuffer) {
+        this();
+        errBuf = errorBuffer.append(errBuf.toString());
     }
 
     /**
@@ -60,7 +86,7 @@ public class DevUtil {
     /**
      * デバイスのMACアドレスからデバイス名を取得します。
      * エラーは出しません。
-     * @param macAddr デバイスの持つMACアドレス。
+     * @param macAddr デバイスの持つMACアドレス。フォーマットは00:CB:CA:D0:32:5A
      * @return name デバイス名。該当無しならnull。
     */
     public String getDevNameByMacAddr(String macAddr) {
