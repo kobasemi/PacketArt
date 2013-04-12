@@ -14,12 +14,6 @@ import org.jnetpcap.packet.PcapPacket;
 
 /*
 
-    TODO: デバイスからの読み込み{
-        デバイス名、IPアドレス、MACアドレスから内部デバイスIDを取得できるようにする
-        IPアドレスから取得しようとすると、IPv6トンネルが優先的に表示されるけど
-        ゲートウェイへのデバイスとしては問題ない。jnetpcapの仕様として、放置。
-    }
-
     TODO: パケット３０００個の保持{
         上記デバイスからの読み込みに際し、jnetpcapにより
         長蛇の待ちパケット行列がメモリ上に生成される可能性が発生した。
@@ -59,13 +53,26 @@ public class PcapManager {
     private boolean fromDev;
     private boolean readyRun;
     private Pcap pcap;//jnetpcapの核。
+    //private Queue packetQueue;
 
-    public File getPcapFile() { return pcapFile; }
-    public PcapIf getPcapDev() { return pcapDev; }
-    public boolean isFromFile() { return fromFile; } 
-    public boolean isfromDev() { return fromDev; } 
-    public boolean isReadyRun() { return readyRun; } 
-    public String getErrBuf() { return errBuf.toString(); }
+    public File getPcapFile() {
+        return pcapFile;
+    }
+    public PcapIf getPcapDev() {
+        return pcapDev;
+    }
+    public boolean isFromFile() {
+        return fromFile;
+    } 
+    public boolean isfromDev() {
+        return fromDev;
+    } 
+    public boolean isReadyRun() {
+        return readyRun;
+    } 
+    public String getErrBuf() {
+        return errBuf.toString();
+    }
 
     /**
      * 空のコンストラクタ。使わないで！
@@ -104,19 +111,18 @@ public class PcapManager {
     public PcapManager(String name) {
         init();
         System.err.println("PcapManager(String " + name +") -> ***GUESS***");
-
+        if (name == null) {
+            return;
+        }
         //name はFilePathか？
         pcapFile = new File(name);
         if (pcapFile.exists() ) {
-            openFile(pcapFile);
+            openFile(name);
             return;
         }
 
         //nameはデバイスIDか？
-        if (name != null) {
-            openDev(name);
-            return;
-        }
+        openDev(name);
         //nameは・・・・何コレ？
         System.err.println("PcapManager failed guess what the " + name + " is.");
         return;
@@ -126,7 +132,7 @@ public class PcapManager {
      * どのコンストラクタでも最初に呼ばれます。
      * 何のエラーも引数も返り値もありません。
     */
-    public void init(){
+    public void init() {
         System.err.println("PcapManager.init()");
         File pcapFile = null;
         PcapIf pcapDev = null;
@@ -135,7 +141,6 @@ public class PcapManager {
         fromDev = false;
         readyRun = false;
         errBuf = new StringBuilder();
-        devUtil = new DevUtil(errBuf);
     }
 
     /**
@@ -144,7 +149,7 @@ public class PcapManager {
      *
      * @return wasOK 成功か失敗か。
     */
-    public boolean openFile(String fname){
+    public boolean openFile(String fname) {
         System.err.println("openFile(" + fname +")");
         boolean wasOK = false;
         pcap = Pcap.openOffline(fname,errBuf);
@@ -161,7 +166,16 @@ public class PcapManager {
     }
 
     /**
-     * デバイス(PcapIf)がコンストラクタの引数の場合に呼ばれる。
+     * @return wasOK 成功か失敗か。
+    */
+    public boolean openDev() {
+        String devName = Pcap.lookupDev(errBuf);
+        System.err.println("openDev(" + devName +  ")");
+        return openDev(devName);
+    }
+
+    /**
+     * デバイス名がコンストラクタの引数の場合に呼ばれる。
      * openLiveでは例外は発生しない。
      *
      * @return wasOK 成功か失敗か。
@@ -182,19 +196,31 @@ public class PcapManager {
     }
 
     /**
-     * 一個ずつロードします。
+     * 一個ずつロードします。packetのメモリはlibpcapのメモリを共有しています。
+     * こいつに関する参照を無くすとlibpcapのメモリもFreeされます。多分。
+     * @return packet パケット。というかlibpcapの保持するパケットへのポインタ。
     */
     public PcapPacket nextPacket() {
         PcapPacket packet = new PcapPacket(JMemory.POINTER);
         if ( pcap.nextEx(packet) == Pcap.NEXT_EX_OK ) {
-            return new PcapPacket(packet);
+          return packet;
         } else {
-            pcap.close();
             readyRun = false;
             return null;
         }
     }
 
+    /**
+     * 一個ずつロードします。packetはのメモリはJavaで管理されます。
+     * libpcapの保持するパケットはすぐに解放され、その代わりにJavaのメモリを食います
+    */
+    public PcapPacket nextPacketCopied() {
+        PcapPacket pkt = nextPacket();
+        if (pkt != null) {
+            return new PcapPacket(pkt);
+        }
+        return null;
+    }
     //TODO:
     /*public float nokoriPacket() {
         int MTU = 1500;
@@ -204,5 +230,8 @@ public class PcapManager {
     }*/
 
     public void close() {
+        if ( fromFile ) {
+            pcap.close();
+        }
     }
 }
