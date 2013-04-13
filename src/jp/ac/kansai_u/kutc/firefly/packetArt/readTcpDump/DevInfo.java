@@ -50,7 +50,8 @@ public class DevInfo {
             macAddr = getHex(device.getHardwareAddress());
         } catch (IOException e) {
             //OSがMACアドレスのクエリを遮断した。なぜ！？
-            System.err.println(device.toString());
+            System.out.println( "Retributing MAC ADDRESS '" + device.toString()
+                                + "'Denied by OS!");
             e.printStackTrace();
             macAddr = "";
         }

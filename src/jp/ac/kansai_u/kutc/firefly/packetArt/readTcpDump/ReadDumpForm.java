@@ -55,15 +55,17 @@ public class ReadDumpForm extends FormBase {
         fileButton_OnActed = new Runnable(){
             public void run(){
                 tempFileName = fileButton.getFileName();
-                File f = new File(tempFileName);
-                if ( f.exists()) {
-                    pcapManager.openFile(tempFileName);
-                    if ( pcapManager.isReadyRun() ) {
-                        fileName = tempFileName;
-                        //このファイル名は、現在PcapManagerが保持しているものである
-                    } else {
-                        //TODO: エラーメッセージをこのFormのどこかに表示
-                        //エラー内容：Fileのオープンに失敗しました。
+                if (tempFileName != null) {
+                    File f = new File(tempFileName);
+                    if ( f.exists()) {
+                        pcapManager.openFile(tempFileName);
+                        if ( pcapManager.isReadyRun() ) {
+                            fileName = tempFileName;
+                            //このファイル名は、現在PcapManagerが保持しているものである
+                        } else {
+                            //TODO: エラーメッセージをこのFormのどこかに表示
+                            //エラー内容：Fileのオープンに失敗しました。
+                        }
                     }
                 }
             }
@@ -117,11 +119,5 @@ public class ReadDumpForm extends FormBase {
     }
     public void onClose(){
         pcapManager.close();
-    }
-
-    public static void main(String[] args) {
-        Form form = new Form("ReadDump", ReadDumpForm.class);
-        form.setVisible(true);
-        System.out.println("Closed.");
     }
 }

@@ -79,7 +79,7 @@ public class PcapManager {
     */
     public PcapManager() {
         init();
-        System.err.println("PcapManager()");
+        System.out.println("PcapManager()");
     }
 
 
@@ -88,7 +88,7 @@ public class PcapManager {
     */
     public PcapManager(File file) {
         init();
-        System.err.println("PcapManager(File " + file.getName() +")");
+        System.out.println("PcapManager(File " + file.getName() +")");
         openFile(file.getName());
     }
 
@@ -97,7 +97,7 @@ public class PcapManager {
     */
     public PcapManager(PcapIf dev) {
         init();
-        System.err.println("PcapManager(PcapIf " + dev.getName() +")");
+        System.out.println("PcapManager(PcapIf " + dev.getName() +")");
         openDev(dev.getName());
     }
 
@@ -110,7 +110,7 @@ public class PcapManager {
     */
     public PcapManager(String name) {
         init();
-        System.err.println("PcapManager(String " + name +") -> ***GUESS***");
+        System.out.println("PcapManager(String " + name +") -> ***GUESS***");
         if (name == null) {
             return;
         }
@@ -133,7 +133,7 @@ public class PcapManager {
      * 何のエラーも引数も返り値もありません。
     */
     public void init() {
-        System.err.println("PcapManager.init()");
+        System.out.println("PcapManager.init()");
         File pcapFile = null;
         PcapIf pcapDev = null;
         pcap = null;
@@ -150,7 +150,7 @@ public class PcapManager {
      * @return wasOK 成功か失敗か。
     */
     public boolean openFile(String fname) {
-        System.err.println("openFile(" + fname +")");
+        System.out.println("openFile(" + fname +")");
         boolean wasOK = false;
         pcap = Pcap.openOffline(fname,errBuf);
         if (pcap == null) {
@@ -170,7 +170,7 @@ public class PcapManager {
     */
     public boolean openDev() {
         String devName = Pcap.lookupDev(errBuf);
-        System.err.println("openDev(" + devName +  ")");
+        System.out.println("openDev(" + devName +  ")");
         return openDev(devName);
     }
 
@@ -181,7 +181,7 @@ public class PcapManager {
      * @return wasOK 成功か失敗か。
     */
     public boolean openDev(String devName) {
-        System.err.println("openDev(" + devName +")");
+        System.out.println("openDev(" + devName +")");
         boolean wasOK = false;
         pcap = Pcap.openLive(devName, Pcap.DEFAULT_SNAPLEN, Pcap.MODE_PROMISCUOUS, Pcap.DEFAULT_TIMEOUT, errBuf);
         if (pcap == null) {

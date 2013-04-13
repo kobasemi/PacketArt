@@ -105,7 +105,7 @@ public class ProtocolHandlerBase {
             if (packet == null) {
                 //System.err.println("GIVE MORE PCAP!");
             } else {
-                System.err.println("jnetpcapBug!!!!");
+                System.err.println("jnetpcapBug! Ignoring...");
             }
             //jnetpcapが解析できないパケットを受け取ったらここに飛ぶ
             //どうしようもない。なので、何もしない。
