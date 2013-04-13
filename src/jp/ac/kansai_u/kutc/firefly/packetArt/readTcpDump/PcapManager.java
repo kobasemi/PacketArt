@@ -28,6 +28,9 @@ import org.jnetpcap.packet.PcapPacket;
         また、fromFile == Trueのときは空撃ちしない。
     }
 
+    TODO: 透過的にBPFフィルタを追加する関数を作成する。
+          scapyのように途中でフィルタを変更するというのはできないっぽい。
+
     TODO: 残りパケットの（概算値）の保持{
         ファイルサイズ(Byte)を標準MTU,1500byteで割る。WIDEプロジェクトの
         パケットはMTU=1500が最頻値なので、逐次ロードでもおおよそは出せるはずだ
@@ -55,27 +58,58 @@ public class PcapManager {
     private Pcap pcap;//jnetpcapの核。
     //private Queue packetQueue;
 
+    /**
+     * @return pcapFile 現在開いているtcpdumpのファイルオブジェクトを返します。
+    */
     public File getPcapFile() {
         return pcapFile;
     }
+
+    /**
+     * @return pcapDev 現在開いているデバイス(PcapIF)オブジェクトを返します。
+    */
     public PcapIf getPcapDev() {
         return pcapDev;
     }
+
+    /**
+     * @return fromFile 現在ファイルからパケットを読み込んでいるか、否か。
+    */
     public boolean isFromFile() {
         return fromFile;
     } 
+
+    /**
+     * @return fromDev 現在デバイスからパケットを読み込んでいるか、否か。
+    */
     public boolean isfromDev() {
         return fromDev;
     } 
+
+    /**
+     * @return readyRun 現在ファイルもしくはデバイスをオープンしているか、否か。
+    */
     public boolean isReadyRun() {
         return readyRun;
     } 
-    public String getErrBuf() {
+
+    /**
+     * @return errBuf.toString() 現在保持しているエラー情報を返します。
+    */
+    public String getAllErr() {
         return errBuf.toString();
     }
 
     /**
-     * 空のコンストラクタ。使わないで！
+     * @return pcap.getErr() libpcapに関する最新のエラー情報を返します。
+    */
+    public String getErr() {
+        return pcap.getErr();
+    }
+
+    /**
+     * 空のコンストラクタ。このコンストラクタを使う場合は、オブジェクト生成後に
+     * openDev(name)もしくはopenFile(name)をしないとパケットが読めません。。
     */
     public PcapManager() {
         init();
@@ -85,6 +119,7 @@ public class PcapManager {
 
     /**
      * ローカルのファイルからパケットを読み出す。
+     * @param file tcpdumpファイルのFileオブジェクト。読み込みできるようにね。
     */
     public PcapManager(File file) {
         init();
@@ -94,6 +129,7 @@ public class PcapManager {
 
     /**
      * ローカルのデバイスからパケットを読み出す。
+     * @param dev リッスンしたいデバイスのPcapIfオブジェクト。
     */
     public PcapManager(PcapIf dev) {
         init();
@@ -125,11 +161,10 @@ public class PcapManager {
         openDev(name);
         //nameは・・・・何コレ？
         System.err.println("PcapManager failed guess what the " + name + " is.");
-        return;
     }
 
     /**
-     * どのコンストラクタでも最初に呼ばれます。
+     * どのコンストラクタでも最初に呼ばれます。ただの初期化関数です。
      * 何のエラーも引数も返り値もありません。
     */
     public void init() {
@@ -144,10 +179,10 @@ public class PcapManager {
     }
 
     /**
-     * Fileがコンストラクタの引数の場合に呼ばれる。
-     * openOfflineでは例外は発生しない。
+     * Fileがコンストラクタの引数の場合に呼ばれる関数です。
+     * この関数では例外は発生しません。
      *
-     * @return wasOK 成功か失敗か。
+     * @return wasOK 成功か失敗か。失敗ならerrBufにエラーが入ってます。
     */
     public boolean openFile(String fname) {
         System.out.println("openFile(" + fname +")");
@@ -198,6 +233,7 @@ public class PcapManager {
     /**
      * 一個ずつロードします。packetのメモリはlibpcapのメモリを共有しています。
      * こいつに関する参照を無くすとlibpcapのメモリもFreeされます。多分。
+     * メモリのアロケート処理が入らないので、高速？
      * @return packet パケット。というかlibpcapの保持するパケットへのポインタ。
     */
     public PcapPacket nextPacket() {
@@ -213,6 +249,8 @@ public class PcapManager {
     /**
      * 一個ずつロードします。packetはのメモリはJavaで管理されます。
      * libpcapの保持するパケットはすぐに解放され、その代わりにJavaのメモリを食います
+     * メモリのアロケート処理が入るので、低速？
+     * @return pkt パケット。libpcapの方はすぐに解放される。メモリ的に安全。
     */
     public PcapPacket nextPacketCopied() {
         PcapPacket pkt = nextPacket();
@@ -221,14 +259,41 @@ public class PcapManager {
         }
         return null;
     }
-    //TODO:
-    /*public float nokoriPacket() {
+    /*TODO:
+    public float nokoriPacket() {
         int MTU = 1500;
         int FILESIZE = File.getSize();
         int howManyPackets = FILESIZE/MTU;
         float ret = count / howManyPackets;
-    }*/
+    }
+    */
 
+    /*TODO:
+    public boolean setFilter(String bpf) {
+        private final int OPTIMIZE = 1;
+        private final int NETMASK = 0;//今回はWANのお話なので。
+        private final int DLT = ?????;//ここ！何！どうすりゃいいの！
+        PcapBpfProgram filter = new PcapBpfProgram();
+
+        int retCode;
+        if (isReadyRun) { //オープン済み
+            retCode = Pcap.compile(filter, bpf, 1, NETMASK);
+        } else {
+            retCode = Pcap.compileNoPcap(Pcap.DEFAULT_SNAPLEN,
+                                DLT,
+                                filter,
+                                bpf,
+                                OPTIMIZE,
+                                NETMASK)
+        }
+        if ( retCode != -1 )retCode = Pcap.setfilter(bpf);
+        return retCode;
+    }
+
+
+    /**
+     * 開いたtcpdumpファイルをガベコレの前に閉じます。
+    */
     public void close() {
         if ( fromFile ) {
             pcap.close();
