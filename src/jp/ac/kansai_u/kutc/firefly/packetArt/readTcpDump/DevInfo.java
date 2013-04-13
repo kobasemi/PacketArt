@@ -101,7 +101,7 @@ public class DevInfo {
     */
     public static String getHex( byte [] raw ) {
         final String HEXES = "0123456789ABCDEF";
-        if ( raw == null && raw.length != 6) {//isMacAddress
+        if ( raw == null || raw.length != 6) {//isMacAddress
             return null;
         }
         final StringBuilder hex = new StringBuilder( 3 * 6);
