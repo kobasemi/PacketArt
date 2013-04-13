@@ -16,8 +16,8 @@ import javax.swing.JFileChooser;
 
 import org.jnetpcap.packet.PcapPacket;
 
+import jp.ac.kansai_u.kutc.firefly.packetArt.Form;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
-import jp.ac.kansai_u.kutc.firefly.packetArt.PcapManager;
 
 /**
  * このフォームはユーザからファイル名を受けとる用です。
@@ -36,7 +36,10 @@ public class ReadDumpForm extends FormBase {
     /**
      * @return fileName PcapManagerが最後に参照したファイル名をフルパスで返す。
     */
-    public String getFileName() { return fileName; }
+    public String getFileName() {
+        return fileName;
+    }
+
     /**
      * @return pkt 現在PcapManagerが吐き出すPcapPacketを返す。無い時NULL。
     */
@@ -52,35 +55,46 @@ public class ReadDumpForm extends FormBase {
         fileButton_OnActed = new Runnable(){
             public void run(){
                 tempFileName = fileButton.getFileName();
-                File f = new File(tempFileName);
-                if ( f.exists()) {
-                    pcapManager.openFile(tempFileName);
-                    if ( pcapManager.isReadyRun() ) {
-                        fileName = tempFileName;
-                        //このファイル名は、現在PcapManagerが保持しているものである
-                    } else {
-                        //TODO: エラーメッセージをこのFormのどこかに表示
-                        //エラー内容：Fileのオープンに失敗しました。
+                if (tempFileName != null) {
+                    File f = new File(tempFileName);
+                    if ( f.exists()) {
+                        pcapManager.openFile(tempFileName);
+                        if ( pcapManager.isReadyRun() ) {
+                            fileName = tempFileName;
+                            //このファイル名は、現在PcapManagerが保持しているものである
+                            setFileButton();
+                        } else {
+                            //TODO: エラーメッセージをこのFormのどこかに表示
+                            //エラー内容：Fileのオープンに失敗しました。
+                        }
                     }
                 }
             }
         };
         fileButton = new LoadDumpFileButton("tcpdumpファイルを開く",
             null, fileButton_OnActed);
-        //TODO: 既に読み込んでいて、パケットも使い切ってない場合は？
         fileButton.setBounds((getSize().width / 3), (getSize().height / 5) * 3,
                                  getSize().width / 3, getSize().height / 5);
         getContentPane().add(fileButton, 0);
     }
 
     public void update() {
+        //PcapPacket pkt = pcapManager.nextPacketCopied();
+        //PcapPacket pkt = pcapManager.nextPacket();
+        //tcpHandler.inspect(pkt);
+        //ipHandler.inpect(pkt);
+        //ここでパケットをばらまく。
+    }
+
+    public void setFileButton() { 
         if (fileName != null) {
             if( pcapManager.isReadyRun() ) {
                 fileButton.setText("すでにロードされています。");
-                //fileButton.setVisible(false);
+                fileButton.setVisible(false);
             } else if (pcapManager.isReadyRun() == false) {
-                     //fileButton.setText("Pcapファイルが正しくロードされました。");
-                     fileButton.setText("次のtcpdumpファイルが要ります。");
+                    //fileButton.setText("Pcapファイルが正しくロードされました。");
+                    fileButton.setText("次のtcpdumpファイルが要ります。");
+                    fileButton.setVisible(true);
             }
         }
     }
@@ -116,5 +130,4 @@ public class ReadDumpForm extends FormBase {
     public void onClose(){
         pcapManager.close();
     }
-
 }
