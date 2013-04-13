@@ -48,25 +48,6 @@ case "$1" in
         done
         popd > /dev/null;
     ;;
-    "sym" | "s" | "symlink")
-        pushd . > /dev/null;
-        cd "${THIS_DIR}"
-        for filename in `find "${FULLPATH}" -name "*.java"`;
-        do
-            [ ! -e `basename $filename` ] && ln -s $filename `basename $filename`;
-        done
-        popd > /dev/null;
-    ;;
-    "dsym" | "delsym")
-        pushd . > /dev/null;
-        cd "${THIS_DIR}"
-        for filename in `find "${FULLPATH}" -name "*.java"`;
-        do
-            FILENAME=`basename $filename`;
-            [ -e "$FILENAME" ] && rm -f $FILENAME > /dev/null;
-        done
-        popd > /dev/null;
-    ;;
     *)
         usage;
     ;;
