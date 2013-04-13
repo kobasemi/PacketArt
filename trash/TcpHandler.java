@@ -27,7 +27,7 @@ public class TcpHandler extends ProtocolHandlerBase {
     }
 
     //親クラスのinspect関数が呼ばれ、しかもTCPが来た時に呼ばれる関数。
-    @override
+    @Override
     public void tcpHandler(Tcp tcpPacket) {
 //        System.err.println("TCP has come!!");
         tcp = tcpPacket;
@@ -35,8 +35,8 @@ public class TcpHandler extends ProtocolHandlerBase {
     }
 
     //パケットが来る(inspect関数が呼ばれる)ごとに呼ばれる関数。
-    @override
-    public void pcapPacketHandler(PcapPacket p) {
+    @Override
+    public void packetHandler(PcapPacket p) {
         if (newer == false) {
 //            System.err.println("Not a TCP Packet...");
 //            System.err.println("But some Packet has come!!");
@@ -58,7 +58,7 @@ public class TcpHandler extends ProtocolHandlerBase {
         //この関数はtcpHandler()の中で実行すれば、TCPが来るごとに実行される
         //packetHandler()の中で実行すればパケットが来るごとに実行される
         //外部から呼び出しても良い
-        newer = false
+        newer = false;
   }
 
 }

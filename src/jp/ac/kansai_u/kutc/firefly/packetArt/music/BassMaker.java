@@ -1,27 +1,27 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.music;
-
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiEvent;
+import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 
 
-//コロブチカ風BGMのベースライン生成を担当するクラス．
+//BGMのベースライン生成を担当するクラス．
 public class BassMaker {
 	public static void main(String[] args) {
 	}
 	
-	public static Sequence koroBassMaker() throws InvalidMidiDataException{
+	public static Sequence setBassLine(int velo) throws InvalidMidiDataException, MidiUnavailableException{
 		
 		//ベースラインはコードを基にして生成．固定．
-		int[] korobassscale = ScaleMaker.korobassscaleScaleMaker();
+		int[] bassscale = ScaleMaker.setBassScale();
 		
-		Sequence sequence = MelodyMaker.koroMelodyMaker();
+		Sequence sequence = MelodyMaker.setMelodyLine(velo);
 		Track track1 = sequence.createTrack();
 
 		int channel = 1; //トラックチャンネル
-		int velocity = 127; //音の強さ
+		int velocity = VelocityModulator.setVelocity(velo); //音の強さ
 		int instrument = 33; //音色の種類
 
 		int i = 0;
@@ -32,7 +32,7 @@ public class BassMaker {
 
 		//メロディの設定
 		//String[] Codeの長さは24
-		String[] Code = CodeMaker.koroCodeMaker();
+		String[] Code = CodeMaker.codeMaker();
 		
 		int pitch = 0;
 		int a = 0;
@@ -53,35 +53,35 @@ public class BassMaker {
 			
 			//ベースラインの生成
 			message[i] = new ShortMessage();
-			message[i].setMessage(ShortMessage.NOTE_ON, channel, korobassscale[pitch], velocity);
+			message[i].setMessage(ShortMessage.NOTE_ON, channel, bassscale[pitch], velocity);
 			track1.add(new MidiEvent(message[i], b));
 
 			message[i] = new ShortMessage();
-			message[i].setMessage(ShortMessage.NOTE_OFF, channel, korobassscale[pitch], velocity);
+			message[i].setMessage(ShortMessage.NOTE_OFF, channel, bassscale[pitch], velocity);
 			track1.add(new MidiEvent(message[i], b + 12));
 
 			message[i] = new ShortMessage();
-			message[i].setMessage(ShortMessage.NOTE_ON, channel, korobassscale[pitch + a], velocity);
+			message[i].setMessage(ShortMessage.NOTE_ON, channel, bassscale[pitch + a], velocity);
 			track1.add(new MidiEvent(message[i], b + 12));
 
 			message[i] = new ShortMessage();
-			message[i].setMessage(ShortMessage.NOTE_OFF, channel, korobassscale[pitch + a], velocity);
+			message[i].setMessage(ShortMessage.NOTE_OFF, channel, bassscale[pitch + a], velocity);
 			track1.add(new MidiEvent(message[i], b + 24));
 			
 			message[i] = new ShortMessage();
-			message[i].setMessage(ShortMessage.NOTE_ON, channel, korobassscale[pitch], velocity);
+			message[i].setMessage(ShortMessage.NOTE_ON, channel, bassscale[pitch], velocity);
 			track1.add(new MidiEvent(message[i], b + 24));
 
 			message[i] = new ShortMessage();
-			message[i].setMessage(ShortMessage.NOTE_OFF, channel, korobassscale[pitch], velocity);
+			message[i].setMessage(ShortMessage.NOTE_OFF, channel, bassscale[pitch], velocity);
 			track1.add(new MidiEvent(message[i], b + 36));
 
 			message[i] = new ShortMessage();
-			message[i].setMessage(ShortMessage.NOTE_ON, channel, korobassscale[pitch + a], velocity);
+			message[i].setMessage(ShortMessage.NOTE_ON, channel, bassscale[pitch + a], velocity);
 			track1.add(new MidiEvent(message[i], b + 36));
 
 			message[i] = new ShortMessage();
-			message[i].setMessage(ShortMessage.NOTE_OFF, channel, korobassscale[pitch + a], velocity);
+			message[i].setMessage(ShortMessage.NOTE_OFF, channel, bassscale[pitch + a], velocity);
 			track1.add(new MidiEvent(message[i], b + 48));
 			
 			b = b + 48;
@@ -89,7 +89,5 @@ public class BassMaker {
 		}
 		//次はドラムへ
 		return sequence;
-		
 	}
-
 }
