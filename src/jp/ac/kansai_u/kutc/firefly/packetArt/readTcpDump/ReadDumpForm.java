@@ -62,6 +62,7 @@ public class ReadDumpForm extends FormBase {
                         if ( pcapManager.isReadyRun() ) {
                             fileName = tempFileName;
                             //このファイル名は、現在PcapManagerが保持しているものである
+                            setFileButton();
                         } else {
                             //TODO: エラーメッセージをこのFormのどこかに表示
                             //エラー内容：Fileのオープンに失敗しました。
@@ -78,13 +79,22 @@ public class ReadDumpForm extends FormBase {
     }
 
     public void update() {
+        //PcapPacket pkt = pcapManager.nextPacketCopied();
+        //PcapPacket pkt = pcapManager.nextPacket();
+        //tcpHandler.inspect(pkt);
+        //ipHandler.inpect(pkt);
+        //ここでパケットをばらまく。
+    }
+
+    public void setFileButton() { 
         if (fileName != null) {
             if( pcapManager.isReadyRun() ) {
                 fileButton.setText("すでにロードされています。");
-                //fileButton.setVisible(false);
+                fileButton.setVisible(false);
             } else if (pcapManager.isReadyRun() == false) {
-                     //fileButton.setText("Pcapファイルが正しくロードされました。");
-                     fileButton.setText("次のtcpdumpファイルが要ります。");
+                    //fileButton.setText("Pcapファイルが正しくロードされました。");
+                    fileButton.setText("次のtcpdumpファイルが要ります。");
+                    fileButton.setVisible(true);
             }
         }
     }
