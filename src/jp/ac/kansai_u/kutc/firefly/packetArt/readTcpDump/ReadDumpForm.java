@@ -16,8 +16,8 @@ import javax.swing.JFileChooser;
 
 import org.jnetpcap.packet.PcapPacket;
 
+import jp.ac.kansai_u.kutc.firefly.packetArt.Form;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
-import jp.ac.kansai_u.kutc.firefly.packetArt.PcapManager;
 
 /**
  * このフォームはユーザからファイル名を受けとる用です。
@@ -36,7 +36,10 @@ public class ReadDumpForm extends FormBase {
     /**
      * @return fileName PcapManagerが最後に参照したファイル名をフルパスで返す。
     */
-    public String getFileName() { return fileName; }
+    public String getFileName() {
+        return fileName;
+    }
+
     /**
      * @return pkt 現在PcapManagerが吐き出すPcapPacketを返す。無い時NULL。
     */
@@ -67,7 +70,6 @@ public class ReadDumpForm extends FormBase {
         };
         fileButton = new LoadDumpFileButton("tcpdumpファイルを開く",
             null, fileButton_OnActed);
-        //TODO: 既に読み込んでいて、パケットも使い切ってない場合は？
         fileButton.setBounds((getSize().width / 3), (getSize().height / 5) * 3,
                                  getSize().width / 3, getSize().height / 5);
         getContentPane().add(fileButton, 0);
@@ -117,4 +119,9 @@ public class ReadDumpForm extends FormBase {
         pcapManager.close();
     }
 
+    public static void main(String[] args) {
+        Form form = new Form("ReadDump", ReadDumpForm.class);
+        form.setVisible(true);
+        System.out.println("Closed.");
+    }
 }
