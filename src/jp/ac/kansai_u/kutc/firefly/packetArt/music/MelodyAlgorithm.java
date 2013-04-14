@@ -49,7 +49,6 @@ public class MelodyAlgorithm {
 				melody[i] = b7mel[judge];
 			}
 		}
-		}
 		return melody;
 	}
 }
