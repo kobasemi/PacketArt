@@ -17,16 +17,30 @@ import javax.sound.midi.Sequencer;
  *
  */
 public class MusicPlayer{
+
+    private Sequencer sequencer;
+    public boolean isPlaying() {
+        return sequencer.isRunning();
+    }
+
+    MusicPlayer() {
+        try {
+            sequencer  = MidiSystem.getSequencer();
+        } catch (MidiUnavailableException e) {
+            e.printStackTrace();
+            System.err.println("残念ながら、あなたのPCはMIDIを再生できない");
+        }
+    }
+
 	public static void main(String[] args) throws InvalidMidiDataException, MidiUnavailableException{
-		playMusic(50);
+        MusicPlayer musicPlayer = new MusicPlayer();
+		musicPlayer.playMusic(50);
 	}
 	
-	public static void playMusic(int velo) throws InvalidMidiDataException, MidiUnavailableException{
+	public void playMusic(int velo) throws InvalidMidiDataException, MidiUnavailableException{
 		VelocityModulator.setVelocity(velo);
-		Sequencer sequencer = null;
 		Sequence sequence = DrumMaker.setDrumLine(velo);
 		try{
-			sequencer  = MidiSystem.getSequencer();
 			sequencer.open();
 			
 			sequencer.setSequence(sequence);
@@ -38,4 +52,11 @@ public class MusicPlayer{
 			if (sequencer != null && sequencer.isOpen()) sequencer.close();
 		}
 	}
+
+    public void stopMusic() {
+        if (sequencer != null && isPlaying()) {
+            sequencer.stop();
+            sequencer.setMicrosecondPosition(0);
+        }
+    }
 }
