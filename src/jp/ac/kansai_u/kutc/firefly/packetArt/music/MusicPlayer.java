@@ -33,7 +33,17 @@ public class MusicPlayer{
     }
 
 	public static void main(String[] args) throws InvalidMidiDataException, MidiUnavailableException{
-        MusicPlayer musicPlayer = new MusicPlayer();
+        final MusicPlayer musicPlayer = new MusicPlayer();
+        new Thread(new Runnable(){
+            public void run(){
+                try{
+                    Thread.sleep(10000);//10秒後、stopMusic()を呼ぶ
+                    musicPlayer.stopMusic();
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 		musicPlayer.playMusic(50);
 	}
 	
@@ -56,7 +66,7 @@ public class MusicPlayer{
     public void stopMusic() {
         if (sequencer != null && isPlaying()) {
             sequencer.stop();
-            sequencer.setMicrosecondPosition(0);
+    //        sequencer.setMicrosecondPosition(0);
         }
     }
 }
