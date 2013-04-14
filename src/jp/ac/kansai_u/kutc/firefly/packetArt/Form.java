@@ -185,6 +185,18 @@ public class Form extends JFrame{
 	public boolean isExistForm(String formName) {
 		return instances.containsKey(formName);
 	}
+	
+	/**
+	 * 指定された名前のフォームを取得します。指定されたフォームが存在しない場合、nullを返します。
+	 * @param formName フォーム名
+	 */
+	public FormBase getInstanceFromName(String formName) {
+		if(isExistForm(formName))
+			return instances.get(formName);
+		else
+			return null;
+	}
+	
 	// updateとrepaintをtimerに登録
 	void registerInvokeMethodsToTimer(FormBase form){
 		try{
