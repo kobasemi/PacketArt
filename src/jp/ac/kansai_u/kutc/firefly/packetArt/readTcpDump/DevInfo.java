@@ -85,11 +85,12 @@ public class DevInfo {
      * @param raw IP(v4,v6)アドレスを、バイト列で。
      * @return address rawを文字列にしたもの。エラーなら""
     */
-    public String getInetAddress(byte[] raw) {
+    public static String getInetAddress(byte[] raw) {
         String address = "";
         try {
             address = InetAddress.getByAddress(raw).getHostAddress();
         } catch (Exception e){
+            return null;
             //今回は正当なアドレスなので、ここには絶対にきません。
         }
         return address;
