@@ -26,7 +26,7 @@ public class LoadDumpFileButton extends JButton {
      * @param beforeActFunc 無名関数入れ。こいつに好きなrunを入れられる。nullOK
      * @param afterActFunc 無名関数入れ。こいつに好きなrunを入れられる。nullOK
      */
-    LoadDumpFileButton(String t, Runnable beforeActFunc, Runnable afterActFunc) {
+    public LoadDumpFileButton(String t, Runnable beforeActFunc, Runnable afterActFunc) {
         super(t);
         this.onBeginAct = beforeActFunc;
         this.onEndAct = afterActFunc;
