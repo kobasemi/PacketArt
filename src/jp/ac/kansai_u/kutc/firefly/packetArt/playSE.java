@@ -15,9 +15,13 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 //ファイルの読み込み
 public enum playSE {
-  DECISION("click.wav"),  //暫定1
-	CANCEL("cancel.wav"),   //暫定2
-	DEMISE("move.wav"); 	//暫定3
+	//MOVE(""),			//ゲーム：ミノ左右下移動
+	//HADRDROP(""),		//ゲーム：ミノハードドロップ
+	//TURN(""),			//ゲーム：ミノ回転
+	//DEMISE(""),		//ゲーム：ミノ消滅
+	SELECT("./se/se_maoudamashii_system49.wav"),	//メニュー：セレクト用効果音
+	CANCEL("./se/se_maoudamashii_system19.wav"),	//メニュー：キャンセル音
+	OPEN("./se/se_maoudamashii_effect03.wav");		//アプリケーション起動音（仮)
 	
 	//音量調節
 	public static enum Volume {
