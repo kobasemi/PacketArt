@@ -64,8 +64,19 @@ public class ProtocolHandlerBase {
     private Tcp tcp = new Tcp();  
     private Udp udp = new Udp();
     private PcapPacket pkt;
+    private boolean willHandlePackets;
+    private boolean handled;
+
+    public void setWillHandlePackets(boolean will) {
+        willHandlePackets = will;
+    }
+    public boolean isHandledPacket() {
+        return handled;
+    }
 
     protected ProtocolHandlerBase() {
+        handled = false;
+        setWillHandlePackets(true);
     }
 
     /**
@@ -77,7 +88,24 @@ public class ProtocolHandlerBase {
      * @see org.jnetpcap.packet.PcapPacket
     */
     public void inspect(PcapPacket packet) {
+        if (willHandlePackets != false) {
+            if (packet != null) {
+                pkt = new PcapPacket(packet);
+                handled = false;
+            }
+            return;
+            //もうパケットいらないよ！っていう人向け。何もしない。
+            //本当に何もしないので、非常に高速。
+        } else if (packet == null && pkt != null) {
+            packetHandler(pkt);
+            return;
+            //呼び出し元でinspect(null)された場合に発動。
+            //inspectが呼ばれたという事実は残したいので、
+            //一つ前のパケットを呼び出すことにした。
+            //一つ前のパケットか、否かはisHandledPacket()で判断できる。
+        }
         try {
+            handled = false;
             if (packet.hasHeader(tcp) ) {  
                 tcpHandler(tcp);//40％ここに来る
             } else if (packet.hasHeader(udp) ) {  
@@ -101,19 +129,19 @@ public class ProtocolHandlerBase {
             //レイヤーが高い順にすることで、最上階のレイヤーを扱う。
 
             //pktを上書き。次のパケットが来れば参照は切断される。
+            //new PcapPacketすることで、厄介な参照問題を防ぐ。
             pkt = new PcapPacket(packet);
-
+            handled = true;
         } catch (Exception e) {
-            if (packet == null) {
-                //System.err.println("GIVE MORE PCAP!");
-            } else {
-                System.err.println("jnetpcapBug! Ignoring...");
-            }
+            System.err.println("jnetpcapBug! Ignoring...");
             //jnetpcapが解析できないパケットを受け取ったらここに飛ぶ
             //どうしようもない。なので、何もしない。
         }
     }
 
+
+//以下、オーバーライドする関数達。
+//使いたい関数だけオーバーライドする。
     /**
      * @see org.jnetpcap.protocol.tcpip.Tcp
     */
@@ -163,6 +191,10 @@ public class ProtocolHandlerBase {
      * @see org.jnetpcap.packet.PcapPacket
     */
     public void packetHandler(PcapPacket packet){};
+
+//以下、「保険」。TCPとIP、UDPとICMPとか、複数のプロトコルを使いたい人用。
+//ここでも受け皿をぶん回して使う。これらの関数を呼び出すのは
+//inspect前に呼び出すと、一つ前の情報が帰ってきます。どうでもいい？
 
     public Tcp getTcp(PcapPacket packet) {
         if (packet != null && packet.hasHeader(tcp) ) {
