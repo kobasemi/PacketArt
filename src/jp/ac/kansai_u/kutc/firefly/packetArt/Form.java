@@ -192,7 +192,7 @@ public class Form extends JFrame{
 	 */
 	public FormBase getInstanceFromName(String formName) {
 		if(isExistForm(formName))
-			return instances.get(formName);
+			return instances.get(formName).x;
 		else
 			return null;
 	}
