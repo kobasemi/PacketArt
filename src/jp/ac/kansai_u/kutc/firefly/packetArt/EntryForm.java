@@ -30,7 +30,6 @@ public class EntryForm extends FormBase {
 	String fileName;
 	JButton loadButton;
     PcapManager pcapManager;//TEST
-    Liner liner;
 	boolean isChanging;
 
 	// あらゆるオブジェクトの初期化はここから(jnetpcap関連クラスなど)
@@ -43,7 +42,6 @@ public class EntryForm extends FormBase {
 		time = new int[50];
         pcapManager = new PcapManager();//TEST
      //   tcpHandler = new TcpHandler();//TEST
-        liner = new Liner(getSize().width,getSize().height);
 
 		setBackground(Color.white);
 
@@ -88,7 +86,6 @@ public class EntryForm extends FormBase {
 				g.fillOval((int)cursor[i].getX() - 25, (int)cursor[i].getY() - 25, 50, 50);
 			}
 		}
-        liner.paint(g,cursor);
        // tcpHandler.paint(g,cursor,getSize().width,getSize().height);
 	}
 
@@ -99,7 +96,6 @@ public class EntryForm extends FormBase {
             if (tick % 1000 == 0) {
             PcapPacket pkt = pcapManager.nextPacket();
          //   tcpHandler.inspect(pkt);
-            liner.inspect(pkt);
             }
         } else {
             loadButton.setVisible(true);

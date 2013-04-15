@@ -103,4 +103,9 @@ public class PacketDisposer extends ProtocolHandlerBase{
     public boolean isFull() {
         return fully;
     }
+
+	public static int[] disposePacket() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
