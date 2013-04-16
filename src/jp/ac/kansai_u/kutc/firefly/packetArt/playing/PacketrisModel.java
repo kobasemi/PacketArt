@@ -1,17 +1,31 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.playing;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import jp.ac.kansai_u.kutc.firefly.packetArt.Location;
+
+/**
+ * パケリスのモデルです。
+ * @author midolin
+ *
+ */
 public class PacketrisModel {
+	boolean canReverse;
 	final int row = 30;
 	final int column = 15;
 	Block[][] board;
 	ArrayList<Block> currentMinos;
+	Location parentLocation;
 	
 	public PacketrisModel(){
 		board = new Block[30][15];
 	}
 	
+	/**
+	 * 初期化を行います。
+	 */
 	public void initialize(){
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board[i].length; j++) {
@@ -27,16 +41,43 @@ public class PacketrisModel {
 		}
 	}
 
+	/**
+	 * 指定座標のブロックを返します。
+	 * @param x 
+	 * @param y
+	 * @return
+	 */
 	public Block getBoardBlock(int x, int y) {
 		return board[x][y];
 	}
 	
+	/**
+	 * 盤面を取得します。
+	 * @return 盤面
+	 */
 	public Block[][] getBoard(){
 		return board;
 	}
 	
 	/**
-	 * ミノを回転させます
+	 * 現在操作対象に設定されているミノが反転可能かどうかを取得します。
+	 * @return 反転の可否
+	 */
+	public boolean canReverse() {
+		return canReverse;
+	}
+
+	/**
+	 * 現在操作対象となっているミノの反転の可否を設定します。
+	 * @param canReverse 反転の可否
+	 */
+	public void setCanReverse(boolean canReverse) {
+		this.canReverse = canReverse;
+	}
+
+	
+	/**
+	 * ミノを回転させます。
 	 * @param direction 回転方向
 	 */
 	public void rotate(Direction direction){
@@ -60,6 +101,52 @@ public class PacketrisModel {
 		for(Block item : currentMinos)
 			item.location.setY(item.location.getY() + 1);
 		return true;
+	}
+	
+	/**
+	 * ミノの反転を行います。
+	 */
+	public void reverse(){
+		if(canReverse)
+			for(Block item : currentMinos)
+				item.location.setX(item.location.getX() * -1);
+	}
+	
+	/**
+	 * ミノを生成します。
+	 * @param mino 生成するミノの種類
+	 * @param isReversed ミノの生成時反転
+	 * @param x 座標
+	 */
+	public void generateMino(Mino mino, boolean isReversed, int x){
+		// 入力チェック
+		if(x < 0 || x > column)
+			throw new InvalidParameterException("座標指定に問題があります");
+		if(mino == null)
+			throw new NullPointerException();
+		
+		// TODO: ミノを作る(相対座標)
+		if(mino instanceof TetroMino){
+			switch ((TetroMino)mino) {
+			case I:
+				break;
+			case O:
+				break;
+			case S:
+				break;
+			case Two:
+				break;
+			case L:
+				break;
+			case LReverse:
+				break;
+
+			default:
+				assert(false);
+			}
+		} else {
+			
+		}
 	}
 }
 

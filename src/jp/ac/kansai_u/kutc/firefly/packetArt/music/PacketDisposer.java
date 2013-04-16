@@ -1,7 +1,5 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.music;
 
-import java.util.LinkedList;
-
 import jp.ac.kansai_u.kutc.firefly.packetArt.ProtocolHandlerBase;
 
 import org.jnetpcap.protocol.network.Ip4;

@@ -34,7 +34,7 @@ public class Form extends JFrame{
 		getContentPane().setLayout(card);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Packet Art");
-		setSize(640, 480);
+		setSize(800, 450);
 		getRootPane().setDoubleBuffered(true);
 		((JComponent)getContentPane()).setDoubleBuffered(true);
 		try{
