@@ -11,6 +11,8 @@ import org.jnetpcap.PcapIf;
 import org.jnetpcap.PcapSockAddr;
 import org.jnetpcap.nio.JMemory;
 import org.jnetpcap.packet.PcapPacket;
+import org.jnetpcap.PcapDLT;//イーサネット２。
+import org.jnetpcap.PcapBpfProgram;
 
 /*
 
@@ -56,6 +58,7 @@ public class PcapManager {
     private boolean fromDev;
     private boolean readyRun;
     private Pcap pcap;//jnetpcapの核。
+    private PcapBpfProgram bpfFilter;
     //private Queue packetQueue;
 
     /**
@@ -268,28 +271,43 @@ public class PcapManager {
     }
     */
 
-    /*TODO:
-    public boolean setFilter(String bpf) {
-        private final int OPTIMIZE = 1;
-        private final int NETMASK = 0;//今回はWANのお話なので。
-        private final int DLT = ?????;//ここ！何！どうすりゃいいの！
-        PcapBpfProgram filter = new PcapBpfProgram();
+    /**
+     * getBPF;
+    */
+    public PcapBpfProgram setBPF(String bpf) {
+        final int OPTIMIZE = 1;//立てといた方がいいんでしょ？多分。
+        final int NETMASK = 0;//今回はWANのお話なので。。。
+        final int DLT = PcapDLT.CONST_EN10MB;//イーサネット２。
+        PcapBpfProgram filter = new PcapBpfProgram();//BPFポインタを取得
 
         int retCode;
-        if (isReadyRun) { //オープン済み
-            retCode = Pcap.compile(filter, bpf, 1, NETMASK);
-        } else {
+        if (readyRun && pcap != null) { //オープン済み
+            retCode = pcap.compile(filter, bpf, OPTIMIZE, NETMASK);
+        } else { //未オープン。snaplenとDLTの指定が必要。
             retCode = Pcap.compileNoPcap(Pcap.DEFAULT_SNAPLEN,
                                 DLT,
                                 filter,
                                 bpf,
                                 OPTIMIZE,
-                                NETMASK)
+                                NETMASK);
         }
-        if ( retCode != -1 )retCode = Pcap.setfilter(bpf);
-        return retCode;
+        if ( retCode == Pcap.NOT_OK ) { // 多分、String bpfがBPFの構文にあってない
+            System.out.println("PcapManager.getBPF('"+ bpf +"') Failed!");
+            if (pcap != null) {
+                System.out.println("ERROR is " + pcap.getErr());
+            }
+            return null;
+        }
+        if ( pcap != null && pcap.setFilter(filter) == Pcap.NOT_OK);
+            System.out.println("PcapManager.getBPF('"+ bpf +"') Failed!");
+            if (pcap != null) {
+                System.out.println("ERROR is " + pcap.getErr());
+            }
+            return null;
+        }
+        
+        return true;
     }
-
 
     /**
      * 開いたtcpdumpファイルをガベコレの前に閉じます。
@@ -298,5 +316,6 @@ public class PcapManager {
         if ( fromFile ) {
             pcap.close();
         }
+        //Pcap.freecode() 
     }
 }
