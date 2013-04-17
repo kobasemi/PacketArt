@@ -17,21 +17,10 @@ import org.jnetpcap.PcapBpfProgram;
 /*
 
     TODO: パケット３０００個の保持{
-        上記デバイスからの読み込みに際し、jnetpcapにより
-        長蛇の待ちパケット行列がメモリ上に生成される可能性が発生した。
-        これは普通のtcpdumpにも言える問題であるが、運営から言われたなら
-        しかたない。パケットの間引きにBPFを使うのは
-        パケットの種類の選択肢が減ることになる。。。
-        そのために、パケットをある程度確保したら捨てる方式をとる。
         これなら、使えるパケットの種類を意図的に減らすことはなくなる。
-        3000個の確保にはjava.util.Queueを使う。捨てるには、nextPacketを空撃ち。
-        nextPacketは透過的に提供する。キューには定期的に補充し、
         キューと、jnetpcapのキューに無くなり次第、関数はnullを返すようにする。
         また、fromFile == Trueのときは空撃ちしない。
     }
-
-    TODO: 透過的にBPFフィルタを追加する関数を作成する。
-          scapyのように途中でフィルタを変更するというのはできないっぽい。
 
     TODO: 残りパケットの（概算値）の保持{
         ファイルサイズ(Byte)を標準MTU,1500byteで割る。WIDEプロジェクトの
@@ -64,7 +53,8 @@ public class PcapManager {
     private boolean readyRun;
     private Pcap pcap;//jnetpcapの核。
     private PcapBpfProgram bpfFilter;
-    //private Queue packetQueue;
+    private PacketQueue packetQueue;
+    public final int QUEUE_SIZE = 30000;
 
     /**
      * @return pcapFile 現在開いているtcpdumpのファイルオブジェクトを返します。
@@ -171,7 +161,7 @@ public class PcapManager {
     }
 
     /**
-     * どのコンストラクタでも最初に呼ばれます。ただの初期化関数です。
+     * コンストラクタで最初に呼ばれます。ただの初期化関数です。<br>
      * 何のエラーも引数も返り値もありません。
     */
     public void init() {
@@ -182,13 +172,13 @@ public class PcapManager {
         fromFile = false;
         fromDev = false;
         readyRun = false;
+        packetQueue = new PacketQueue(QUEUE_SIZE);
         errBuf = new StringBuilder();
     }
 
     /**
-     * Fileがコンストラクタの引数の場合に呼ばれる関数です。
-     * この関数では例外は発生しません。
-     *
+     * Fileがコンストラクタの引数の場合に呼ばれる関数です。ファイルの有無チェックはそちらでやってください。<br>
+     * この関数はエラーを出しません。エラー内容はgetErrカンスで取得可能です。
      * @return wasOK 成功か失敗か。失敗ならerrBufにエラーが入ってます。
     */
     public boolean openFile(String fname) {
@@ -208,6 +198,8 @@ public class PcapManager {
     }
 
     /**
+     * デバイス名を指定せずにこの関数を実行した場合、jnetpcapによって最適デバイスを選択されます。<br>
+     * この関数はエラーを出しません。エラー内容はgetErr関数で取得可能です。
      * @return wasOK 成功か失敗か。
     */
     public boolean openDev() {
@@ -217,8 +209,8 @@ public class PcapManager {
     }
 
     /**
-     * デバイス名がコンストラクタの引数の場合に呼ばれる。
-     * openLiveでは例外は発生しない。
+     * デバイス名がコンストラクタの引数の場合に呼ばれます。<br>
+     * この関数はエラーを出しません。エラー内容はgetErr関数で取得可能です。
      *
      * @return wasOK 成功か失敗か。
     */
@@ -238,9 +230,9 @@ public class PcapManager {
     }
 
     /**
-     * 一個ずつロードします。packetのメモリはlibpcapのメモリを共有しています。
-     * こいつに関する参照を無くすとlibpcapのメモリもFreeされます。多分。
-     * メモリのアロケート処理が入らないので、高速？
+     * 一個ずつロードします。packetのメモリはlibpcapのメモリを共有しています。<br>
+     * こいつに関する参照を無くすとlibpcapのメモリもFreeされます。<br>
+     * メモリのアロケート処理が入らないので、高速です。<br>
      * @return packet パケット。というかlibpcapの保持するパケットへのポインタ。
     */
     public PcapPacket nextPacket() {
@@ -254,9 +246,9 @@ public class PcapManager {
     }
 
     /**
-     * 一個ずつロードします。packetはのメモリはJavaで管理されます。
-     * libpcapの保持するパケットはすぐに解放され、その代わりにJavaのメモリを食います
-     * メモリのアロケート処理が入るので、低速？
+     * 一個ずつロードします。packetはのメモリはJavaで管理されます。<br>
+     * libpcapの保持するパケットはすぐに解放され、その代わりにJavaのメモリを食います<br>
+     * メモリリークは起こりませんが、メモリのアロケート処理が入るので、低速です。<br>
      * @return pkt パケット。libpcapの方はすぐに解放される。メモリ的に安全。
     */
     public PcapPacket nextPacketCopied() {
@@ -266,6 +258,49 @@ public class PcapManager {
         }
         return null;
     }
+
+    /**
+     * Javaのメモリ上にある、「非常食」、デバイスまたはファイルから<br>
+     * パケットを読み込み、同時にキューに高速に蓄えます。
+     *
+     * @param howManyPackets どのくらいの数のパケットを読み込むか。 
+     * @return wasOK 成功か、否か。
+    */
+    public boolean savePackets(int howManyPackets) {
+        final int DLT;
+        final int NOT_INITIALIZED = -1;
+        final Object dummy = null;
+        final int howManyEnqeued;
+        final boolean wasOK;
+
+        if (pcap == null) {
+            wasOK = false;
+            System.out.println("PCAP NOT OPENED!");
+            return wasOK;
+        }
+
+        DLT = pcap.datalink();
+        howManyEnqeued = pcap.dispatch(howManyPackets, DLT, packetQueue, dummy);
+        int sizeAfter = packetQueue.size();
+        if (howManyEnqeued < 0) {
+            wasOK = false;
+            return wasOK;//ループ中にブレークループシグナルを受け取った。
+        }
+        wasOK = true;
+        return wasOK;
+    }
+
+    /**
+     * 「非常食」のパケットを複数個読み込み、配列もしくで返します。<br>
+     * まとまったパケットを不定期に欲しい人にとっては嬉しい関数です。
+     *
+     * @param howManyPackets 何個のパケットを持ってくるか。Listの配列数。
+     * @return packetQueue.pollPackets(howManyPackets) 実際のリスト
+    */
+    public List<PcapPacket> restorePackets(int howManyPackets) {
+        return packetQueue.pollPackets(howManyPackets);
+    }
+
     /*TODO:
     public float nokoriPacket() {
         int MTU = 1500;
@@ -277,6 +312,7 @@ public class PcapManager {
 
     /**
      * BPFという記法で取得するパケットを意図的に制御します。
+     *
      * @param bpf BPF構文で書かれたフィルタリングの記号文字列
      * @return T/F 成功か、失敗か。エラーは発生しませんが、getErr()でエラー内容は見れます。
     */
