@@ -282,7 +282,7 @@ public class PcapManager {
     */
     public boolean setBPFfilter(String bpf) {
         if (bpfFilter != null) {
-            String.out.println("ERRO: Has been Fltered!");
+            System.out.println("ERRO: Has been Fltered!");
             return false;
         }
         final int OPTIMIZE = 1;//立てといた方がいいんでしょ？多分。
