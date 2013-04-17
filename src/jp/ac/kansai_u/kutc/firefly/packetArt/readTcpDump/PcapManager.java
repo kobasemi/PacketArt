@@ -50,6 +50,11 @@ import org.jnetpcap.PcapBpfProgram;
  * 正常にパケットを読めたか確認するにはisReadyRunを使います。
 */
 public class PcapManager {
+    static final PcapManager instance = new PcapManager();
+    public static PcapManager getInstance(){
+       return instance;
+    }
+
 
     private static StringBuilder errBuf;//libpcapからのエラーをここに
     private File pcapFile;
@@ -114,18 +119,17 @@ public class PcapManager {
      * 空のコンストラクタ。このコンストラクタを使う場合は、オブジェクト生成後に
      * openDev(name)もしくはopenFile(name)をしないとパケットが読めません。。
     */
-    public PcapManager() {
+    private PcapManager() {
         init();
         System.out.println("PcapManager()");
     }
-
 
     /**
      * ローカルのファイルからパケットを読み出す。
      * @param file tcpdumpファイルのFileオブジェクト。読み込みできるようにね。
     */
-    public PcapManager(File file) {
-        init();
+    private PcapManager(File file) {
+       init();
         System.out.println("PcapManager(File " + file.getName() +")");
         openFile(file.getName());
     }
@@ -134,7 +138,7 @@ public class PcapManager {
      * ローカルのデバイスからパケットを読み出す。
      * @param dev リッスンしたいデバイスのPcapIfオブジェクト。
     */
-    public PcapManager(PcapIf dev) {
+    private PcapManager(PcapIf dev) {
         init();
         System.out.println("PcapManager(PcapIf " + dev.getName() +")");
         openDev(dev.getName());
@@ -147,7 +151,7 @@ public class PcapManager {
      *
      * @param name ファイル名フルパスもしくはデバイスのIPを、Stringで。
     */
-    public PcapManager(String name) {
+    private PcapManager(String name) {
         init();
         System.out.println("PcapManager(String " + name +") -> ***GUESS***");
         if (name == null) {
@@ -274,7 +278,7 @@ public class PcapManager {
     /**
      * getBPF;
     */
-    public PcapBpfProgram setBPF(String bpf) {
+    public PcapBpfProgram setBPFfilter(String bpf) {
         final int OPTIMIZE = 1;//立てといた方がいいんでしょ？多分。
         final int NETMASK = 0;//今回はWANのお話なので。。。
         final int DLT = PcapDLT.CONST_EN10MB;//イーサネット２。
@@ -298,15 +302,14 @@ public class PcapManager {
             }
             return null;
         }
-        if ( pcap != null && pcap.setFilter(filter) == Pcap.NOT_OK);
+        if ( pcap != null && pcap.setFilter(filter) == Pcap.NOT_OK){
             System.out.println("PcapManager.getBPF('"+ bpf +"') Failed!");
             if (pcap != null) {
                 System.out.println("ERROR is " + pcap.getErr());
             }
             return null;
         }
-        
-        return true;
+        return filter;
     }
 
     /**
