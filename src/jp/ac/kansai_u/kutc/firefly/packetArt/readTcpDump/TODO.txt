@@ -1,7 +1,3 @@
-Pcapmanager シングルトン
-Pcapmanagerにハンドラホルダ
-プロトコルハンドらーインターフェース作成
-Pcapmanager 30000ぱけっと
 Pcapmanager sync
 PcapManager runnable
 PcapManager addInterface
@@ -10,7 +6,7 @@ DevUtil List<PcapIf>
 
 ReadDumpFormのGUI
 僕のイメージ
-・・・映画のスタッフロール的な感じがいいなあ。。。。
+・・・パケットでできた映画のスタッフロール的な感じがいいなあ。。。。
 んで、最後に「チームコバゼミ」とかｗｗ
 
 
