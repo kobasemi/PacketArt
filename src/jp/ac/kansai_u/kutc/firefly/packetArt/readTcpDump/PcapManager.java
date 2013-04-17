@@ -276,9 +276,15 @@ public class PcapManager {
     */
 
     /**
-     * getBPF;
+     * BPFという記法で取得するパケットを意図的に制御します。
+     * @param bpf BPF構文で書かれたフィルタリングの記号文字列
+     * @return T/F 成功か、失敗か。エラーは発生しませんが、getErr()でエラー内容は見れます。
     */
-    public PcapBpfProgram setBPFfilter(String bpf) {
+    public boolean setBPFfilter(String bpf) {
+        if (bpfFilter != null) {
+            String.out.println("ERRO: Has been Fltered!");
+            return false;
+        }
         final int OPTIMIZE = 1;//立てといた方がいいんでしょ？多分。
         final int NETMASK = 0;//今回はWANのお話なので。。。
         final int DLT = PcapDLT.CONST_EN10MB;//イーサネット２。
@@ -300,25 +306,28 @@ public class PcapManager {
             if (pcap != null) {
                 System.out.println("ERROR is " + pcap.getErr());
             }
-            return null;
+            return false;
         }
         if ( pcap != null && pcap.setFilter(filter) == Pcap.NOT_OK){
             System.out.println("PcapManager.getBPF('"+ bpf +"') Failed!");
             if (pcap != null) {
                 System.out.println("ERROR is " + pcap.getErr());
             }
-            return null;
+            return false;
         }
-        return filter;
+        bpfFilter = filter;//解放用ポインタの保持。
+        return true;
     }
 
     /**
-     * 開いたtcpdumpファイルをガベコレの前に閉じます。
+     * アロケートしたメモリや開いたファイルをガベコレの前に閉じます。
     */
     public void close() {
         if ( fromFile ) {
             pcap.close();
         }
-        //Pcap.freecode() 
+        if ( bpfFilter != null ) {
+            Pcap.freecode(bpfFilter);
+        }
     }
 }
