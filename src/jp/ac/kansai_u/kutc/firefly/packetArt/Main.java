@@ -1,5 +1,5 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt;
-import java.util.Arrays;
+//import java.util.Arrays;
 
 public class Main {
 	public static void main(String [] args) {

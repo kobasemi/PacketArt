@@ -2,7 +2,6 @@ package jp.ac.kansai_u.kutc.firefly.packetArt.playing;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.Location;
 

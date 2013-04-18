@@ -11,11 +11,11 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
+//import javax.swing.JOptionPane;
 
-import org.jnetpcap.packet.PcapPacket;
+//import org.jnetpcap.packet.PcapPacket;
 
 /**
  * 最初に表示されるフォームです.
@@ -94,7 +94,7 @@ public class EntryForm extends FormBase {
 	public void update() {
         if ( pcapManager.isReadyRun() ) {
             if (tick % 1000 == 0) {
-            PcapPacket pkt = pcapManager.nextPacket();
+            //PcapPacket pkt = pcapManager.nextPacket();
          //   tcpHandler.inspect(pkt);
             }
         } else {

@@ -1,5 +1,5 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.music;
-import java.util.Random;
+//import java.util.Random;
 
 //BGMのメロディを作成するアルゴリズム
 public class MelodyAlgorithm {

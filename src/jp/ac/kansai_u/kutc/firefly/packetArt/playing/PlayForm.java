@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
-import jp.ac.kansai_u.kutc.firefly.packetArt.PacketrisPacketHandler;
 
 /**
  * パケットを利用したテトリスを表示、処理するフォームです。

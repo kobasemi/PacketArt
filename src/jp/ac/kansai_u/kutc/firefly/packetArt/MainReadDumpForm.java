@@ -1,5 +1,5 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt;
-import java.util.Arrays;
+//import java.util.Arrays;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.ReadDumpForm;
 
