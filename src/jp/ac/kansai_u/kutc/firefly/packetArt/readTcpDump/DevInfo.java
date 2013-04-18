@@ -117,4 +117,28 @@ public class DevInfo {
         hex.deleteCharAt(hex.length() - 1);
         return hex.toString();
     }
+
+    /**
+     * libpcapがキャプチャ可能なデバイスについて、情報をすべて返します。
+     *
+     * @return ret 全ての情報をStringで返します。
+    */
+    public String getStats() {
+        String ret = "";
+        String ln = "\n";
+        ret += "NAME: " + name + " = " + description + ln;
+        ret += "MAC: " + macAddr + ln;
+        ret += "IPv4: " + ipAddr + ln;
+        for (String ip6 : ip6Addr) {
+            ret += "IPv6: " + ip6 + ln;
+        }
+        ret += "LOOPBACK: ";
+        if (loopback) {
+            ret+="true";
+        } else {
+            ret+="false";
+        }
+        ret += ln;
+        return ret;
+    }
 }
