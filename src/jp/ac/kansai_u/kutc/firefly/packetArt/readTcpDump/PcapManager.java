@@ -1,14 +1,14 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump;
 
 import java.io.File;//File.existsに必要
-import java.net.InetAddress;//getDevByIPのIPからStringの変換に必要
 import java.util.ArrayList;
 import java.util.List;
+
+import java.lang.Runnable;
 
 import org.jnetpcap.Pcap;//こいつが心臓
 import org.jnetpcap.PcapAddr;
 import org.jnetpcap.PcapIf;
-import org.jnetpcap.PcapSockAddr;
 import org.jnetpcap.nio.JMemory;
 import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.PcapDLT;//イーサネット２。
@@ -30,18 +30,38 @@ import org.jnetpcap.PcapBpfProgram;
 */
 
 /**
- * 完全にパケットアート用。
- * 使い方:
- * PcapManager pm = new PcapManager(new File(filename))
- * if (pm.isReadyRun) { pm.nextPacket(); }
- * 
+ * 完全にパケットアート用。<br>
+ * シングルトンになったので、close時にnullを代入してください。
+ * 使い方:<br>
+ * <code>
+ * PcapManager pm = PcapManager.getInstance();
+ * pm.addHandler(handler);
+ * </code>
  * その他アクセスできる変数はget??というメソッドを参照してください。
  * 正常にパケットを読めたか確認するにはisReadyRunを使います。
 */
-public class PcapManager {
+public class PcapManager implements Runnable{
     static final PcapManager instance = new PcapManager();
     public static PcapManager getInstance(){
        return instance;
+    }
+
+    private PcapPacket pkt;
+    public void run() {
+        synchronized(pkt) {
+        pkt = null;
+        pkt = nextPacket();//ここで1秒間パケットが来なかったらタイムアウトしてほしい。
+        if (pkt == null) {
+            nextPacketFromQueue();
+        }
+/*
+        for (ProtocolHandlerBase handler : handlersHolder){
+            handler.inspect(pkt);
+            //このpktは全ての参照が切断されなければ多分メモリが開放されません。
+        }
+*/
+        pkt = null;//その対策として、ここでnullしていいのかな～？
+        }
     }
 
 
@@ -51,10 +71,104 @@ public class PcapManager {
     private boolean fromFile;
     private boolean fromDev;
     private boolean readyRun;
+    private boolean filtered;
     private Pcap pcap;//jnetpcapの核。
     private PcapBpfProgram bpfFilter;
     private PacketQueue packetQueue;
     public final int QUEUE_SIZE = 30000;
+
+    /**
+     * 空のコンストラクタ。このコンストラクタを使う場合は、オブジェクト生成後に
+     * openDev(name)もしくはopenFile(name)をしないとパケットが読めません。。
+    */
+    private PcapManager() {
+        init();
+        System.out.println("PcapManager()");
+    }
+
+    /**
+     * コンストラクタで最初に呼ばれます。ただの初期化関数です。<br>
+     * 何のエラーも引数も返り値もありません。
+    */
+    public void init() {
+        System.out.println("PcapManager.init()");
+        File pcapFile = null;
+        PcapIf pcapDev = null;
+        pcap = null;
+        fromFile = false;
+        fromDev = false;
+        readyRun = false;
+        packetQueue = new PacketQueue(QUEUE_SIZE);
+        filtered = false;
+        errBuf = new StringBuilder();
+    }
+
+    /**
+     * Fileがコンストラクタの引数の場合に呼ばれる関数です。ファイルの有無チェックはそちらでやってください。<br>
+     * この関数はエラーを出しません。エラー内容はgetErrカンスで取得可能です。
+     * @return wasOK 成功か失敗か。失敗ならerrBufにエラーが入ってます。
+    */
+    public boolean openFile(String fname) {
+        System.out.println("openFile(" + fname +")");
+        if (pcap != null) {
+            System.out.println("You've already opened pcap! closing previous one..");
+            close();
+        }
+        pcapFile = new File(fname);
+        boolean wasOK = false;
+        if (pcapFile.exists() == false) {
+            readyRun = false;
+        }
+        pcap = Pcap.openOffline(fname,errBuf);
+        if (pcap == null) {
+            System.err.println("Error while opening a file for capture: "
+                + errBuf.toString());
+            return wasOK;
+        }
+        fromDev = false;
+        fromFile = true;
+        filtered = false;
+        wasOK = true;
+        readyRun = true;
+        return wasOK;
+    }
+
+    /**
+     * デバイス名を指定せずにこの関数を実行した場合、jnetpcapによって最適デバイスを選択されます。<br>
+     * この関数はエラーを出しません。エラー内容はgetErr関数で取得可能です。
+     * @return wasOK 成功か失敗か。
+    */
+    public boolean openDev() {
+        String devName = Pcap.lookupDev(errBuf);
+        System.out.println("Jnetpcap did a big assumption but....Yes...");
+        return openDev(devName);
+    }
+
+    /**
+     * デバイス名がコンストラクタの引数の場合に呼ばれます。<br>
+     * この関数はエラーを出しません。エラー内容はgetErr関数で取得可能です。
+     *
+     * @return wasOK 成功か失敗か。
+    */
+    public boolean openDev(String devName) {
+        System.out.println("openDev(" + devName +")");
+        boolean wasOK = false;
+        pcap = Pcap.openLive(devName, Pcap.DEFAULT_SNAPLEN, Pcap.MODE_PROMISCUOUS, Pcap.DEFAULT_TIMEOUT, errBuf);
+        if (pcap == null) {
+            System.err.println("Error while opening device for capture: "
+                + errBuf.toString());
+            return wasOK;
+        }
+        fromDev = true;
+        if (fromFile) {
+            close();
+            fromFile = false;
+        }
+        wasOK = true;
+        filtered = false;
+        readyRun = wasOK;
+        return wasOK;
+    }
 
     /**
      * @return pcapFile 現在開いているtcpdumpのファイルオブジェクトを返します。
@@ -106,127 +220,10 @@ public class PcapManager {
     }
 
     /**
-     * 空のコンストラクタ。このコンストラクタを使う場合は、オブジェクト生成後に
-     * openDev(name)もしくはopenFile(name)をしないとパケットが読めません。。
+     * @return filtered BPFフィルターが適用されているか確認します。
     */
-    private PcapManager() {
-        init();
-        System.out.println("PcapManager()");
-    }
-
-    /**
-     * ローカルのファイルからパケットを読み出す。
-     * @param file tcpdumpファイルのFileオブジェクト。読み込みできるようにね。
-    */
-    private PcapManager(File file) {
-       init();
-        System.out.println("PcapManager(File " + file.getName() +")");
-        openFile(file.getName());
-    }
-
-    /**
-     * ローカルのデバイスからパケットを読み出す。
-     * @param dev リッスンしたいデバイスのPcapIfオブジェクト。
-    */
-    private PcapManager(PcapIf dev) {
-        init();
-        System.out.println("PcapManager(PcapIf " + dev.getName() +")");
-        openDev(dev.getName());
-    }
-
-    /**
-     * Linuxならeth0だが、WindowsでデバイスIDを取得するのはタイヘン。
-     * そこで、様々な文字列からお目当てのパケットを取得できるようにする。
-     * 使うなら絶対このコンストラクタ！
-     *
-     * @param name ファイル名フルパスもしくはデバイスのIPを、Stringで。
-    */
-    private PcapManager(String name) {
-        init();
-        System.out.println("PcapManager(String " + name +") -> ***GUESS***");
-        if (name == null) {
-            return;
-        }
-        //name はFilePathか？
-        pcapFile = new File(name);
-        if (pcapFile.exists() ) {
-            openFile(name);
-            return;
-        }
-
-        //nameはデバイスIDか？
-        openDev(name);
-        //nameは・・・・何コレ？
-        System.err.println("PcapManager failed guess what the " + name + " is.");
-    }
-
-    /**
-     * コンストラクタで最初に呼ばれます。ただの初期化関数です。<br>
-     * 何のエラーも引数も返り値もありません。
-    */
-    public void init() {
-        System.out.println("PcapManager.init()");
-        File pcapFile = null;
-        PcapIf pcapDev = null;
-        pcap = null;
-        fromFile = false;
-        fromDev = false;
-        readyRun = false;
-        packetQueue = new PacketQueue(QUEUE_SIZE);
-        errBuf = new StringBuilder();
-    }
-
-    /**
-     * Fileがコンストラクタの引数の場合に呼ばれる関数です。ファイルの有無チェックはそちらでやってください。<br>
-     * この関数はエラーを出しません。エラー内容はgetErrカンスで取得可能です。
-     * @return wasOK 成功か失敗か。失敗ならerrBufにエラーが入ってます。
-    */
-    public boolean openFile(String fname) {
-        System.out.println("openFile(" + fname +")");
-        boolean wasOK = false;
-        pcap = Pcap.openOffline(fname,errBuf);
-        if (pcap == null) {
-            System.err.println("Error while opening a file for capture: "
-                + errBuf.toString());
-            return wasOK;
-        }
-        pcapFile = new File(fname);
-        fromFile = true;
-        wasOK = true;
-        readyRun = wasOK;
-        return wasOK;
-    }
-
-    /**
-     * デバイス名を指定せずにこの関数を実行した場合、jnetpcapによって最適デバイスを選択されます。<br>
-     * この関数はエラーを出しません。エラー内容はgetErr関数で取得可能です。
-     * @return wasOK 成功か失敗か。
-    */
-    public boolean openDev() {
-        String devName = Pcap.lookupDev(errBuf);
-        System.out.println("openDev(" + devName +  ")");
-        return openDev(devName);
-    }
-
-    /**
-     * デバイス名がコンストラクタの引数の場合に呼ばれます。<br>
-     * この関数はエラーを出しません。エラー内容はgetErr関数で取得可能です。
-     *
-     * @return wasOK 成功か失敗か。
-    */
-    public boolean openDev(String devName) {
-        System.out.println("openDev(" + devName +")");
-        boolean wasOK = false;
-        pcap = Pcap.openLive(devName, Pcap.DEFAULT_SNAPLEN, Pcap.MODE_PROMISCUOUS, Pcap.DEFAULT_TIMEOUT, errBuf);
-        if (pcap == null) {
-            System.err.println("Error while opening device for capture: "
-                + errBuf.toString());
-            return wasOK;
-        }
-        fromDev = true;
-        wasOK = true;
-        readyRun = wasOK;
-        return wasOK;
+    public boolean isFiltered() {
+        return filtered;
     }
 
     /**
@@ -268,7 +265,6 @@ public class PcapManager {
     */
     public boolean savePackets(int howManyPackets) {
         final int DLT;
-        final int NOT_INITIALIZED = -1;
         final Object dummy = null;
         final int howManyEnqeued;
         final boolean wasOK;
@@ -281,7 +277,6 @@ public class PcapManager {
 
         DLT = pcap.datalink();
         howManyEnqeued = pcap.dispatch(howManyPackets, DLT, packetQueue, dummy);
-        int sizeAfter = packetQueue.size();
         if (howManyEnqeued < 0) {
             wasOK = false;
             return wasOK;//ループ中にブレークループシグナルを受け取った。
@@ -301,6 +296,13 @@ public class PcapManager {
         return packetQueue.pollPackets(howManyPackets);
     }
 
+    /**
+     * 「非常食」からパケットを一つ読み込みます。
+     * @return packetQueue.poll() PcapPacket または null
+    */
+    public PcapPacket nextPacketFromQueue() {
+        return packetQueue.pollPacket();
+    }
     /*TODO:
     public float nokoriPacket() {
         int MTU = 1500;
@@ -317,7 +319,7 @@ public class PcapManager {
      * @return T/F 成功か、失敗か。エラーは発生しませんが、getErr()でエラー内容は見れます。
     */
     public boolean setBPFfilter(String bpf) {
-        if (bpfFilter != null) {
+        if (isFiltered()) {
             System.out.println("ERRO: Has been Fltered!");
             return false;
         }
@@ -352,18 +354,25 @@ public class PcapManager {
             return false;
         }
         bpfFilter = filter;//解放用ポインタの保持。
+        filtered = true;
         return true;
     }
 
     /**
-     * アロケートしたメモリや開いたファイルをガベコレの前に閉じます。
+     * アロケートしたメモリや開いたファイルをガベコレの前に閉じます。<br>
+     * この関数では自分（シングルトンinstance）を解放しません。<br>
+     * 別のクラスから開放してください。
     */
     public void close() {
-        if ( fromFile ) {
+        if ( pcap != null && fromFile == true) {
             pcap.close();
         }
         if ( bpfFilter != null ) {
             Pcap.freecode(bpfFilter);
         }
+        pcap = null;
+        readyRun = false;
+        fromFile = false;
+        fromDev = false;
     }
 }
