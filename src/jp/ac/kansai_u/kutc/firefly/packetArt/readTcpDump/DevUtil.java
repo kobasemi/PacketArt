@@ -165,14 +165,16 @@ public class DevUtil {
      * 結局、これが一番安定して有益な情報を取得できます。<br>
      * "MACアドレス デバイスの説明"のリストを返します。
      * 
-     * @return ret "MACアドレス デバイスの説明"のリストを返します。
+     * @return ret "MACアドレス デバイスの説明"のString配列を返します。
     */
-    public List<String> getGoodInformations() {
-        ArrayList<String> ret = new ArrayList<String>( allDevs.size() );
+    public String[] getGoodInformations() {
+        String[] ret = new String[ allDevs.size() ];
+        int i=0;
         for (DevInfo devInfo : allDevInfo) {
             String buf = "";
             buf += devInfo.macAddr + " " + devInfo.description;
-            ret.add(buf);
+            ret[i] = buf;
+            i++;
         }
         return ret;
     }
