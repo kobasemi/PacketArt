@@ -123,7 +123,7 @@ public class PcapManager implements Runnable{
             }
             //それでもパケットが来ないなら、どうしようもありません。
             if (pkt != null ) {
-                System.out.println("Inspect!");
+                //System.out.println("Inspect!");
                 handlerHolder.inspect(pkt);
             }
         }

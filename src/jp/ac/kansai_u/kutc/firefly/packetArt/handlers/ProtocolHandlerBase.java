@@ -131,7 +131,8 @@ public class ProtocolHandlerBase {
             pkt = new PcapPacket(packet);
             handled = true;
         } catch (Exception e) {
-            System.err.println("jnetpcapBug! Ignoring...");
+            e.printStackTrace();
+            System.err.println("Maybe jnetpcapBug... Ignoring...");
             //jnetpcapが解析できないパケットを受け取ったらここに飛ぶ
             //どうしようもない。なので、何もしない。
         }

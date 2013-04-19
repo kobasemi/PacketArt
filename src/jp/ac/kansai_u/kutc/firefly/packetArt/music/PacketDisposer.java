@@ -11,15 +11,17 @@ import org.jnetpcap.protocol.network.Ip4;
  * @author midolin
  */
 public class PacketDisposer implements Ip4Handler{
-    private final int MAX_PACKETS = 3000;//スレッドは急には止まれないかも
+    private final int MAX_PACKETS = 100;//スレッドは急には止まれないかも
     private int[] data;
     private int counter;
     private PcapManager pm = PcapManager.getInstance();
+    private PacketDisposer me;
 
     PacketDisposer() {
         data = new int[MAX_PACKETS * 4];//IPv4は4オクテット
         counter = 0;
-        pm.addHandler(this);
+        me = this;
+        System.out.println("PacketDisposer.handler atttached");
     }
 
     public int[] bytes2ints(byte[] b) {
@@ -36,20 +38,27 @@ public class PacketDisposer implements Ip4Handler{
             data[counter + i] = buf[i];
         }
     }
+
     public void handleIp4(Ip4 ip4) {
+        System.out.println("IPv4 COMES!");
         counter++;
         if (counter < MAX_PACKETS) {
             addData(ip4.destination());
             addData(ip4.source());
-        } else {
-            pm.removeHandler(this);
-            //これが呼ばれた時点でこのhandleIp4関数はPcapManagerに呼ばれない
         }
     }
 
     public int[] disposePacket() {
+        pm.addHandler(me);
         while(counter < MAX_PACKETS){
         }
+        System.out.println("PacketDisposer.handler detached");
+        pm.removeHandler(me);
+        try{
+            Thread.sleep(10000);
+        } catch(Exception e){
+        }
+        //これが呼ばれた時点でこのhandleIp4関数はPcapManagerに呼ばれない
         return data;
     }
 }
