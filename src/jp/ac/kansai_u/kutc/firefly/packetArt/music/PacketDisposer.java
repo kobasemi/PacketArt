@@ -49,8 +49,7 @@ public class PacketDisposer implements Ip4Handler{
 
     public int[] disposePacket() {
         while(counter < MAX_PACKETS){
-            return data;
         }
-        return null;//ここにはきません。
+        return data;
     }
 }
