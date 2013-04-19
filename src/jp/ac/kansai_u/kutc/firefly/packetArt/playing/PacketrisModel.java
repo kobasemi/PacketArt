@@ -2,6 +2,7 @@ package jp.ac.kansai_u.kutc.firefly.packetArt.playing;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.Location;
 
@@ -14,12 +15,13 @@ public class PacketrisModel {
 	boolean canReverse;
 	final int row = 30;
 	final int column = 15;
-	Block[][] board;
-	ArrayList<Block> currentMinos;
+	PacketBlock[][] board;
+	ArrayList<PacketBlock> currentMinos;
+	int currentMinoRotationPattern = 0;
 	Location parentLocation;
 	
 	public PacketrisModel(){
-		board = new Block[30][15];
+		board = new PacketBlock[30][15];
 	}
 	
 	/**
@@ -28,7 +30,7 @@ public class PacketrisModel {
 	public void initialize(){
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board[i].length; j++) {
-				board[i][j] = new Block();
+				board[i][j] = new PacketBlock();
 			}
 		}
 		for (int i = 0; i < board.length; i++) {
@@ -128,23 +130,157 @@ public class PacketrisModel {
 		if(mino instanceof TetroMino){
 			switch ((TetroMino)mino) {
 			case I:
+				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
+					 new PacketBlock( 1,0,mino),
+					 new PacketBlock( 0,0,mino),
+					 new PacketBlock(-1,0,mino),
+					 new PacketBlock(-2,0,mino),
+				 }));
 				break;
 			case O:
+				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
+					 new PacketBlock( 1,0,mino),
+					 new PacketBlock( 0,0,mino),
+					 new PacketBlock( 1,1,mino),
+					 new PacketBlock( 0,1,mino),
+				 }));
 				break;
 			case S:
+				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
+					 new PacketBlock(-1,1,mino),
+					 new PacketBlock( 0,1,mino),
+					 new PacketBlock( 0,0,mino),
+					 new PacketBlock( 1,0,mino),
+				 }));
 				break;
 			case Two:
+				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
+					 new PacketBlock( 1,1,mino),
+					 new PacketBlock( 0,1,mino),
+					 new PacketBlock( 0,0,mino),
+					 new PacketBlock(-1,0,mino),
+				 }));
 				break;
 			case L:
+				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
+					 new PacketBlock( 0,2,mino),
+					 new PacketBlock( 0,1,mino),
+					 new PacketBlock( 0,0,mino),
+					 new PacketBlock( 1,0,mino),
+				 }));
 				break;
 			case LReverse:
+				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
+					 new PacketBlock( 0,2,mino),
+					 new PacketBlock( 0,1,mino),
+					 new PacketBlock( 0,0,mino),
+					 new PacketBlock(-1,0,mino),
+				 }));
 				break;
 
 			default:
 				assert(false);
 			}
-		} else {
+		} else if(mino instanceof PentoMino){
+			switch((PentoMino)mino){
+			case F:
+				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
+					 new PacketBlock( 0,2,mino),
+					 new PacketBlock( 0,1,mino),
+					 new PacketBlock( 0,0,mino),
+					 new PacketBlock(-1,0,mino),
+				 }));
+				break;
+			case I:
+				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
+					 new PacketBlock( 0,2,mino),
+					 new PacketBlock( 0,1,mino),
+					 new PacketBlock( 0,0,mino),
+					 new PacketBlock(-1,0,mino),
+				 }));
+				break;
+			case L:
+				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
+					 new PacketBlock( 0,2,mino),
+					 new PacketBlock( 0,1,mino),
+					 new PacketBlock( 0,0,mino),
+					 new PacketBlock(-1,0,mino),
+				 }));
+				break;
+			case N:
+				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
+					 new PacketBlock( 0,2,mino),
+					 new PacketBlock( 0,1,mino),
+					 new PacketBlock( 0,0,mino),
+					 new PacketBlock(-1,0,mino),
+				 }));
+				break;
+			case P:
+				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
+					 new PacketBlock( 0,2,mino),
+					 new PacketBlock( 0,1,mino),
+					 new PacketBlock( 0,0,mino),
+					 new PacketBlock(-1,0,mino),
+				 }));
+				break;
+			case T:
+				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
+					 new PacketBlock( 0,2,mino),
+					 new PacketBlock( 0,1,mino),
+					 new PacketBlock( 0,0,mino),
+					 new PacketBlock(-1,0,mino),
+				 }));
+				break;
+			case U:
+				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
+					 new PacketBlock( 0,2,mino),
+					 new PacketBlock( 0,1,mino),
+					 new PacketBlock( 0,0,mino),
+					 new PacketBlock(-1,0,mino),
+				 }));
+				break;
+			case V:
+				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
+					 new PacketBlock( 0,2,mino),
+					 new PacketBlock( 0,1,mino),
+					 new PacketBlock( 0,0,mino),
+					 new PacketBlock(-1,0,mino),
+				 }));
+				break;
+			case W:
+				currentMinos.addAll(Arrays.asList(new PacketBlock[] { new PacketBlock( 0,2,mino),
+					 new PacketBlock( 0,1,mino),
+					 new PacketBlock( 0,0,mino),
+					 new PacketBlock(-1,0,mino),
+				 }));
+				break;
+			case X:
+				currentMinos.addAll(Arrays.asList(new PacketBlock[] { new PacketBlock( 0,2,mino),
+					 new PacketBlock( 0,1,mino),
+					 new PacketBlock( 0,0,mino),
+					 new PacketBlock(-1,0,mino),
+				 }));
+				break;
+			case Y:
+				currentMinos.addAll(Arrays.asList(new PacketBlock[] { new PacketBlock( 0,2,mino),
+					 new PacketBlock( 0,1,mino),
+					 new PacketBlock( 0,0,mino),
+					 new PacketBlock(-1,0,mino),
+				 }));
+				break;
+			case Z:
+				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
+					 new PacketBlock( 0,2,mino),
+					 new PacketBlock( 0,1,mino),
+					 new PacketBlock( 0,0,mino),
+					 new PacketBlock(-1,0,mino),
+				 }));
+				break;
+			default:
+				assert(false);
+				break;
 			
+			}
 		}
 	}
 }

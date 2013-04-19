@@ -1,4 +1,5 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -29,7 +30,7 @@ public class EntryForm extends FormBase {
 	int count;
 	String fileName;
 	JButton loadButton;
-    PcapManager pcapManager;//TEST
+	PcapManager pcapManager;//TEST
 	boolean isChanging;
 
 	// あらゆるオブジェクトの初期化はここから(jnetpcap関連クラスなど)
@@ -40,33 +41,34 @@ public class EntryForm extends FormBase {
 		limit = 50;
 		cursor = new Point[50];
 		time = new int[50];
-        pcapManager = new PcapManager();//TEST
-     //   tcpHandler = new TcpHandler();//TEST
+		pcapManager = PcapManager.getInstance();//TEST
+		//   tcpHandler = new TcpHandler();//TEST
 
 		setBackground(Color.white);
 
 		// ファイルを開くボタンを指定する部分
 		loadButton = new JButton("ファイルを開く");
-		loadButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+		loadButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				JFileChooser chooser = new JFileChooser();
-				if((int)chooser.showOpenDialog(getParent()) == JFileChooser.APPROVE_OPTION)
+				if ((int) chooser.showOpenDialog(getParent()) == JFileChooser.APPROVE_OPTION)
 					fileName = chooser.getSelectedFile().getAbsolutePath();
-                    if (fileName != null) {
-                        if( pcapManager.isReadyRun() ) {
-                            loadButton.setText("すでにロードされています。");
-                        } else {
-                            pcapManager.openFile(fileName);
-                            fileName = null;
-                            if (pcapManager.isReadyRun() == true) {
-                                //loadButton.setText("Pcapファイルが正しくロードされました。");
-                                loadButton.setVisible(false);
-                            }
-                        }
-                    }
+				if (fileName != null) {
+					if (pcapManager.isReadyRun()) {
+						loadButton.setText("すでにロードされています。");
+					} else {
+						pcapManager.openFile(fileName);
+						fileName = null;
+						if (pcapManager.isReadyRun() == true) {
+							//loadButton.setText("Pcapファイルが正しくロードされました。");
+							loadButton.setVisible(false);
+						}
+					}
+				}
 			}
 		});
-		loadButton.setBounds((getSize().width / 3) , (getSize().height / 5) * 3, getSize().width / 3, getSize().height / 5);
+		loadButton.setBounds((getSize().width / 3), (getSize().height / 5) * 3, getSize().width / 3,
+				getSize().height / 5);
 		getContentPane().add(loadButton, 0);
 
 	}
@@ -74,34 +76,34 @@ public class EntryForm extends FormBase {
 	// 描画関連のコードはここに
 	public void paint(Graphics g) {
 		// アンチエイリアス
-		((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-			getAntiAlias() ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
+		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				getAntiAlias() ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
 
 		g.setColor(Color.getHSBColor(360.0f / (tick % 360.0f), 0.5f, 1.0f));
 		g.fillRect(0, 0, 25, 25);
 
-		for (int i = 0; i < limit ; i++) {
-			if(cursor[i] != null) {
+		for (int i = 0; i < limit; i++) {
+			if (cursor[i] != null) {
 				g.setColor(Color.getHSBColor(360.0f / (time[i] % 360.0f), 0.5f, 0.9f));
-				g.fillOval((int)cursor[i].getX() - 25, (int)cursor[i].getY() - 25, 50, 50);
+				g.fillOval((int) cursor[i].getX() - 25, (int) cursor[i].getY() - 25, 50, 50);
 			}
 		}
-       // tcpHandler.paint(g,cursor,getSize().width,getSize().height);
+		// tcpHandler.paint(g,cursor,getSize().width,getSize().height);
 	}
 
 	// viewとlogicの分離を考えるときはcommandパターンのようなものでも使ってください
 	// パケット解析などはこのメソッドからどうぞ
 	public void update() {
-        if ( pcapManager.isReadyRun() ) {
-            if (tick % 1000 == 0) {
-            //PcapPacket pkt = pcapManager.nextPacket();
-         //   tcpHandler.inspect(pkt);
-            }
-        } else {
-            loadButton.setVisible(true);
-        //    System.err.println("GIVE ME MORE PCAP..");
-            //再度pcapファイルを開くように促す
-        }
+		if (pcapManager.isReadyRun()) {
+			if (tick % 1000 == 0) {
+				//PcapPacket pkt = pcapManager.nextPacket();
+				//   tcpHandler.inspect(pkt);
+			}
+		} else {
+			loadButton.setVisible(true);
+			//    System.err.println("GIVE ME MORE PCAP..");
+			//再度pcapファイルを開くように促す
+		}
 		tick++;
 		// 5秒のはず 正確に時間を取りたい場合は別スレッドで動かすこと
 		//if(tick > 3000 && !isChanging){
@@ -119,33 +121,52 @@ public class EntryForm extends FormBase {
 	// MouseClickedとMousePressedの違い:
 	// Clicked:押して、離してから反応、ダブルクリックにも対応
 	// Pressed:押したら反応
-	public void mouseClicked(MouseEvent e) { }
-    public void mousePressed(MouseEvent e) {
+	public void mouseClicked(MouseEvent e) {
+	}
+
+	public void mousePressed(MouseEvent e) {
 		System.out.print(count);
 		System.out.println(Thread.currentThread());
 
-		if(count > limit)
+		if (count > limit)
 			count = 0;
 		else
 			count++;
 
-		synchronized(cursor){
-			time[count] = (int)tick;
+		synchronized (cursor) {
+			time[count] = (int) tick;
 			cursor[count] = e.getPoint();
 		}
 
-    }
-    public void mouseReleased(MouseEvent e) { }
-    public void mouseEntered(MouseEvent e) { }
-    public void mouseExited(MouseEvent e) { }
+	}
 
-    public void mouseMoved(MouseEvent e){ }
-    public void mouseDragged(MouseEvent e){ }
+	public void mouseReleased(MouseEvent e) {
+	}
 
-    public void keyPressed(KeyEvent e) { }
-    public void keyReleased(KeyEvent e) { }
-    public void keyTyped(KeyEvent e) { }
+	public void mouseEntered(MouseEvent e) {
+	}
 
-    public void onFormChanged(){ }
-    public void onClose(){ }
+	public void mouseExited(MouseEvent e) {
+	}
+
+	public void mouseMoved(MouseEvent e) {
+	}
+
+	public void mouseDragged(MouseEvent e) {
+	}
+
+	public void keyPressed(KeyEvent e) {
+	}
+
+	public void keyReleased(KeyEvent e) {
+	}
+
+	public void keyTyped(KeyEvent e) {
+	}
+
+	public void onFormChanged() {
+	}
+
+	public void onClose() {
+	}
 }

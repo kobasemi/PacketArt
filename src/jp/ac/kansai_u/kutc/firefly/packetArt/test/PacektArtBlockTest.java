@@ -1,9 +1,9 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.test;
 
 import static org.junit.Assert.*;
-import jp.ac.kansai_u.kutc.firefly.packetArt.*;
-import jp.ac.kansai_u.kutc.firefly.packetArt.playing.Block;
+import jp.ac.kansai_u.kutc.firefly.packetArt.Location;
 import jp.ac.kansai_u.kutc.firefly.packetArt.playing.BlockType;
+import jp.ac.kansai_u.kutc.firefly.packetArt.playing.PacketBlock;
 import jp.ac.kansai_u.kutc.firefly.packetArt.playing.PentoMino;
 import jp.ac.kansai_u.kutc.firefly.packetArt.playing.TetroMino;
 import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
@@ -14,13 +14,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class PacektArtBlockTest {
-	Block block;
+	PacketBlock block;
 	PcapManager pcapMngr;
 
 	@Before
 	public void setUp() throws Exception {
-		block = new Block(new Location(14, 29), PentoMino.T);
-		pcapMngr = new PcapManager("/home/midolin/git/PacketArt/src/jp/ac/kansai_u/kutc/firefly/packetArt/test/1.cap");
+		block = new PacketBlock(new Location(14, 29), PentoMino.T);
+		pcapMngr = PcapManager.getInstance();
 	}
 
 	@After

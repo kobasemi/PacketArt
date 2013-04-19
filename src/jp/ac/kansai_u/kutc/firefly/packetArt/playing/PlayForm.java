@@ -66,9 +66,9 @@ public class PlayForm extends FormBase {
 	public void paint(Graphics g) {
 		// TODO: backgrownd
 		
-		// TODO: painting blocks using packet data.
-		for (Block[] column : model.getBoard()) {
-			for(Block item : column){
+		// TODO: painting PacketBlocks using packet data.
+		for (PacketBlock[] column : model.getBoard()) {
+			for(PacketBlock item : column){
 				
 			}
 		}
