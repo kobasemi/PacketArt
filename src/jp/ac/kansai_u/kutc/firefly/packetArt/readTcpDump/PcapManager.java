@@ -15,15 +15,10 @@ import org.jnetpcap.PcapDLT;//イーサネット２。
 import org.jnetpcap.PcapBpfProgram;
 
 /*
-
     TODO: 残りパケットの（概算値）の保持{
         ファイルサイズ(Byte)を標準MTU,1500byteで割る。WIDEプロジェクトの
         パケットはMTU=1500が最頻値なので、逐次ロードでもおおよそは出せるはずだ
     }
-
-    TODO: ハンドラホルダの実装、run()の中でループ
-
-
 */
 
 /**
@@ -31,8 +26,10 @@ import org.jnetpcap.PcapBpfProgram;
  * シングルトンになったので、close時にnullを代入してください。
  * 使い方:<br>
  * <code>
+ * //他のクラスで
  * PcapManager pm = PcapManager.getInstance();
  * pm.addHandler(handler);
+ * pm.removeHandler(handler);
  * </code>
  * その他アクセスできる変数はget??というメソッドを参照してください。
  * 正常にパケットを読めたか確認するにはisReadyRunを使います。
@@ -44,33 +41,6 @@ public class PcapManager implements Runnable{
     }
 
     private PcapPacket pkt;
-    public void run() {
-        while(true) {
-            pkt = null;
-            pkt = nextPacket();//0.01秒間パケットが来なかったらタイムアウトします。
-            //パケットが来なかった場合、pktにはnullが入ります。
-            if (pkt == null) {
-                //パケットが来なくても、キューから非常食のパケットを取り出します。
-                pkt = nextPacketFromQueue();
-            }
-            if (pkt == null ) {
-                //それでもパケットが来ないなら、どうしようもありません。
-            }
-/*
-            for (ProtocolHandlerBase handler : handlersHolder){
-                handler.inspect(pkt);
-                //このpktは全ての参照が切断されなければ多分メモリが開放されません。
-            }
-*/
-            //savePackets(300)
-            //キューは満タンになった時点でパケットを捨てていくので、
-            //この関数を空撃ちしてパケットを間引くこともできます。
-
-            pkt = null;//その対策として、ここでnullしていいのかな～？
-        }
-    }
-
-
     private static StringBuilder errBuf;//libpcapからのエラーをここに
     private File pcapFile;
     private PcapIf pcapDev;
@@ -80,8 +50,11 @@ public class PcapManager implements Runnable{
     private boolean filtered;
     private Pcap pcap;//jnetpcapの核。
     private PcapBpfProgram bpfFilter;
-    private PacketQueue packetQueue;
-    public final int TIMEOUT_OPENDEV = 10;//0.01秒のパケット待ちを許す。
+
+    private HandlerHolder handlerHolder;//便利そうだから、public
+    private PacketQueue packetQueue;//便利そうだから、public
+
+    public final int TIMEOUT_OPENDEV = 10;//デバイスからの読み込みで、0.01秒のパケット待ちを許す。
     public final int QUEUE_SIZE = 30000;//30000パケットの保持をする。
 
     /**
@@ -108,6 +81,56 @@ public class PcapManager implements Runnable{
         packetQueue = new PacketQueue(QUEUE_SIZE);
         filtered = false;
         errBuf = new StringBuilder();
+        handlerHolder = new HandlerHolder();
+    }
+
+    /**
+     * シングルトンでスレッドが無限ループします。
+     * PcapManagerは空中のグローバル空間を漂い、パケットを拾い、蓄え続けます。
+     * PcapManagerは常にパケットを拾い続けつつ一部を捨て、libpcapが浪費する待ちパケットのメモリを開放します。
+     * PcapManagerはパケットが欲しいというオブジェクトに惜しみなくパケットを譲ります。
+     * PcapManagerはパケットをプロトコルの種類別に譲ります。
+    */
+    public void run() {
+        while(true) {
+            pkt = null;
+            pkt = nextPacket();//0.01秒間パケットが来なかったらタイムアウトします。
+            //パケットが来なかった場合、pktにはnullが入ります。
+            if (pkt == null) {
+                //パケットが来なくても、キューから非常食のパケットを取り出します。
+                pkt = nextPacketFromQueue();
+            }
+            //それでもパケットが来ないなら、どうしようもありません。
+            if (pkt != null ) {
+                handlerHolder.inspect(pkt);
+            }
+            savePackets(3);
+            //savePacketsの保存先のキューは満タンになった時点で
+            //パケットを捨てていくので、この関数を空撃ちしてパケットを間引くこともできます。
+        }
+    }
+
+    /**
+     * パケットハンドラを追加し、実行の登録をします。
+     * 追加するパケットハンドラはなんらかのhandlerをimplementsしていなければなりません。
+     * 
+     * @param o パケットハンドラをimplementsしたオブジェクト。
+     * @return wasOK パケットハンドラじゃなかった場合、falseが返ります。
+    */
+    public boolean addHandler(Object o) {
+        boolean wasOK = handlerHolder.classify(o);
+        return wasOK;
+    }
+
+    /**
+     * パケットハンドラを削除し、実行の登録解除をします。
+     * オブジェクトの参照を比較しているので、登録したものと
+     * 全く同一のパケットハンドラが引数でなければなりません。
+     * 
+     * @param o パケットハンドラをimplementsしたオブジェクト。
+    */
+    public void removeHandler(Object o) {
+        handlerHolder.classify(o);
     }
 
     /**
