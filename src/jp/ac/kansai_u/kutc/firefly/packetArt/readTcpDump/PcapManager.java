@@ -166,7 +166,8 @@ public class PcapManager implements Runnable{
     /**
      * デバイス名を指定せずにこの関数を実行した場合、jnetpcapによって最適デバイスを選択されます。<br>
      * この関数はエラーを出しません。エラー内容はgetErr関数で取得可能です。
-     * @return wasOK 成功か失敗か。
+     * 
+     * @return wasOK 成功ならtrueが返ります。
     */
     public boolean openDev() {
         String devName = Pcap.lookupDev(errBuf);
@@ -178,7 +179,7 @@ public class PcapManager implements Runnable{
      * デバイス名がコンストラクタの引数の場合に呼ばれます。<br>
      * この関数はエラーを出しません。エラー内容はgetErr関数で取得可能です。
      *
-     * @return wasOK 成功か失敗か。
+     * @return wasOK 成功ならtrueが返ります。
     */
     public boolean openDev(String devName) {
         System.out.println("openDev(" + devName +")");
@@ -202,41 +203,56 @@ public class PcapManager implements Runnable{
     }
 
     /**
-     * @return pcapFile 現在開いているtcpdumpのファイルオブジェクトを返します。
+     * 現在開いているtcpdumpのファイルオブジェクトを返します。
+     *
+     * @return pcapFile Fileオブジェクトです。ファイルからパケットを読んでいない場合はnullが返ります。
     */
     public File getPcapFile() {
         return pcapFile;
     }
 
     /**
-     * @return pcapDev 現在開いているデバイス(PcapIF)オブジェクトを返します。
+     * 現在開いているデバイス(PcapIF)オブジェクトを返します。
+     *
+     * @return pcapDev PcapIFオブジェクトです。デバイスを開いてなければnullを返します。
     */
     public PcapIf getPcapDev() {
         return pcapDev;
     }
 
     /**
-     * @return fromFile 現在ファイルからパケットを読み込んでいるか、否か。
+     * 現在「ファイルから」パケットを読み込んでいるか、否かを返します。
+     * 性質上、isFromDevとは裏表の関係になりがちです。。
+     *
+     * @return fromFile ファイルからパケットを読み込んでいるか、否か。
     */
     public boolean isFromFile() {
         return fromFile;
     } 
 
     /**
-     * @return fromDev 現在デバイスからパケットを読み込んでいるか、否か。
+     * 現在「デバイスから」パケットを読み込んでいるか、否かを返します。
+     * 性質上、isFromFileとは裏表の関係になりがちです。。
+     *
+     * @return fromDev デバイスからパケットを読み込んでいるか、否か。
     */
-    public boolean isfromDev() {
+    public boolean isFromDev() {
         return fromDev;
     } 
 
     /**
-     * @return readyRun 現在ファイルもしくはデバイスをオープンしているか、否か。
+     * 現在パケットを読み出せる状態か、否かを返します。<br>
+     * ファイルが閉じている、「非常食」のキューが空の場合はfalseが返ります。
+     *
+     * @return readyRun パケットを読める状態か、否か。
     */
     public boolean isReadyRun() {
         return readyRun;
     } 
 
     /**
+     * これまでlibpcapで発生した全てのエラーを返します。
+     *
      * @return errBuf.toString() 現在保持しているエラー情報を返します。
     */
     public String getAllErr() {
@@ -244,6 +260,8 @@ public class PcapManager implements Runnable{
     }
 
     /**
+     * 最も最近発生したlibpcapのエラーを返します。
+     *
      * @return pcap.getErr() libpcapに関する最新のエラー情報を返します。
     */
     public String getErr() {
@@ -251,6 +269,8 @@ public class PcapManager implements Runnable{
     }
 
     /**
+     * 未テストです。フィルターが有効か否かを返します。
+     *
      * @return filtered BPFフィルターが適用されているか確認します。
     */
     public boolean isFiltered() {
@@ -260,7 +280,8 @@ public class PcapManager implements Runnable{
     /**
      * 一個ずつロードします。packetのメモリはlibpcapのメモリを共有しています。<br>
      * こいつに関する参照を無くすとlibpcapのメモリもFreeされます。<br>
-     * メモリのアロケート処理が入らないので、高速です。<br>
+     * メモリのアロケート処理が入らないので、高速です。
+     *
      * @return packet パケット。というかlibpcapの保持するパケットへのポインタ。
     */
     public PcapPacket nextPacket() {
@@ -275,7 +296,8 @@ public class PcapManager implements Runnable{
     /**
      * 一個ずつロードします。packetはのメモリはJavaで管理されます。<br>
      * libpcapの保持するパケットはすぐに解放され、その代わりにJavaのメモリを食います<br>
-     * メモリリークは起こりませんが、メモリのアロケート処理が入るので、低速です。<br>
+     * 参照の複雑化は起こりませんが、メモリのアロケート処理が入るので、低速です。
+     *
      * @return pkt パケット。libpcapの方はすぐに解放される。メモリ的に安全。
     */
     public PcapPacket nextPacketCopied() {
@@ -290,8 +312,8 @@ public class PcapManager implements Runnable{
      * Javaのメモリ上にある、「非常食」、デバイスまたはファイルから<br>
      * パケットを読み込み、同時にキューに高速に蓄えます。
      *
-     * @param howManyPackets どのくらいの数のパケットを読み込むか。 
-     * @return wasOK 成功か、否か。
+     * @param howManyPackets どのくらいの数のパケットを読み込むかという数値です。 
+     * @return wasOK 成功ならtrueを返します。
     */
     public boolean savePackets(int howManyPackets) {
         final int DLT;
@@ -317,10 +339,11 @@ public class PcapManager implements Runnable{
 
     /**
      * 「非常食」のパケットを複数個読み込み、配列もしくで返します。<br>
-     * まとまったパケットを不定期に欲しい人にとっては嬉しい関数です。
+     * まとまったパケットを不定期に欲しい人にとっては嬉しい関数です。<br>
+     * ただし、非常食が足りなかった場合、残り0になった時点でのパケットを返します。
      *
-     * @param howManyPackets 何個のパケットを持ってくるか。Listの配列数。
-     * @return packetQueue.pollPackets(howManyPackets) 実際のリスト
+     * @param howManyPackets 何個のパケットを持ってくるかをという数値です。Listの配列数です。
+     * @return packetQueue.pollPackets(howManyPackets) 実際のリストが返ってきます。非常食が無かった場合は空のリストが返ります。
     */
     public List<PcapPacket> restorePackets(int howManyPackets) {
         return packetQueue.pollPackets(howManyPackets);
@@ -328,11 +351,13 @@ public class PcapManager implements Runnable{
 
     /**
      * 「非常食」からパケットを一つ読み込みます。
-     * @return packetQueue.poll() PcapPacket または null
+     *
+     * @return packetQueue.poll() PcapPacket または 非常食が空の場合はnullが返ります。
     */
     public PcapPacket nextPacketFromQueue() {
         return packetQueue.pollPacket();
     }
+
     /*TODO:
     public float nokoriPacket() {
         int MTU = 1500;
@@ -345,7 +370,7 @@ public class PcapManager implements Runnable{
     /**
      * BPFという記法で取得するパケットを意図的に制御します。
      *
-     * @param bpf BPF構文で書かれたフィルタリングの記号文字列
+     * @param bpf BPF構文で書かれたフィルタリングの記号文字列です。
      * @return T/F 成功か、失敗か。エラーは発生しませんが、getErr()でエラー内容は見れます。
     */
     public boolean setBPFfilter(String bpf) {

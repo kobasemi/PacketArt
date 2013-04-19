@@ -11,8 +11,9 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.JButton;
 
 /**
- * pcapのファイル名を読み込むためのGUIボタン部品。JButton。
- * 
+ * pcapのファイル名を読み込むためのGUIボタン部品です。スーパーJButtonです。
+ *
+ * @author sya-ke
 */
 public class LoadDumpFileButton extends JButton {
 
@@ -22,9 +23,11 @@ public class LoadDumpFileButton extends JButton {
     private Runnable onEndAct;
 
     /**
-     * @param t ボタンに表示される説明 null NG
-     * @param beforeActFunc 無名関数入れ。こいつに好きなrunを入れられる。nullOK
-     * @param afterActFunc 無名関数入れ。こいつに好きなrunを入れられる。nullOK
+     * JButtonのコンストラクタです。スコープの架け橋を作るため、Runnableも引数にとってます。
+     *
+     * @param t ボタンの上に表示される文字列です。必須です。
+     * @param beforeActFunc 無名関数入れです。好きなをRunnableを入れられます。nullでも構いません。
+     * @param afterActFunc 無名関数入れです。好きなRunnableを入れられます。nullでも構いません。
      */
     public LoadDumpFileButton(String t, Runnable beforeActFunc, Runnable afterActFunc) {
         super(t);
@@ -34,12 +37,18 @@ public class LoadDumpFileButton extends JButton {
         this.addActionListener(new OnClickListener());
     }
 
+    /**
+     * 初期化時に登録したRunnableを呼び出します。
+    */
     private void onBeginAction() {
         if ( onBeginAct != null ) {
             onBeginAct.run();
         }
     }
 
+    /**
+     * 初期化時に登録したRunnableを呼び出します。
+    */
     private void onEndAction() {
         if ( onEndAct != null ) {
             onEndAct.run();
@@ -72,7 +81,7 @@ public class LoadDumpFileButton extends JButton {
                 String ext = getExtension(f);
                 if (ext != null) {
                     if (ext.equals("dump") || ext.equals("pcap") || ext.equals("pcapdump") ||
-                    ext.equals(".cap") || ext.equals(".tcpdump")) {
+                    ext.equals("cap") || ext.equals("tcpdump")) {
                     //ext.equals(".dump.tar.gz") || ext.equals(".dump.tgz")) {
                         return true;
                     } else {
@@ -83,7 +92,7 @@ public class LoadDumpFileButton extends JButton {
             }
             public String getDescription() {
                 //return ".dump .pcap .dump.tar.gz .dump.tgzの拡張子に対応";
-                return ".dump .pcap .pcapdump .cap .tcpdumpの拡張子に対応";
+                return ".dump .pcap .pcapdump .cap .tcpdump";
             }
             /* 拡張子を取り出す */
             private String getExtension(File f) {

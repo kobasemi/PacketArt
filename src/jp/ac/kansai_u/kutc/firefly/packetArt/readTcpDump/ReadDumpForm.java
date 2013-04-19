@@ -90,6 +90,7 @@ public class ReadDumpForm extends FormBase {
 
     private String packetStream;
     PcapPacket pkt;
+
     public void update() {
         if (pcapManager.isReadyRun()) {
             pkt = pcapManager.nextPacket();
@@ -103,6 +104,9 @@ public class ReadDumpForm extends FormBase {
         }
     }
 
+    /**
+     * PcapManagerの状態に応じてボタンのテキストを変更します。
+    */
     public void setFileButton() { 
         if (fileName != null) {
             if( pcapManager.isReadyRun() ) {
@@ -150,8 +154,7 @@ public class ReadDumpForm extends FormBase {
     public void onFormChanged(){
     }
     public void onClose(){
-        pcapManager.close();
-        pcapManager = null;
-        
+        //pcapManager.close();
+        //pcapManager = null;
     }
 }

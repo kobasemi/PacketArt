@@ -11,8 +11,10 @@ import java.lang.StringBuilder;
 import java.io.IOException;
 
 /**
- * このクラスはPcapIfのバイナリな情報を文字列に変え、保持するクラスです
- * ただの構造体です。必要な情報しか保持しません。
+ * このクラスはPcapIfのバイナリな情報を文字列に変え、保持するクラスです。<br>
+ * 基本的にただの構造体です。必要な情報しか保持しません。
+ *
+ * @author sya-ke
 */
 public class DevInfo {
 
@@ -28,7 +30,10 @@ public class DevInfo {
     public boolean loopback;//ループバックかどうか。なんの役に立つかは不明
 
     /**
-     * @param pcapIf まんま。バイトな情報を文字列な情報に変換したいデバイスのクラス
+     * このクラスのコンストラクタはこの一つのみです。
+     *
+     * @see PcapIf
+     * @param pcapIf バイト、数字、booleanな情報を文字列な情報に変換したいデバイスのクラスです。
     */
     DevInfo(PcapIf pcapIf) {
         ip6Addr = new ArrayList<String>();
@@ -82,6 +87,9 @@ public class DevInfo {
     }
 
     /**
+     * バイト列のIPアドレスをStringにしてまとめてしまう、便利な関数です。<br>
+     * 
+     *
      * @param raw IP(v4,v6)アドレスを、バイト列で。
      * @return address rawを文字列にしたもの。エラーなら""
     */
@@ -97,7 +105,8 @@ public class DevInfo {
     }
 
     /**
-     * http://rgagnon.com/javadetails/java-0596.html を魔改造
+     * http://rgagnon.com/javadetails/java-0596.html をMACアドレス用に魔改造したものです。
+     *
      * @param raw MACADDRESS IN BYTE
      * @return hex 文字型 "AA-BB-CC-DD-EE-FF"
     */
@@ -119,7 +128,7 @@ public class DevInfo {
     }
 
     /**
-     * libpcapがキャプチャ可能なデバイスについて、情報をすべて返します。
+     * libpcapがキャプチャ可能なデバイスについて、情報をすべて返します。デバッグに使えます。
      *
      * @return ret 全ての情報をStringで返します。
     */

@@ -8,11 +8,14 @@ import org.jnetpcap.PcapIf;
 
 /**
  * Pcap.openLive()で使うdevNameを人間の分かる方法で取得できる。<br>
+ *
  * 使い方：<br>
  * <code>
- * StringBuilder errBuf = new StringBuilder();
- * DevUtil devUtil = new DevUtil(errBuf);
- * devUtil.getDevDescriptionByName();
+ * DevUtil devUtil = new DevUtil();
+ * String[] sa = devUtil.getGoodInformations();
+ * for (String s : sa) {
+ *     System.out.println(s);
+ * }
  * </code>
  *
  * @author sya-ke
@@ -23,51 +26,6 @@ public class DevUtil {
     private List<PcapIf> allDevs;
     private ArrayList<DevInfo> allDevInfo;
     private boolean gotError;
-
-    /*
-     * テスト用。
-    */
-    public static void main(String[] args) {
-        DevUtil d = new DevUtil();
-        System.out.println("------------------");
-        for (DevInfo i : d.getAllDevInfo() ) {
-            System.out.println(i.getStats());
-        }
-        System.out.println("------------------");
-        for (String i : d.getGoodInformations()) {
-            System.out.println(i);
-        }
-        System.out.println("------------------");
-    }
-
-    /**
-     * すべてのNICの情報を取得します。
-     * 
-     * @return alldevInfo Listで全てのDevInfoオブジェクトを返します。
-    */
-    public List<DevInfo> getAllDevInfo() {
-        return allDevInfo;
-    }
-
-    /**
-     * findAllDevsでエラーが出たかどうかを判定する。<br>
-     * エラーが出ている場合、get??By??系関数は使えない。
-     *
-     * @return gotError デバイス情報の取得にエラーが出たか否か。
-    */
-    public boolean hasError() {
-        return gotError;
-    }
-
-    /**
-     * String型と違って、プリミティブじゃないから、この関数不要だと思うんだけど<br>
-     * 一応。hasErrorでエラー出た時に呼んでみるよいいかも。
-     *
-     * @return errBuf libpcapからもらったエラーのString。
-    */
-    public StringBuilder getErrBuf() {
-        return errBuf;
-    }
 
     /**
      * コンストラクタ。失敗した場合とデバイスが存在しない場合に<br>
@@ -100,11 +58,58 @@ public class DevUtil {
     }
 
     /**
-     * デバイスのIPからデバイス名を取得します。<br>
-     * エラーは出しません。
+     * テスト用のメソッドです。libpcapが対応するデバイスを表示します。
      *
-     * @param ip デバイスの持つIPアドレス。IPv6でもOK。
-     * @return name IPにひも付けされたデバイス名。該当無しならnull。
+     * @param args なんでも構いません
+    */
+    public static void main(String[] args) {
+        DevUtil d = new DevUtil();
+        System.out.println("------------------");
+        for (DevInfo i : d.getAllDevInfo() ) {
+            System.out.println(i.getStats());
+        }
+        System.out.println("------------------");
+        for (String i : d.getGoodInformations()) {
+            System.out.println(i);
+        }
+        System.out.println("------------------");
+    }
+
+    /**
+     * すべてのNICの情報を取得します。
+     * 
+     * @return allDevInfo Listで全てのDevInfoオブジェクトを返します。
+    */
+    public List<DevInfo> getAllDevInfo() {
+        return allDevInfo;
+    }
+
+    /**
+     * findAllDevsでエラーが出たかどうかを判定します。<br>
+     * 例えば、NICが一個もささっていない状態にtrueになります。<br>
+     * エラーが出ている場合、get??By??系関数は使えません。
+     *
+     * @return gotError デバイス情報の取得にエラーが出たか否かが分かります。
+    */
+    public boolean hasError() {
+        return gotError;
+    }
+
+    /**
+     * hasErrorでエラーが出た時に呼ぶと便利な関数です。。
+     *
+     * @return errBuf libpcapからもらったエラーのStringBuilderです。
+    */
+    public StringBuilder getErrBuf() {
+        return errBuf;
+    }
+
+
+    /**
+     * デバイスのIPからデバイス名を取得します。
+     *
+     * @param ip デバイスの持つIPアドレスです。IPv6でもOKです。
+     * @return devInfo.name IPにひも付けされたデバイス名です。該当無しならnull返ります。
     */
     public String getNameByIP(String ip) {
         for (DevInfo devInfo : allDevInfo) {
@@ -116,11 +121,10 @@ public class DevUtil {
     }
 
     /**
-     * デバイスのMACアドレスからデバイス名を取得します。<br>
-     * エラーは出しません。
+     * デバイスのMACアドレスからデバイス名を取得します。
      *
-     * @param macAddr デバイスの持つMACアドレス。フォーマットは00:CB:CA:D0:32:5A
-     * @return name MACアドレスにひも付けされたデバイス名。該当無しならnull。
+     * @param macAddr デバイスの持つMACアドレスです。フォーマットは00:CB:CA:D0:32:5Aでお願いします。
+     * @return devInfo.name MACアドレスにひも付けされたデバイス名です。該当無しならnullが返ります。
     */
     public String getNameByMacAddr(String macAddr) {
         for (DevInfo devInfo : allDevInfo) {
@@ -132,10 +136,10 @@ public class DevUtil {
     }
 
     /**
-     * 人間の読めるデバイスの説明文からデバイス名を抽出します。この関数、いる？
+     * 人間の読めるデバイスの説明文からデバイス名を抽出します。
      *
-     * @param description デバイスの説明文。メーカ名とあ書いてある。
-     * @return name 説明文にひも付けされたデバイス名です。該当なしならnullです。
+     * @param description デバイスの説明文。ベンダ名などが書いてあります。
+     * @return devInfo.name 説明文にひも付けされたデバイス名です。該当なしならnullです。
     */
     public String getNameByDescription(String description) {
         for (DevInfo devInfo : allDevInfo) {
@@ -148,9 +152,9 @@ public class DevUtil {
 
     /**
      * ループバックデバイスからデバイス名を抽出します。<br>
-     * Linuxならほぼ確実に"lo" が返ってきます。Windowsならnullが返ってくるはず。
+     * Linuxならほぼ確実に"lo" が返ってきます。Windowsならおそらくnullが返ってきます。
      *
-     * @return name ループバックデバイス名です。該当なしならnullです。
+     * @return devInfo.name ループバックデバイス名です。該当なしならnullです。
     */
     public String getNameByLoopback() {
         for (DevInfo devInfo : allDevInfo) {
@@ -162,13 +166,13 @@ public class DevUtil {
     }
 
     /**
-     * 結局、これが一番安定して有益な情報を取得できます。<br>
+     * デバイスの選択に有益な情報を取得します。<br>
      * "MACアドレス デバイスの説明"のリストを返します。
      * 
-     * @return ret "MACアドレス デバイスの説明"のString配列を返します。
+     * @return information "MACアドレス デバイスの説明"のString配列を返します。
     */
     public String[] getGoodInformations() {
-        String[] ret = new String[ allDevs.size() ];
+        String[] information = new String[ allDevs.size() ];
         int i=0;
         for (DevInfo devInfo : allDevInfo) {
             String buf = "";
@@ -176,31 +180,32 @@ public class DevUtil {
             if (devInfo.ipAddr != null) {
                 buf += " " + devInfo.ipAddr;
             }
-            ret[i] = buf;
+            information[i] = buf;
             i++;
         }
-        return ret;
+        return information;
     }
 
     /**
-     * ↑のメソッドから得た情報を元に、デバイス名を特定します。
+     * getGoodInformationsメソッドから得た情報を元に、デバイス名を特定します。
      * 
-     * @param goodInformation ↑のメソッドで得たString
-     * @return name デバイス名、該当なしならnull
+     * @param goodInformation getGoodInformations()で得たString
+     * @return info デバイス名、該当なしならnull
+     * @see getGoodInformations
     */
     public String getNameByGoodInformation(String goodInformation) {
         int l = 0;
         String macAddr = null;
-        for (String buf : getGoodInformations() ) {
-            if (buf.equals(goodInformation)) {
-                l = buf.indexOf(" ");
-                macAddr = buf.substring(0,l);
-                buf = getNameByMacAddr(macAddr);
+        for (String info : getGoodInformations() ) {
+            if (info.equals(goodInformation)) {
+                l = info.indexOf(" ");
+                macAddr = info.substring(0,l);
+                info = getNameByMacAddr(macAddr);
             } else {
-                buf = null;
+                info = null;
             }
-            if (buf != null) {
-                return buf;
+            if (info != null) {
+                return info;
             }
         }
         return null;
