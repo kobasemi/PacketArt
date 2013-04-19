@@ -245,7 +245,6 @@ public class PcapManager implements Runnable{
         if ( pcap.nextEx(packet) == Pcap.NEXT_EX_OK ) {
           return packet;
         } else {
-            readyRun = false;
             return null;
         }
     }
