@@ -55,6 +55,7 @@ public class PcapManager implements Runnable{
     private boolean fromFile;
     private boolean fromDev;
     private boolean readyRun;
+    private boolean running;
     private boolean filtered;
     private Pcap pcap;//jnetpcapの核。
     private PcapBpfProgram bpfFilter;
@@ -92,6 +93,7 @@ public class PcapManager implements Runnable{
         filtered = false;
         errBuf = new StringBuilder();
         handlerHolder = new HandlerHolder();
+        running = false;
     }
 
     /**
@@ -102,6 +104,7 @@ public class PcapManager implements Runnable{
      * PcapManagerはパケットをプロトコルの種類別に譲ります。<br>
     */
     public void run() {
+        running = true;
         while(true) {
             while(readyRun == false && pcap == null){
                 //
@@ -271,6 +274,16 @@ public class PcapManager implements Runnable{
     public boolean isReadyRun() {
         return readyRun;
     } 
+
+    /**
+     * 現在スレッドで動いている状態か、否かを返します。<br>
+     *
+     * @return スレッドで動いているならばtrueを返します。falseならば(new Thread(pm)).start()をしてください。
+    */
+    public boolean isRunning() {
+        return running;
+    } 
+
 
     /**
      * これまでlibpcapで発生した全てのエラーを返します。

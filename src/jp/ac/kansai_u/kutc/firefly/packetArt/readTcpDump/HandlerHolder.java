@@ -64,42 +64,52 @@ public class HandlerHolder extends ProtocolHandlerBase {
         boolean added = false;
         if (o instanceof TcpHandler) {
             addHandler((TcpHandler)o);
+            System.out.println("Adding a TcpHandler..");
             added = true;
         }
         if (o instanceof UdpHandler) {
             addHandler((UdpHandler)o);
+            System.out.println("Adding a UdpHandler..");
             added = true;
         }
         if (o instanceof Ip6Handler) {
             addHandler((Ip6Handler)o);
+            System.out.println("Adding a Ip6Handler..");
             added = true;
         }
         if (o instanceof Ip4Handler) {
             addHandler((Ip4Handler)o);
+            System.out.println("Adding a Ip4Handler..");
             added = true;
         }
         if (o instanceof PPPHandler) {
             addHandler((PPPHandler)o);
+            System.out.println("Adding a PPPHandler..");
             added = true;
         }
         if (o instanceof L2TPHandler) {
             addHandler((L2TPHandler)o);
+            System.out.println("Adding a L2TPHandler..");
             added = true;
         }
         if (o instanceof IcmpHandler) {
             addHandler((IcmpHandler)o);
+            System.out.println("Adding a IcmpHandler..");
             added = true;
         }
         if (o instanceof ArpHandler) {
             addHandler((ArpHandler)o);
+            System.out.println("Adding a ArpHandler..");
             added = true;
         }
         if (o instanceof EthernetHandler) {
             addHandler((EthernetHandler)o);
+            System.out.println("Adding a EthernetHandler..");
             added = true;
         }
         if (o instanceof PacketHandler) {
             addHandler((PacketHandler)o);
+            System.out.println("Adding a PacketHandler..");
             added = true;
         }
         return added;
@@ -216,16 +226,36 @@ public class HandlerHolder extends ProtocolHandlerBase {
      * @param o 登録解除したいオブジェクトです。
     */
     public void removeHandler(Object o) {
-        tcpHandlers.remove(o);
-        udpHandlers.remove(o);
-        ip6Handlers.remove(o);
-        ip4Handlers.remove(o);
-        pppHandlers.remove(o);
-        l2tpHandlers.remove(o);
-        icmpHandlers.remove(o);
-        arpHandlers.remove(o);
-        ethernetHandlers.remove(o);
-        packetHandlers.remove(o);
+        if ( tcpHandlers.remove(o) ) {
+            System.out.println("Removing a TcpHandler..");
+        }
+        if ( udpHandlers.remove(o) ) {
+            System.out.println("Removing a UdpHandler..");
+        }
+        if ( ip6Handlers.remove(o) ) {
+            System.out.println("Removing a Ip6Handler..");
+        }
+        if ( ip4Handlers.remove(o) ) {
+            System.out.println("Removing a Ip4Handler..");
+        }
+        if ( pppHandlers.remove(o) ) {
+            System.out.println("Removing a PPPHandler..");
+        }
+        if ( l2tpHandlers.remove(o) ) {
+            System.out.println("Removing a L2TPHandler..");
+        }
+        if ( icmpHandlers.remove(o) ) {
+            System.out.println("Removing a IcmpHandler..");
+        }
+        if ( arpHandlers.remove(o) ) {
+            System.out.println("Removing a ArpHandler..");
+        }
+        if ( ethernetHandlers.remove(o) ) {
+            System.out.println("Removing a EthernetHandler..");
+        }
+        if ( packetHandlers.remove(o) ) {
+            System.out.println("Removing a PacketHandler..");
+        }
     }
 
 //-----ProtocolHandlerBaseのメソッドをオーバーライドしたものです
