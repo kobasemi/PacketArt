@@ -48,6 +48,8 @@ public class PacketDisposer implements Ip4Handler{
     }
 
     public int[] disposePacket() {
-        return data;
+        while(counter < MAX_PACKETS){
+            return data;
+        }
     }
 }
