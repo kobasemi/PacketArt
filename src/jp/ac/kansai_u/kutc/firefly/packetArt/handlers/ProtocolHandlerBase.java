@@ -23,28 +23,11 @@ import org.jnetpcap.protocol.tcpip.Udp;
  * inspectメソッドではパケットアートとjnetpcapで扱える、<br>
  * 最もレイヤーの高いプロトコルを識別し、対応するハンドラを自動で呼び出します。<br>
  * 例：<br>
- *     もしTCPパケットがinspectメソッドで読み込まれたらtcpHandlerが呼ばれます。<br>
+ *     もしTCPパケットがinspectメソッドで読み込まれたらhandleTcpが呼ばれます。<br>
  *     次に「inspectが呼び出された」ということを認識させる用に、<br>
- *     packetHandlerが呼ばれます。最後に保持用にパケットがpktに代入されます。<br>
+ *     handlePacketが呼ばれます。最後に保持用にパケットがpktに代入されます。<br>
  *     pktを保持するので、inspect後もgetTcp()を使う事でTCPのデータを取得することができます。<br>
  * 使い方：
- * <code>
- * class ExtendedProtocolHandler extends ProtocolHandlerBase {
- *     public void tcpHandler(Tcp t) {
- *         Syste.err.println("TCP COMES!!");
- *     }
- * }
- * PcapManager pm = new PcapManager("filename");
- * ExtendedProtocolHandler extendedProtocolHandler = new ExtendedProtocolHandler();
- * PcapPacket pkt;
- * pkt = pm.nextPacket();
- * ExtendedProtocolHandler.inspect(pkt);
- * Ip4 ip4;
- * int addr = 0;
- * if ( (ip4 = extendedProtocolHandler.getIp4()) != null) {
- *      addr = ip4.destinationToInt();
- * }
- * </code>
  *
  * @author syake
  *
@@ -97,7 +80,7 @@ public class ProtocolHandlerBase {
             //もうパケットいらないよ！っていう人向け。何もしない。
             //本当に何もしないので、非常に高速。
         } else if (packet == null && pkt != null) {
-            packetHandler(pkt);
+            handlePacket(pkt);
             return;
             //呼び出し元でinspect(null)された場合に発動。
             //inspectが呼ばれたという事実は残したいので、
@@ -107,25 +90,25 @@ public class ProtocolHandlerBase {
         try {
             handled = false;
             if (packet.hasHeader(tcp) ) {  
-                tcpHandler(tcp);//40％ここに来る
+                handleTcp(tcp);//40％ここに来る
             } else if (packet.hasHeader(udp) ) {  
-                udpHandler(udp);//30％ここに来る
+                handleUdp(udp);//30％ここに来る
             } else if ( packet.hasHeader(ip6) ) {  
-                ip6Handler(ip6);//IPv4より上にしてIPv6 over IPv4に対応させる
+                handleIp6(ip6);//IPv4より上にしてIPv6 over IPv4に対応させる
             } else if ( packet.hasHeader(ip4) ) {  
-                ip4Handler(ip4);//20％ここニ来る
+                handleIp4(ip4);//20％ここニ来る
             } else if ( packet.hasHeader(ppp) ) {  
-                pppHandler(ppp);//実際PPPが来ることは殆ど無い
+                handlePPP(ppp);//実際PPPが来ることは殆ど無い
             } else if ( packet.hasHeader(l2tp) ) {  
-                l2tpHandler(l2tp);//実際くることはないだろう。
+                handleL2TP(l2tp);//実際くることはないだろう。
             } else if ( packet.hasHeader(icmp) ) {  
-                icmpHandler(icmp);//ちょっとしか来ない。
+                handleIcmp(icmp);//ちょっとしか来ない。
             } else if ( packet.hasHeader(arp) ) {  
-                arpHandler(arp);//実際来ることは無いだろう。
+                handleArp(arp);//実際来ることは無いだろう。
             } else if ( packet.hasHeader(ethernet) ) {  
-                ethernetHandler(ethernet);
+                handleEthernet(ethernet);
             }
-            packetHandler(packet);
+            handlePacket(packet);
             //レイヤーが高い順にすることで、最上階のレイヤーを扱う。
 
             //pktを上書き。次のパケットが来れば参照は切断される。
@@ -145,52 +128,52 @@ public class ProtocolHandlerBase {
     /**
      * @see org.jnetpcap.protocol.tcpip.Tcp
     */
-    public void tcpHandler(Tcp tcp){};
+    public void handleTcp(Tcp tcp){};
 
     /**
      * @see org.jnetpcap.protocol.tcpip.Udp
     */
-    public void udpHandler(Udp udp){};
+    public void handleUdp(Udp udp){};
 
     /**
      * @see org.jnetpcap.protocol.network.Ip6
     */
-    public void ip6Handler(Ip6 ip6){};
+    public void handleIp6(Ip6 ip6){};
 
     /**
      * @see org.jnetpcap.protocol.network.Ip4
     */
-    public void ip4Handler(Ip4 ip4){};
+    public void handleIp4(Ip4 ip4){};
 
     /**
      * @see org.jnetpcap.protocol.wan.PPP
     */
-    public void pppHandler(PPP ppp){};
+    public void handlePPP(PPP ppp){};
 
     /**
      * @see org.jnetpcap.protocol.vpn.PPP
     */
-    public void l2tpHandler(L2TP lt2p){};
+    public void handleL2TP(L2TP lt2p){};
 
     /**
      * @see org.jnetpcap.protocol.network.Icmp
     */
-    public void icmpHandler(Icmp icmp){};
+    public void handleIcmp(Icmp icmp){};
 
     /**
      * @see org.jnetpcap.protocol.network.Arp
     */
-    public void arpHandler(Arp arp){};
+    public void handleArp(Arp arp){};
 
     /**
      * @see org.jnetpcap.protocol.lan.Ethernet
     */
-    public void ethernetHandler(Ethernet ethernet){};
+    public void handleEthernet(Ethernet ethernet){};
 
     /**
      * @see org.jnetpcap.packet.PcapPacket
     */
-    public void packetHandler(PcapPacket packet){};
+    public void handlePacket(PcapPacket packet){};
 
 //以下、「保険」。TCPとIP、UDPとICMPとか、複数のプロトコルを使いたい人用。
 //ここでも受け皿をぶん回して使う。これらの関数を呼び出すのは
