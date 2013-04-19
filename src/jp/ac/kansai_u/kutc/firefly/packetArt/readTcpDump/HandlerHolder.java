@@ -194,6 +194,18 @@ public class HandlerHolder extends ProtocolHandlerBase {
         packetHandlers.add(t);
     }
 
+    public void removeHandler(Object o) {
+        tcpHandlers.remove(o);
+        udpHandlers.remove(o);
+        ip6Handlers.remove(o);
+        ip4Handlers.remove(o);
+        pppHandlers.remove(o);
+        l2tpHandlers.remove(o);
+        icmpHandlers.remove(o);
+        arpHandlers.remove(o);
+        ethernetHandlers.remove(o);
+        packetHandlers.remove(o);
+    }
 
 //-----ProtocolHandlerBaseのメソッドをオーバーライドしたものです
     public void handleTcp(Tcp tcp) {
