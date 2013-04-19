@@ -93,7 +93,15 @@ public class PcapManager implements Runnable{
     */
     public void run() {
         while(true) {
+            while(readyRun == false){
+                //
+            }
             pkt = null;
+
+            savePackets(3);
+            //savePacketsの保存先のキューは満タンになった時点で
+            //パケットを捨てていくので、この関数を空撃ちしてパケットを間引くこともできます。
+
             pkt = nextPacket();//0.01秒間パケットが来なかったらタイムアウトします。
             //パケットが来なかった場合、pktにはnullが入ります。
             if (pkt == null) {
@@ -104,9 +112,6 @@ public class PcapManager implements Runnable{
             if (pkt != null ) {
                 handlerHolder.inspect(pkt);
             }
-            savePackets(3);
-            //savePacketsの保存先のキューは満タンになった時点で
-            //パケットを捨てていくので、この関数を空撃ちしてパケットを間引くこともできます。
         }
     }
 
