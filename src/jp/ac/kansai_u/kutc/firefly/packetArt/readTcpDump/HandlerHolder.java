@@ -16,7 +16,10 @@ import org.jnetpcap.packet.PcapPacket;
 import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.*;
 
 /**
- * パケットに関するメソッドを、プロトコル別に呼び出します。
+ * パケットに関するメソッドを、<br>
+ * プロトコル別に呼び出します。
+ *
+ * @author sya-ke
 */
 public class HandlerHolder extends ProtocolHandlerBase {
 
@@ -32,7 +35,8 @@ public class HandlerHolder extends ProtocolHandlerBase {
     private ArrayList<PacketHandler> packetHandlers;
 
     /**
-     * 全部空に初期化します。空の状態でinspect()しても無意味です。
+     * 全部空に初期化します。<br>
+     * 空の状態でinspect()しても無意味です。
     */
     public HandlerHolder() {
         System.out.println("HandlerHolder()");
@@ -49,12 +53,12 @@ public class HandlerHolder extends ProtocolHandlerBase {
     }
 
     /**
-     * ハンドラを追加する関数です。これしか方法が思いつきませんでした。<br>
+     * ハンドラを追加する関数です。<br>
+     * これしか方法が思いつきませんでした。<br>
      * そう何回も呼ばれる関数ではないので、これで妥協します。<br>
-     * ...getMethodsでいけた気もします。<br>
      *
      * @param o なんらかのパケットハンドラを実装(implement)したオブジェクトです。
-     * @return added なんのパケットハンドラも実装していないオブジェクトたったならtrueを返します。
+     * @return o がなんのパケットハンドラも実装していないオブジェクトだったならfalseを返します。
     */
     public boolean classify(Object o) {
         boolean added = false;
@@ -102,9 +106,10 @@ public class HandlerHolder extends ProtocolHandlerBase {
     }
 
     /**
-     * パケットのハンドラを登録します。これらのハンドラは<br>
-     * inspect関数が呼ばれる度に呼び出されます。<br>
-     * いちいちインターフェース毎に登録するのも面倒なので、classifyが便利です。
+     * パケットのハンドラを登録します。<br>
+     * これらのハンドラはinspect関数が呼ばれる度に呼び出されます。<br>
+     * いちいちインターフェース毎に登録するのも<br>
+     * 面倒なので、classifyが便利です。
      *
      * @param t interfaceを実装したハンドラです。
      * @see  ProtocolHandlerBase#inspect(PcapPacket)
@@ -114,7 +119,8 @@ public class HandlerHolder extends ProtocolHandlerBase {
     }
     /**
      * パケットのハンドラを登録します。<br>
-     * いちいちインターフェース毎に登録するのも面倒なので、classifyが便利です。
+     * いちいちインターフェース毎に登録するのも<br>
+     * 面倒なので、classifyが便利です。
      *
      * @param t interfaceを実装したハンドラです。
     */
@@ -123,7 +129,8 @@ public class HandlerHolder extends ProtocolHandlerBase {
     }
     /**
      * パケットのハンドラを登録します。<br>
-     * いちいちインターフェース毎に登録するのも面倒なので、classifyが便利です。
+     * いちいちインターフェース毎に登録するのも<br>
+     * 面倒なので、classifyが便利です。
      *
      * @param t interfaceを実装したハンドラです。
     */
@@ -132,7 +139,8 @@ public class HandlerHolder extends ProtocolHandlerBase {
     }
     /**
      * パケットのハンドラを登録します。<br>
-     * いちいちインターフェース毎に登録するのも面倒なので、classifyが便利です。
+     * いちいちインターフェース毎に登録するのも<br>
+     * 面倒なので、classifyが便利です。
      *
      * @param t interfaceを実装したハンドラです。
     */
@@ -141,7 +149,8 @@ public class HandlerHolder extends ProtocolHandlerBase {
     }
     /**
      * パケットのハンドラを登録します。<br>
-     * いちいちインターフェース毎に登録するのも面倒なので、classifyが便利です。
+     * いちいちインターフェース毎に登録するのも<br>
+     * 面倒なので、classifyが便利です。
      *
      * @param t interfaceを実装したハンドラです。
     */
@@ -150,7 +159,8 @@ public class HandlerHolder extends ProtocolHandlerBase {
     }
     /**
      * パケットのハンドラを登録します。<br>
-     * いちいちインターフェース毎に登録するのも面倒なので、classifyが便利です。
+     * いちいちインターフェース毎に登録するのも<br>
+     * 面倒なので、classifyが便利です。
      *
      * @param t interfaceを実装したハンドラです。
     */
@@ -159,7 +169,8 @@ public class HandlerHolder extends ProtocolHandlerBase {
     }
     /**
      * パケットのハンドラを登録します。<br>
-     * いちいちインターフェース毎に登録するのも面倒なので、classifyが便利です。
+     * いちいちインターフェース毎に登録するのも<br>
+     * 面倒なので、classifyが便利です。
      *
      * @param t interfaceを実装したハンドラです。
     */
@@ -168,7 +179,8 @@ public class HandlerHolder extends ProtocolHandlerBase {
     }
     /**
      * パケットのハンドラを登録します。<br>
-     * いちいちインターフェース毎に登録するのも面倒なので、classifyが便利です。
+     * いちいちインターフェース毎に登録するのも<br>
+     * 面倒なので、classifyが便利です。
      *
      * @param t interfaceを実装したハンドラです。
     */
@@ -177,7 +189,8 @@ public class HandlerHolder extends ProtocolHandlerBase {
     }
     /**
      * パケットのハンドラを登録します。<br>
-     * いちいちインターフェース毎に登録するのも面倒なので、classifyが便利です。
+     * いちいちインターフェース毎に登録するのも<br>
+     * 面倒なので、classifyが便利です。
      *
      * @param t interfaceを実装したハンドラです。
     */
@@ -186,7 +199,8 @@ public class HandlerHolder extends ProtocolHandlerBase {
     }
     /**
      * パケットのハンドラを登録します。<br>
-     * いちいちインターフェース毎に登録するのも面倒なので、classifyが便利です。
+     * いちいちインターフェース毎に登録するのも<br>
+     * 面倒なので、classifyが便利です。
      *
      * @param t interfaceを実装したハンドラです。
     */
@@ -194,6 +208,13 @@ public class HandlerHolder extends ProtocolHandlerBase {
         packetHandlers.add(t);
     }
 
+    /**
+     * パケットのハンドラを登録解除します。<br>
+     * 登録したオブジェクトと全く同一のものを<br>
+     * 引数にしなければ削除されません。
+     *
+     * @param o 登録解除したいオブジェクトです。
+    */
     public void removeHandler(Object o) {
         tcpHandlers.remove(o);
         udpHandlers.remove(o);

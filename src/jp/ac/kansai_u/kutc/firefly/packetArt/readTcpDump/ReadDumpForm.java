@@ -22,9 +22,11 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.Form;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 
 /**
- * このフォームはユーザからファイル名を受けとる用です。
- * ファイル名はgetFileName()で取得してください。
- * このフォームってファイル名受け取ったら要らない子だよね。
+ * このフォームはユーザからファイル名を受けとる用です。<br>
+ * ファイル名はgetFileName()で取得してください。<br>
+ * このフォームってファイル名受け取ったら要らない子だよね～
+ *
+ * @author sya-ke
  */
 public class ReadDumpForm extends FormBase {
 
@@ -34,13 +36,6 @@ public class ReadDumpForm extends FormBase {
     private String fileName;
     private Runnable fileButton_OnActed;
     public DevUtil devUtil;
-
-    /**
-     * @return fileName PcapManagerが最後に参照したファイル名をフルパスで返す。
-    */
-    public String getFileName() {
-        return fileName;
-    }
 
     public void initialize() {
         pcapManager = PcapManager.getInstance();

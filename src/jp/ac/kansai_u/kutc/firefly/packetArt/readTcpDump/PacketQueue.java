@@ -17,6 +17,8 @@ public class PacketQueue implements PcapPacketHandler<Object>{
     private LimitedQueue<PcapPacket> q;
 
     /**
+     * 唯一のコンストラクタです。
+     *
      * @param max キューの最大保持可能数です。
     */
     public PacketQueue(int max) {
@@ -24,12 +26,13 @@ public class PacketQueue implements PcapPacketHandler<Object>{
     }
 
     /**
-     * インターフェースから実装を強制された関数です。パケットを高速でキューに放り込みます。<br>
-     * この関数を直に呼び出すことはあまりありません。
+     * インターフェースから実装を強制された関数です。<br>
+     * パケットを高速でキューに放り込みます。<br>
+     * この関数を直に呼び出すことはありません。
      *
      * @see PcapPacketHandler
      * @param packet 関数によって定められたPcapPacketです。キューに加えられます。
-     * @param dummy 今回は使わないので、気にしないでください。。
+     * @param dummy 気にしないでください。。
     */
     public void nextPacket(PcapPacket packet, Object dummy) {
         q.add(packet);
@@ -38,7 +41,7 @@ public class PacketQueue implements PcapPacketHandler<Object>{
     /**
      * パケットをキューに放り込みます。
      * 
-     * @return q.add() 成功ならtrueが返ります。基本的にtrueしか帰って来ません。
+     * @return 成功ならtrueが返ります。基本的にtrueしか返しません。
     */
     public boolean pushPacket(PcapPacket packet) {
         return q.add(packet);
@@ -47,18 +50,19 @@ public class PacketQueue implements PcapPacketHandler<Object>{
     /**
      * パケットをキューから取り出します。
      *
-     * @return q.poll() キューから取り出したPcapPacketもしくはnul（キューは空）です。
+     * @return キューから取り出したPcapPacketもしくはnull（キューが空のとき）を返します。
     */
     public PcapPacket pollPacket() {
         return q.poll();
     }
 
     /**
-     * パケットをキューから複数取り出します。キューの装填数が少ない場合は<br>
+     * パケットをキューから複数取り出します。<br>
+     * キューの装填数が少ない場合は<br>
      * 取り出せるMAXまで搾り取り、Listで返します。
      * 
      * @param howMany 何個取り出すかという数値です。
-     * @return q.poll(howMany) ListでPcapPacketが返ってきます。空のリストも返ってくることがあります。
+     * @return ListでPcapPacketが返ってきます。空のリストも返ってくることがあります。
     */
     public List<PcapPacket> pollPackets(int howMany) {
         return q.poll(howMany);
@@ -67,7 +71,7 @@ public class PacketQueue implements PcapPacketHandler<Object>{
     /**
      * 残りパケット数を返します。
      *
-     * @return q.size() キューのサイズ。
+     * @return 現在キューに入っている要素の数を返します。
     */
     public int size() {
         return q.size();
@@ -76,7 +80,7 @@ public class PacketQueue implements PcapPacketHandler<Object>{
     /**
      * パケット最大装填数を返します。
      * 
-     * @return max このインスタンスが持つ最大装填数です。
+     * @return max このインスタンスが持つ最大装填数を返します。
     */
     public int maxSize() {
         return q.getMaxSize();
@@ -85,7 +89,7 @@ public class PacketQueue implements PcapPacketHandler<Object>{
     /**
      * 装填数が限界に達した場合にtrueを返します。
      *
-     * @return T/F 限界ならtrue,まだ余裕あるならfalseを返します。
+     * @return 限界ならtrue,まだ余裕あるならfalseを返します。
     */
     public boolean isFull() {
         if (size() == maxSize()) {

@@ -7,16 +7,17 @@ import org.jnetpcap.Pcap;
 import org.jnetpcap.PcapIf;
 
 /**
- * Pcap.openLive()で使うdevNameを人間の分かる方法で取得できる。<br>
- *
+ * Pcap.openLive()で使うdevNameを<br>
+ * 人間の分かる方法で取得できるようにするクラスです。<br>
+ * <br>
  * 使い方：<br>
- * <code>
- * DevUtil devUtil = new DevUtil();
- * String[] sa = devUtil.getGoodInformations();
- * for (String s : sa) {
- *     System.out.println(s);
- * }
- * </code>
+ * <br>
+ * DevUtil devUtil = new DevUtil();<br>
+ * String[] sa = devUtil.getGoodInformations();<br>
+ * for (String s : sa) {<br>
+ *     System.out.println(s);<br>
+ * }<br>
+ * 
  *
  * @author sya-ke
 */
@@ -28,7 +29,8 @@ public class DevUtil {
     private boolean gotError;
 
     /**
-     * コンストラクタ。失敗した場合とデバイスが存在しない場合に<br>
+     * 普通のコンストラクタです。<br>
+     * 失敗した場合とデバイスが存在しない場合に<br>
      * gotErrorにtrueが入ります。普通は失敗しません。
     */
     public DevUtil() {
@@ -48,7 +50,8 @@ public class DevUtil {
     }
 
     /**
-     * コンストラクタ。エラー内容を格納するオブジェクトを引き継ぎます。
+     * エラー継承型コンストラクタです。<br>
+     * エラー内容を格納するオブジェクトを引き継ぎます。
      *
      * @param errorBuffer 呼び出し元からコピーしたエラーバッファー
     */
@@ -58,7 +61,8 @@ public class DevUtil {
     }
 
     /**
-     * テスト用のメソッドです。libpcapが対応するデバイスを表示します。
+     * テスト用のメソッドです。<br>
+     * libpcapが対応するデバイスを表示します。
      *
      * @param args なんでも構いません
     */
@@ -78,7 +82,7 @@ public class DevUtil {
     /**
      * すべてのNICの情報を取得します。
      * 
-     * @return allDevInfo Listで全てのDevInfoオブジェクトを返します。
+     * @return Listで全てのDevInfoオブジェクトを返します。
     */
     public List<DevInfo> getAllDevInfo() {
         return allDevInfo;
@@ -89,7 +93,7 @@ public class DevUtil {
      * 例えば、NICが一個もささっていない状態にtrueになります。<br>
      * エラーが出ている場合、get??By??系関数は使えません。
      *
-     * @return gotError デバイス情報の取得にエラーが出たか否かが分かります。
+     * @return デバイス情報の取得にエラーが出た場合trueが返ります。
     */
     public boolean hasError() {
         return gotError;
@@ -98,7 +102,7 @@ public class DevUtil {
     /**
      * hasErrorでエラーが出た時に呼ぶと便利な関数です。。
      *
-     * @return errBuf libpcapからもらったエラーのStringBuilderです。
+     * @return libpcapからもらったエラーのStringBuilderが返ります。
     */
     public StringBuilder getErrBuf() {
         return errBuf;
@@ -109,7 +113,7 @@ public class DevUtil {
      * デバイスのIPからデバイス名を取得します。
      *
      * @param ip デバイスの持つIPアドレスです。IPv6でもOKです。
-     * @return devInfo.name IPにひも付けされたデバイス名です。該当無しならnull返ります。
+     * @return IPにひも付けされたデバイス名を返します。該当無しならnullが返ります。
     */
     public String getNameByIP(String ip) {
         for (DevInfo devInfo : allDevInfo) {
@@ -121,10 +125,11 @@ public class DevUtil {
     }
 
     /**
-     * デバイスのMACアドレスからデバイス名を取得します。
+     * デバイスのMACアドレスから<br>
+     * デバイス名を取得します。
      *
      * @param macAddr デバイスの持つMACアドレスです。フォーマットは00:CB:CA:D0:32:5Aでお願いします。
-     * @return devInfo.name MACアドレスにひも付けされたデバイス名です。該当無しならnullが返ります。
+     * @return MACアドレスにひも付けされたデバイス名が返ります。該当無しならnullが返ります。
     */
     public String getNameByMacAddr(String macAddr) {
         for (DevInfo devInfo : allDevInfo) {
@@ -136,10 +141,11 @@ public class DevUtil {
     }
 
     /**
-     * 人間の読めるデバイスの説明文からデバイス名を抽出します。
+     * 人間の読めるデバイスの説明文から<br>
+     * デバイス名を抽出します。
      *
-     * @param description デバイスの説明文。ベンダ名などが書いてあります。
-     * @return devInfo.name 説明文にひも付けされたデバイス名です。該当なしならnullです。
+     * @param description デバイスの説明文です。ベンダ名などが書いてあります。
+     * @return 説明文にひも付けされたデバイス名が返ります。該当なしならnullが返ります。
     */
     public String getNameByDescription(String description) {
         for (DevInfo devInfo : allDevInfo) {
@@ -152,9 +158,10 @@ public class DevUtil {
 
     /**
      * ループバックデバイスからデバイス名を抽出します。<br>
-     * Linuxならほぼ確実に"lo" が返ってきます。Windowsならおそらくnullが返ってきます。
+     * Linuxならほぼ確実に"lo" が返ってきます。
+     * Windowsならおそらくnullが返ってきます。
      *
-     * @return devInfo.name ループバックデバイス名です。該当なしならnullです。
+     * @return devInfo.name ループバックデバイス名が返ります。該当なしならnullが返ります。
     */
     public String getNameByLoopback() {
         for (DevInfo devInfo : allDevInfo) {
@@ -169,7 +176,7 @@ public class DevUtil {
      * デバイスの選択に有益な情報を取得します。<br>
      * "MACアドレス デバイスの説明"のリストを返します。
      * 
-     * @return information "MACアドレス デバイスの説明"のString配列を返します。
+     * @return "MACアドレス デバイスの説明"のString配列を返します。
     */
     public String[] getGoodInformations() {
         String[] information = new String[ allDevs.size() ];
@@ -187,10 +194,11 @@ public class DevUtil {
     }
 
     /**
-     * getGoodInformationsメソッドから得た情報を元に、デバイス名を特定します。
+     * getGoodInformationsメソッドから得た情報を元に、<br>
+     * デバイス名を特定します。
      * 
-     * @param goodInformation getGoodInformations()で得たString
-     * @return info デバイス名、該当なしならnull
+     * @param goodInformation getGoodInformations()で得たStringの一つです。
+     * @return デバイス名が文字列で返ります、該当なしならnullが返ります。
      * @see getGoodInformations
     */
     public String getNameByGoodInformation(String goodInformation) {

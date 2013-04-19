@@ -5,7 +5,10 @@ import java.util.LinkedList;
 //http://stackoverflow.com/questions/5498865/size-limited-queue-that-holds-last-n-elements-in-java
 
 /**
- * サイズ制限付きQueueです。limitを超えた場合、先頭データを削除します。
+ * http://stackoverflow.com/questions/5498865/size-limited-queue-that-holds-last-n-elements-in-java<br>
+ * サイズ制限付きQueueです。<br>
+ * limitを超えた場合、先頭データを削除します。
+ *
  * @author sya-ke
 */
 public class LimitedQueue<E> extends LinkedList<E> {
@@ -29,17 +32,20 @@ public class LimitedQueue<E> extends LinkedList<E> {
     }
 
     /**
-     * @return limit このリストの最大装填数を返します。
+     * そのまんま名前の通りです。
+     *
+     * @return このリストの最大装填数を返します。
     */
     public int getMaxSize() {
         return limit;
     }
 
     /**
-     * pollをhowMany回やる関数です。途中で弾切れになった場合はそこまでのListを返します。
+     * pollを複数回やる関数です。途中で<br>
+     * 弾切れになった場合はそこまでのListを返します。
      * 
-     * @param howMany howMany個のオブジェクトをこのキューから取り出します。
-     * @return listBuf howMany個のオブジェクトが入った配列です。
+     * @param howMany この個数だけオブジェクトをこのキューから取り出します。
+     * @return 個数分のオブジェクトが入った配列です。空の場合も有り得ます。
     */
     public List<E> poll(int howMany) {
         List<E> listBuf = new ArrayList<E>(howMany);

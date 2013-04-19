@@ -11,8 +11,10 @@ import java.lang.StringBuilder;
 import java.io.IOException;
 
 /**
- * このクラスはPcapIfのバイナリな情報を文字列に変え、保持するクラスです。<br>
- * 基本的にただの構造体です。必要な情報しか保持しません。
+ * このクラスはPcapIfのバイナリな情報を
+ * 文字列に変え、保持するクラスです。<br>
+ * 基本的にただの構造体です。<br>
+ * 必要な情報しか保持しません。
  *
  * @author sya-ke
 */
@@ -30,7 +32,8 @@ public class DevInfo {
     public boolean loopback;//ループバックかどうか。なんの役に立つかは不明
 
     /**
-     * このクラスのコンストラクタはこの一つのみです。
+     * このクラスのコンストラクタは<br>
+     * この一つのみです。
      *
      * @see PcapIf
      * @param pcapIf バイト、数字、booleanな情報を文字列な情報に変換したいデバイスのクラスです。
@@ -46,9 +49,10 @@ public class DevInfo {
     }
 
     /**
-     * 必要な情報を取得し、文字列でデータ化します。
+     * 必要な情報を取得し、文字列でデータ化します。<br>
+     * この関数はコンストラクタで呼ばれます。
     */
-    public void complete() {
+    private void complete() {
         name = device.getName();
         description = device.getDescription();
         try {
@@ -77,7 +81,7 @@ public class DevInfo {
     /**
      * 初期化します。
     */
-    public void decomplete() {
+    private void decomplete() {
         name = "";
         description = "";
         macAddr = "";
@@ -87,11 +91,11 @@ public class DevInfo {
     }
 
     /**
-     * バイト列のIPアドレスをStringにしてまとめてしまう、便利な関数です。<br>
+     * バイト列のIPアドレスをStringにして、<br>
+     * ひとるにまとめる関数です。
      * 
-     *
-     * @param raw IP(v4,v6)アドレスを、バイト列で。
-     * @return address rawを文字列にしたもの。エラーなら""
+     * @param raw IP(v4,v6)アドレスをバイト列で表現したものです。
+     * @return バイト列のIPアドレスを文字列にしたものが返ります。エラーならnullが返ります。
     */
     public static String getInetAddress(byte[] raw) {
         String address = "";
@@ -105,10 +109,11 @@ public class DevInfo {
     }
 
     /**
-     * http://rgagnon.com/javadetails/java-0596.html をMACアドレス用に魔改造したものです。
+     * http://rgagnon.com/javadetails/java-0596.html を<br>
+     * MACアドレス用に魔改造した関数です。
      *
-     * @param raw MACADDRESS IN BYTE
-     * @return hex 文字型 "AA-BB-CC-DD-EE-FF"
+     * @param raw MACアドレスをバイト配列で表現したものです。
+     * @return StringなMACアドレスが返ります。例："AA:BB:CC:DD:EE:FF"。エラーならnullが返ります。
     */
     public static String getHex( byte [] raw ) {
         final String HEXES = "0123456789ABCDEF";
@@ -128,9 +133,10 @@ public class DevInfo {
     }
 
     /**
-     * libpcapがキャプチャ可能なデバイスについて、情報をすべて返します。デバッグに使えます。
+     * libpcapがキャプチャ可能なデバイスについて、<br>
+     * 情報をすべて返します。デバッグに使えます。
      *
-     * @return ret 全ての情報をStringで返します。
+     * @return 全ての情報をひとつのString型で返します。改行コードは"\n"です。
     */
     public String getStats() {
         String ret = "";
