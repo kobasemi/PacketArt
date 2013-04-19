@@ -46,7 +46,7 @@ public class MusicPlayer{
 		}).start();
 		musicPlayer.playMusic(50);
 	}
-	
+
 	public void playMusic(int velo) throws InvalidMidiDataException, MidiUnavailableException{
 		VelocityModulator.setVelocity(velo);
 		Sequence sequence = DrumMaker.setDrumLine(velo);
