@@ -1,4 +1,7 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt;
+
+import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.TcpHandler;
+
 import org.jnetpcap.protocol.tcpip.Tcp;
 
 /**
@@ -6,7 +9,7 @@ import org.jnetpcap.protocol.tcpip.Tcp;
  * @author midolin
  *
  */
-public class PacketrisPacketHandler extends ProtocolHandlerBase {
+public class PacketrisPacketHandler implements TcpHandler{
 	public PacketrisPacketHandler() {
 		// TODO 自動生成されたコンストラクター・スタブ
 	}
@@ -16,6 +19,12 @@ public class PacketrisPacketHandler extends ProtocolHandlerBase {
 	}
 	
 	public void tcpHandler(Tcp packet){
+		
+	}
+
+	@Override
+	public void handleTcp(Tcp tcp) {
+		// TODO 自動生成されたメソッド・スタブ
 		
 	}
 

@@ -1,6 +1,6 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.music;
 
-import jp.ac.kansai_u.kutc.firefly.packetArt.ProtocolHandlerBase;
+import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.Ip4Handler;
 
 import org.jnetpcap.protocol.network.Ip4;
 
@@ -16,7 +16,7 @@ import org.jnetpcap.protocol.network.Ip4;
  * @author midolin
  *
  */
-public class PacketDisposer extends ProtocolHandlerBase{
+public class PacketDisposer implements Ip4Handler{
     private static final PacketDisposer instance = new PacketDisposer();
     private boolean fully;
     private final int MAX_PACKETS = 3000;
@@ -85,19 +85,6 @@ public class PacketDisposer extends ProtocolHandlerBase{
     }
 */
     
-    @Override
-    public void ip4Handler(Ip4 pkt){
-        counter++;
-       /* destQueue.push(pkt.destination());*/
-        if (counter < MAX_PACKETS) {
-            addData(pkt.destination());
-        } else {
-            fully = true;
-            //お腹いっぱい
-        }
-        //srcQueue.push(pkt.source());
-    }
-
     public boolean isFull() {
         return fully;
     }
@@ -105,5 +92,19 @@ public class PacketDisposer extends ProtocolHandlerBase{
 	public static int[] disposePacket() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void handleIp4(Ip4 ip4) {
+        counter++;
+       /* destQueue.push(pkt.destination());*/
+        if (counter < MAX_PACKETS) {
+            addData(ip4.destination());
+        } else {
+            fully = true;
+            //お腹いっぱい
+        }
+        //srcQueue.push(pkt.source());
+		
 	}
 }

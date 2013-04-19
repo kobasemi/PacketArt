@@ -1,16 +1,15 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.test;
 
 //import jp.ac.kansai_u.kutc.firefly.packetArt.*;
-import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
-import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.*;
-import jp.ac.kansai_u.kutc.firefly.packetArt.music.PacketDisposerI;
-
-import java.lang.Runnable;
-import java.io.File;
-
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.io.File;
+
+import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
+import jp.ac.kansai_u.kutc.firefly.packetArt.music.PacketDisposer;
+import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.LoadDumpFileButton;
+import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
 
 import org.jnetpcap.packet.PcapPacket;
 
@@ -24,7 +23,7 @@ public class MusicPacketTest extends FormBase {
 	private String fileName;
 	private Runnable fileButton_OnActed;
 
-	private PacketDisposerI pd;
+	private PacketDisposer pd;
 
 	/*
 	 * public static void main(String[] args) { pd = new PacketDisposerI(); Form
@@ -33,7 +32,7 @@ public class MusicPacketTest extends FormBase {
 	 */
 
 	public void initialize() {
-		pcapManager = new PcapManager();
+		pcapManager = PcapManager.getInstance();
 		fileButton_OnActed = new Runnable() {
 			public void run() {
 				tempFileName = fileButton.getFileName();
@@ -63,7 +62,7 @@ public class MusicPacketTest extends FormBase {
 	public void update() {
 		pkt = pcapManager.nextPacket();
 		if (pkt != null) {
-			pd.inspect(pkt);
+			//pd.inspect(pkt);
 			if (pd.isFull()) {
 			}
 		} else {
@@ -85,43 +84,42 @@ public class MusicPacketTest extends FormBase {
 	}
 
 	public void paint(Graphics g) {
-	};
-
-	public void mouseClicked(MouseEvent e) {
-	};
-
-	public void mousePressed(MouseEvent e) {
-	};
-
-	public void mouseReleased(MouseEvent e) {
-	};
-
-	public void mouseEntered(MouseEvent e) {
-	};
-
-	public void mouseExited(MouseEvent e) {
-	};
-
-	public void mouseMoved(MouseEvent e) {
-	};
-
-	public void mouseDragged(MouseEvent e) {
-	};
-
-	public void keyPressed(KeyEvent e) {
-	};
-
-	public void keyReleased(KeyEvent e) {
-	};
-
-	public void keyTyped(KeyEvent e) {
-	};
-
-	public void onFormChanged() {
-	};
-
-	public void onClose() {
-		pcapManager.close();
 	}
 
+	public void mouseClicked(MouseEvent e) {
+	}
+
+	public void mousePressed(MouseEvent e) {
+	}
+
+	public void mouseReleased(MouseEvent e) {
+	}
+
+	public void mouseEntered(MouseEvent e) {
+	}
+
+	public void mouseExited(MouseEvent e) {
+	}
+
+	public void mouseMoved(MouseEvent e) {
+	}
+
+	public void mouseDragged(MouseEvent e) {
+	}
+
+	public void keyPressed(KeyEvent e) {
+	}
+
+	public void keyReleased(KeyEvent e) {
+	}
+
+	public void keyTyped(KeyEvent e) {
+	}
+
+	public void onFormChanged() {
+	}
+
+	public void onClose() {
+		pcapManager = null;
+	}
 }
