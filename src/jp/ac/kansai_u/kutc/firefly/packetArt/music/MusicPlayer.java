@@ -17,16 +17,40 @@ import javax.sound.midi.Sequencer;
  *
  */
 public class MusicPlayer{
+
+	private Sequencer sequencer;
+	public boolean isPlaying() {
+		return sequencer.isRunning();
+	}
+
+	MusicPlayer() {
+		try {
+			sequencer  = MidiSystem.getSequencer();
+		} catch (MidiUnavailableException e) {
+			e.printStackTrace();
+			System.err.println("残念ながら、あなたのPCはMIDIを再生できない");
+		}
+	}
+
 	public static void main(String[] args) throws InvalidMidiDataException, MidiUnavailableException{
-		playMusic(50);
+		final MusicPlayer musicPlayer = new MusicPlayer();
+		new Thread(new Runnable(){
+			public void run(){
+				try{
+					Thread.sleep(10000);//10秒後、stopMusic()を呼ぶ
+					musicPlayer.stopMusic();
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
+		musicPlayer.playMusic(50);
 	}
 	
-	public static void playMusic(int velo) throws InvalidMidiDataException, MidiUnavailableException{
+	public void playMusic(int velo) throws InvalidMidiDataException, MidiUnavailableException{
 		VelocityModulator.setVelocity(velo);
-		Sequencer sequencer = null;
 		Sequence sequence = DrumMaker.setDrumLine(velo);
 		try{
-			sequencer  = MidiSystem.getSequencer();
 			sequencer.open();
 			
 			sequencer.setSequence(sequence);
@@ -36,6 +60,13 @@ public class MusicPlayer{
 			e.printStackTrace();
 		}finally{
 			if (sequencer != null && sequencer.isOpen()) sequencer.close();
+		}
+	}
+
+	public void stopMusic() {
+		if (sequencer != null && isPlaying()) {
+			sequencer.stop();
+			//sequencer.setMicrosecondPosition(0);
 		}
 	}
 }
