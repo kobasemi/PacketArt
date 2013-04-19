@@ -89,9 +89,15 @@ public class ReadDumpForm extends FormBase {
     }
 
     private String packetStream;
+    PcapPacket pkt;
     public void update() {
         if (pcapManager.isReadyRun()) {
-            packetStream = pcapManager.nextPacket().toString();
+            pkt = pcapManager.nextPacket();
+            if (pkt != null) {
+                packetStream = pkt.toDebugString();
+            } else {
+                System.out.println("弾切れ！");
+            }
         } else {
             packetStream = null;
         }
@@ -113,7 +119,7 @@ public class ReadDumpForm extends FormBase {
     public void paint(Graphics g) {
         g.setColor(Color.white);
         if (packetStream != null) {
-            g.drawString(packetStream, 320,300);
+            g.drawString(packetStream, 0,50);
         }
         g.drawString("Hello",100,200);
     }
@@ -146,5 +152,6 @@ public class ReadDumpForm extends FormBase {
     public void onClose(){
         pcapManager.close();
         pcapManager = null;
+        
     }
 }
