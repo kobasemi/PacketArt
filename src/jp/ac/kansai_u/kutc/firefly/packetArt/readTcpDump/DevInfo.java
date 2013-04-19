@@ -64,7 +64,7 @@ public class DevInfo {
                 ip6Addr.add( getInetAddress(pcapSockAddr.getData() ));
             }
         }
-        if (ipAddr.equals("127.0.0.1") || ip6Addr.contains("::1")) {
+        if (ipAddr != null && ipAddr.equals("127.0.0.1") || ip6Addr.contains("::1")) {
             loopback = true;
         }
     }
