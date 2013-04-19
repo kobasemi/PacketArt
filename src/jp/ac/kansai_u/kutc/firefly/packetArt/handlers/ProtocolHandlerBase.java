@@ -50,13 +50,28 @@ public class ProtocolHandlerBase {
     private boolean willHandlePackets;
     private boolean handled;
 
+    /**
+     * 使わなくなった関数です。
+     *
+     * @param will パケットを受け取るの意志を示します。
+    */
     public void setWillHandlePackets(boolean will) {
         willHandlePackets = will;
     }
+
+    /**
+     * 使わなくなった関数です。
+     * 使い古しのパケットかどうかを判別します。
+     *
+     * @return 古いやつならtrue
+    */
     public boolean isHandledPacket() {
         return handled;
     }
 
+    /**
+     * ただのコンストラクタです。
+    */
     protected ProtocolHandlerBase() {
         handled = false;
         setWillHandlePackets(true);
@@ -66,7 +81,7 @@ public class ProtocolHandlerBase {
      * この関数は、プロトコル毎に呼び出す関数を変えます。
      * 最後に、一度関数を呼び出す猶予を与えています。
      * 
-     * @param packet PcapManager.nextPacket()で読みだしたパケット。
+     * @param packet PcapManager.nextPacket()で読みだしたパケットです。
      * 
      * @see org.jnetpcap.packet.PcapPacket
     */
