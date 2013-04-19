@@ -93,7 +93,7 @@ public class PcapManager implements Runnable{
     */
     public void run() {
         while(true) {
-            while(readyRun == false){
+            while(readyRun == false && pcap == null){
                 //
             }
             pkt = null;
@@ -110,6 +110,7 @@ public class PcapManager implements Runnable{
             }
             //それでもパケットが来ないなら、どうしようもありません。
             if (pkt != null ) {
+                System.out.println("Inspect!");
                 handlerHolder.inspect(pkt);
             }
         }
