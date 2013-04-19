@@ -93,7 +93,15 @@ public class PcapManager implements Runnable{
     */
     public void run() {
         while(true) {
+            while(readyRun == false && pcap == null){
+                //
+            }
             pkt = null;
+
+            savePackets(3);
+            //savePacketsの保存先のキューは満タンになった時点で
+            //パケットを捨てていくので、この関数を空撃ちしてパケットを間引くこともできます。
+
             pkt = nextPacket();//0.01秒間パケットが来なかったらタイムアウトします。
             //パケットが来なかった場合、pktにはnullが入ります。
             if (pkt == null) {
@@ -102,11 +110,9 @@ public class PcapManager implements Runnable{
             }
             //それでもパケットが来ないなら、どうしようもありません。
             if (pkt != null ) {
+                System.out.println("Inspect!");
                 handlerHolder.inspect(pkt);
             }
-            savePackets(3);
-            //savePacketsの保存先のキューは満タンになった時点で
-            //パケットを捨てていくので、この関数を空撃ちしてパケットを間引くこともできます。
         }
     }
 
@@ -347,6 +353,15 @@ public class PcapManager implements Runnable{
     */
     public List<PcapPacket> restorePackets(int howManyPackets) {
         return packetQueue.pollPackets(howManyPackets);
+    }
+
+    /**
+     * 「非常食」の残りパケットを返します。
+     *
+     * @return packetQueue.size() 残りパケット数。
+    */
+    public int packetsLeftIs() {
+        return packetQueue.size();
     }
 
     /**
