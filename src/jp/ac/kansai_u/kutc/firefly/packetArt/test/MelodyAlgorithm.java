@@ -8,7 +8,7 @@ import org.jnetpcap.protocol.network.*;
 import org.jnetpcap.protocol.tcpip.*;
 
 //BGMのメロディを作成するアルゴリズム
-public class MelodyAlgorithm implements Ip4Handler,TcpHandler{
+public class MelodyAlgorithm implements Ip4Handler{
 
     public PcapManager pm;
     public DevUtil devUtil;
@@ -62,12 +62,12 @@ public class MelodyAlgorithm implements Ip4Handler,TcpHandler{
                 System.out.println("###PcapManager killed");
                 return;
             }
-            while( myMelody.counter < 1500){
+            while( myMelody.counter < 1450){//急にスレッド止まらないし、なんとなく、このくらい？
 //                System.out.println(myMelody.counter + " integer(s) captured...");
             }
-            for (int i: myMelody.ip4List) {
-                System.out.println(i);
-            }
+          //  for (int i: myMelody.ip4List) {
+        //        System.out.println(i);
+            //}
             melodyAlgorithm( myMelody.ip4List);
         }
         myMelody.pm.close();
@@ -86,10 +86,10 @@ public class MelodyAlgorithm implements Ip4Handler,TcpHandler{
 
     private void addData(byte[] b) {
         int[] buf = bytes2ints(b);
-        ip4List[counter] = buf[0];
-        ip4List[counter+1] = buf[1];
-        ip4List[counter+2] = buf[2];
-        ip4List[counter+3] = buf[3];
+        ip4List[counter] = buf[0]%10;
+        ip4List[counter+1] = buf[1]%10;
+        ip4List[counter+2] = buf[2]%10;
+        ip4List[counter+3] = buf[3]%10;
         counter = counter + 4;
     }
 
@@ -104,11 +104,6 @@ public class MelodyAlgorithm implements Ip4Handler,TcpHandler{
         }
         System.out.println("Called Ip4! counter =>" + counter);
     }
-
-    public void handleTcp(Tcp tcp) {
-        System.out.println("Called Tcp! counter =>" + counter);
-    }
-
 
     static public int[] melodyAlgorithm(int[] a){
         int[] desposedip = a;
