@@ -2,8 +2,9 @@ package jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump;
 
 import java.lang.Runnable;
 import java.io.File;
-//import java.awt.Color;
+import java.awt.Color;
 import java.awt.Graphics;
+//import java.awt.BorderLayout;
 /*import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
@@ -13,6 +14,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JComboBox;
 
 import org.jnetpcap.packet.PcapPacket;
 
@@ -28,10 +30,10 @@ public class ReadDumpForm extends FormBase {
 
     private LoadDumpFileButton fileButton;
     private PcapManager pcapManager;
-    private String tempFileName;
+    private String tempName;
     private String fileName;
     private Runnable fileButton_OnActed;
-
+    public DevUtil devUtil;
 
     /**
      * @return fileName PcapManagerが最後に参照したファイル名をフルパスで返す。
@@ -40,27 +42,20 @@ public class ReadDumpForm extends FormBase {
         return fileName;
     }
 
-    /**
-     * @return pkt 現在PcapManagerが吐き出すPcapPacketを返す。無い時NULL。
-    */
-    public PcapPacket pickPacket() {
-        //TODO: ここで、PcapManagerとある程度の兼ね合いをしたい。
-        //特に、NULLが帰ってきた場合、次のtcpdumpファイルの入力を促す必要もある
-        PcapPacket pkt = pcapManager.nextPacket();
-        return pkt;
-    }
-
     public void initialize() {
-        pcapManager = new PcapManager();
+        pcapManager = PcapManager.getInstance();
+        devUtil = new DevUtil();
+
+        //ここからファイルロードボタン
         fileButton_OnActed = new Runnable(){
             public void run(){
-                tempFileName = fileButton.getFileName();
-                if (tempFileName != null) {
-                    File f = new File(tempFileName);
+                tempName = fileButton.getFileName();
+                if (tempName != null) {
+                    File f = new File(tempName);
                     if ( f.exists()) {
-                        pcapManager.openFile(tempFileName);
+                        pcapManager.openFile(tempName);
                         if ( pcapManager.isReadyRun() ) {
-                            fileName = tempFileName;
+                            fileName = tempName;
                             //このファイル名は、現在PcapManagerが保持しているものである
                             setFileButton();
                         } else {
@@ -76,14 +71,30 @@ public class ReadDumpForm extends FormBase {
         fileButton.setBounds((getSize().width / 3), (getSize().height / 5) * 3,
                                  getSize().width / 3, getSize().height / 5);
         getContentPane().add(fileButton, 0);
+        //ここまでファイルロードボタン
+
+       //ここからデバイスメニュー
+        JComboBox deviceSelector = new JComboBox(devUtil.getGoodInformations());
+        deviceSelector.setBounds(0, 0,
+                                 getSize().width, getSize().height / 20);
+        getContentPane().add(deviceSelector, 0);
+        //ここまでデバイスメニュー
+
+        //ここからデバイスロードボタン
+        //if onclick then
+        //String info = deviceSelector.getSelectedItem();
+        //String name = devUtil.getNameByGoodInformation(info);
+        //pcapManager.openDev(name);
+        //ここからデバイスロードボタン
     }
 
+    private String packetStream;
     public void update() {
-        //PcapPacket pkt = pcapManager.nextPacketCopied();
-        //PcapPacket pkt = pcapManager.nextPacket();
-        //tcpHandler.inspect(pkt);
-        //ipHandler.inpect(pkt);
-        //ここでパケットをばらまく。
+        if (pcapManager.isReadyRun()) {
+            packetStream = pcapManager.nextPacket().toString();
+        } else {
+            packetStream = null;
+        }
     }
 
     public void setFileButton() { 
@@ -100,6 +111,11 @@ public class ReadDumpForm extends FormBase {
     }
 
     public void paint(Graphics g) {
+        g.setColor(Color.white);
+        if (packetStream != null) {
+            g.drawString(packetStream, 320,300);
+        }
+        g.drawString("Hello",100,200);
     }
 
     public void mouseClicked(MouseEvent e) {
@@ -129,5 +145,6 @@ public class ReadDumpForm extends FormBase {
     }
     public void onClose(){
         pcapManager.close();
+        pcapManager = null;
     }
 }
