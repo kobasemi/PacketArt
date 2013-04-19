@@ -173,6 +173,9 @@ public class DevUtil {
         for (DevInfo devInfo : allDevInfo) {
             String buf = "";
             buf += devInfo.macAddr + " " + devInfo.description;
+            if (devInfo.ipAddr != null) {
+                buf += " " + devInfo.ipAddr;
+            }
             ret[i] = buf;
             i++;
         }
