@@ -108,7 +108,7 @@ public class DevUtil {
     */
     public String getNameByIP(String ip) {
         for (DevInfo devInfo : allDevInfo) {
-            if (ip == devInfo.ipAddr || devInfo.ip6Addr.contains(ip)) {
+            if (ip.equals(devInfo.ipAddr) || devInfo.ip6Addr.contains(ip)) {
                 return devInfo.name;
             }
         }
@@ -124,7 +124,7 @@ public class DevUtil {
     */
     public String getNameByMacAddr(String macAddr) {
         for (DevInfo devInfo : allDevInfo) {
-            if (macAddr == devInfo.macAddr) {
+            if (macAddr.equals(devInfo.macAddr)) {
                 return devInfo.name;
             }
         }
@@ -139,7 +139,7 @@ public class DevUtil {
     */
     public String getNameByDescription(String description) {
         for (DevInfo devInfo : allDevInfo) {
-            if (description == devInfo.description) {
+            if (description.equals(devInfo.description)) {
                 return devInfo.name;
             }
         }
@@ -184,9 +184,12 @@ public class DevUtil {
      * @return name デバイス名、該当なしならnull
     */
     public String getNameByGoodInformation(String goodInformation) {
+        int l = 0;
+        String macAddr = null;
         for (String buf : getGoodInformations() ) {
-            if (buf == goodInformation) {
-                String macAddr = buf.split(" ")[0];
+            if (buf.equals(goodInformation)) {
+                l = buf.indexOf(" ");
+                macAddr = buf.substring(0,l);
                 buf = getNameByMacAddr(macAddr);
             } else {
                 buf = null;
