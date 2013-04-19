@@ -16,16 +16,13 @@ import org.jnetpcap.PcapBpfProgram;
 
 /*
 
-    TODO: パケット３０００個の保持{
-        これなら、使えるパケットの種類を意図的に減らすことはなくなる。
-        キューと、jnetpcapのキューに無くなり次第、関数はnullを返すようにする。
-        また、fromFile == Trueのときは空撃ちしない。
-    }
-
     TODO: 残りパケットの（概算値）の保持{
         ファイルサイズ(Byte)を標準MTU,1500byteで割る。WIDEプロジェクトの
         パケットはMTU=1500が最頻値なので、逐次ロードでもおおよそは出せるはずだ
     }
+
+    TODO: ハンドラホルダの実装、run()の中でループ
+
 
 */
 
@@ -48,19 +45,28 @@ public class PcapManager implements Runnable{
 
     private PcapPacket pkt;
     public void run() {
-        synchronized(pkt) {
-        pkt = null;
-        pkt = nextPacket();//ここで1秒間パケットが来なかったらタイムアウトしてほしい。
-        if (pkt == null) {
-            nextPacketFromQueue();
-        }
+        while(true) {
+            pkt = null;
+            pkt = nextPacket();//0.01秒間パケットが来なかったらタイムアウトします。
+            //パケットが来なかった場合、pktにはnullが入ります。
+            if (pkt == null) {
+                //パケットが来なくても、キューから非常食のパケットを取り出します。
+                pkt = nextPacketFromQueue();
+            }
+            if (pkt == null ) {
+                //それでもパケットが来ないなら、どうしようもありません。
+            }
 /*
-        for (ProtocolHandlerBase handler : handlersHolder){
-            handler.inspect(pkt);
-            //このpktは全ての参照が切断されなければ多分メモリが開放されません。
-        }
+            for (ProtocolHandlerBase handler : handlersHolder){
+                handler.inspect(pkt);
+                //このpktは全ての参照が切断されなければ多分メモリが開放されません。
+            }
 */
-        pkt = null;//その対策として、ここでnullしていいのかな～？
+            //savePackets(300)
+            //キューは満タンになった時点でパケットを捨てていくので、
+            //この関数を空撃ちしてパケットを間引くこともできます。
+
+            pkt = null;//その対策として、ここでnullしていいのかな～？
         }
     }
 
@@ -75,7 +81,8 @@ public class PcapManager implements Runnable{
     private Pcap pcap;//jnetpcapの核。
     private PcapBpfProgram bpfFilter;
     private PacketQueue packetQueue;
-    public final int QUEUE_SIZE = 30000;
+    public final int TIMEOUT_OPENDEV = 10;//0.01秒のパケット待ちを許す。
+    public final int QUEUE_SIZE = 30000;//30000パケットの保持をする。
 
     /**
      * 空のコンストラクタ。このコンストラクタを使う場合は、オブジェクト生成後に
@@ -153,7 +160,8 @@ public class PcapManager implements Runnable{
     public boolean openDev(String devName) {
         System.out.println("openDev(" + devName +")");
         boolean wasOK = false;
-        pcap = Pcap.openLive(devName, Pcap.DEFAULT_SNAPLEN, Pcap.MODE_PROMISCUOUS, Pcap.DEFAULT_TIMEOUT, errBuf);
+        //pcap = Pcap.openLive(devName, Pcap.DEFAULT_SNAPLEN, Pcap.MODE_PROMISCUOUS, Pcap.DEFAULT_TIMEOUT, errBuf);
+        pcap = Pcap.openLive(devName, Pcap.DEFAULT_SNAPLEN, Pcap.MODE_PROMISCUOUS, TIMEOUT_OPENDEV, errBuf);
         if (pcap == null) {
             System.err.println("Error while opening device for capture: "
                 + errBuf.toString());
