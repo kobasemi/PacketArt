@@ -350,6 +350,15 @@ public class PcapManager implements Runnable{
     }
 
     /**
+     * 「非常食」の残りパケットを返します。
+     *
+     * @return packetQueue.size() 残りパケット数。
+    */
+    public int packetsLeftIs() {
+        return packetQueue.size();
+    }
+
+    /**
      * 「非常食」からパケットを一つ読み込みます。
      *
      * @return packetQueue.poll() PcapPacket または 非常食が空の場合はnullが返ります。
