@@ -51,5 +51,6 @@ public class PacketDisposer implements Ip4Handler{
         while(counter < MAX_PACKETS){
             return data;
         }
+        return null;//ここにはきません。
     }
 }
