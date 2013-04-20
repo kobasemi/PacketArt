@@ -11,17 +11,17 @@ import org.jnetpcap.protocol.network.Ip4;
  * @author midolin
  */
 public class PacketDisposer implements Ip4Handler{
-    private final int MAX_PACKETS = 6;//スレッドは急には止まれないかも
+    private int max;//スレッドは急には止まれないかも
     private int[] data;
     private int counter;
     private PcapManager pm = PcapManager.getInstance();
-    private PacketDisposer me;
 
-    PacketDisposer() {
-        data = new int[MAX_PACKETS * 4];//IPv4は4オクテット
+    PacketDisposer(int maxInt) {
+        data = new int[maxInt];
+        max = maxInt;
         counter = 0;
-        me = this;
         System.out.println("PacketDisposer.handler atttached");
+        pm.addHandler(this);
     }
 
     public int[] bytes2ints(byte[] b) {
@@ -34,31 +34,38 @@ public class PacketDisposer implements Ip4Handler{
 
     public void addData(byte[] b) {
         int[] buf = bytes2ints(b);
-        for (int i=0;i<4;i++) {
-            data[counter + i] = buf[i];
+        int i;
+        for (i=0;i<buf.length && counter + i < max;i++) {
+            System.out.println("Data"+"["+ (counter + i) +"] = " + buf[i] % 10);
+            data[counter + i] = buf[i] % 10;
         }
+        counter += i;
     }
 
+    //PcapManagerから呼ばれる
     public void handleIp4(Ip4 ip4) {
-        System.out.println("IPv4 COMES!");
-        counter++;
-        if (counter < MAX_PACKETS) {
-            addData(ip4.destination());
-            addData(ip4.source());
+        System.out.print("IPv4 COMES!");
+        if (counter >= max) {
+            System.out.println("  BUT COUNTER FULL!");
+        } else {
+            System.out.println("");
         }
+        addData(ip4.destination());
+        addData(ip4.source());
     }
 
+    //MelodyAlgorithmから呼ばれる
     public int[] disposePacket() {
-        pm.addHandler(me);
-        while(counter < MAX_PACKETS){
+        //pm.addHandler(this);
+        while(counter < max){
         }
         System.out.println("PacketDisposer.handler detached");
-        pm.removeHandler(me);
-        try{
-            Thread.sleep(10000);
-        } catch(Exception e){
+        if ( pm.removeHandler(this) == false) {
+            //これが呼ばれた時点でこのhandleIp4関数はPcapManagerに呼ばれない
+            System.out.println("PacketDisposer.handler detach FAIL!!!!");
         }
-        //これが呼ばれた時点でこのhandleIp4関数はPcapManagerに呼ばれない
+        pm = null;
+        System.out.println("PacketDisposer: returning Data...");
         return data;
     }
 }

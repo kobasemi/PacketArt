@@ -65,6 +65,7 @@ public class HandlerHolder extends ProtocolHandlerBase {
     */
     public boolean classify(Object o) {
         boolean added = false;
+        System.out.println("classifying protocolHandler: " + o.getClass().getName());
         synchronized(o){ 
         if (o instanceof TcpHandler) {
             addHandler((TcpHandler)o);
@@ -230,39 +231,52 @@ public class HandlerHolder extends ProtocolHandlerBase {
      *
      * @param o 登録解除したいオブジェクトです。
     */
-    public void removeHandler(Object o) {
+    public synchronized boolean removeHandler(Object o) {
+        System.out.println("removing protocolHandler: " + o.getClass().getName());
+        boolean removed = false;
         synchronized(o) {
         if ( tcpHandlers.remove(o) ) {
+            removed = true;
             System.out.println("Removing a TcpHandler..");
         }
         if ( udpHandlers.remove(o) ) {
+            removed = true;
             System.out.println("Removing a UdpHandler..");
         }
         if ( ip6Handlers.remove(o) ) {
+            removed = true;
             System.out.println("Removing a Ip6Handler..");
         }
         if ( ip4Handlers.remove(o) ) {
+            removed = true;
             System.out.println("Removing a Ip4Handler..");
         }
         if ( pppHandlers.remove(o) ) {
+            removed = true;
             System.out.println("Removing a PPPHandler..");
         }
         if ( l2tpHandlers.remove(o) ) {
+            removed = true;
             System.out.println("Removing a L2TPHandler..");
         }
         if ( icmpHandlers.remove(o) ) {
+            removed = true;
             System.out.println("Removing a IcmpHandler..");
         }
         if ( arpHandlers.remove(o) ) {
+            removed = true;
             System.out.println("Removing a ArpHandler..");
         }
         if ( ethernetHandlers.remove(o) ) {
+            removed = true;
             System.out.println("Removing a EthernetHandler..");
         }
         if ( packetHandlers.remove(o) ) {
+            removed = true;
             System.out.println("Removing a PacketHandler..");
         }
         }
+        return removed;
     }
 
 //-----ProtocolHandlerBaseのメソッドをオーバーライドしたものです

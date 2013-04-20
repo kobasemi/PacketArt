@@ -13,7 +13,7 @@ public class MelodyAlgorithm {
 		String[] code = CodeMaker.codeMaker();
 		
 		//Disposeされたパケットが入っている配列を持ってくる．
-		int[] desposedip = (new PacketDisposer()).disposePacket();
+		int[] desposedip = (new PacketDisposer(24)).disposePacket();
 		
 		//音程情報が入る配列．
 		int[] melody = new int[24];

@@ -39,13 +39,14 @@ import org.jnetpcap.PcapBpfProgram;
  *
  * @author sya-ke
 */
-public class PcapManager implements Runnable{
-    static final PcapManager instance = new PcapManager();
+public final class PcapManager implements Runnable{
+    private static final PcapManager instance = new PcapManager();
     /**
      * @return シングルトンのインスタンスを返します。
     */
-    public static PcapManager getInstance(){
-       return instance;
+    public static  synchronized PcapManager getInstance(){
+        System.out.println("PcapManager.getInstance()");
+        return instance;
     }
 
     private PcapPacket pkt;
@@ -105,9 +106,14 @@ public class PcapManager implements Runnable{
     */
     public void run() {
         running = true;
+        long timer = 0;
         while(true) {
+        synchronized (this){
+            timer++;
             while(readyRun == false && pcap == null){
-                //
+            }
+            if (timer%100000 == 0) {
+                System.out.println("PcapManager is Running...");
             }
             pkt = null;
 
@@ -126,6 +132,7 @@ public class PcapManager implements Runnable{
                 //System.out.println("Inspect!");
                 handlerHolder.inspect(pkt);
             }
+        }
         }
     }
 
@@ -147,9 +154,10 @@ public class PcapManager implements Runnable{
      * 全く同一のパケットハンドラが引数でなければなりません。<br>
      * 
      * @param o パケットハンドラをimplementsしたオブジェクト。
+     * @return oというパケットハンドラが登録されていなかった場合、falseを返します。
     */
-    public void removeHandler(Object o) {
-        handlerHolder.classify(o);
+    public boolean removeHandler(Object o) {
+        return handlerHolder.removeHandler(o);
     }
 
     /**
