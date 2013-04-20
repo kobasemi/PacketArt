@@ -14,6 +14,8 @@ import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.PcapDLT;//イーサネット２。
 import org.jnetpcap.PcapBpfProgram;
 
+import org.jnetpcap.PcapClosedException;
+
 /*
     TODO: 残りパケットの（概算値）の保持{
         ファイルサイズ(Byte)を標準MTU,1500byteで割る。WIDEプロジェクトの
@@ -39,7 +41,7 @@ import org.jnetpcap.PcapBpfProgram;
  *
  * @author sya-ke
 */
-public final class PcapManager implements Runnable{
+public final class PcapManager extends Thread{
     private static final PcapManager instance = new PcapManager();
     /**
      * @return シングルトンのインスタンスを返します。
@@ -49,6 +51,7 @@ public final class PcapManager implements Runnable{
         return instance;
     }
 
+    private volatile boolean killThis;
     private PcapPacket pkt;
     private static StringBuilder errBuf;//libpcapからのエラーをここに
     private File pcapFile;
@@ -56,7 +59,6 @@ public final class PcapManager implements Runnable{
     private boolean fromFile;
     private boolean fromDev;
     private boolean readyRun;
-    private boolean running;
     private boolean filtered;
     private Pcap pcap;//jnetpcapの核。
     private PcapBpfProgram bpfFilter;
@@ -94,7 +96,7 @@ public final class PcapManager implements Runnable{
         filtered = false;
         errBuf = new StringBuilder();
         handlerHolder = new HandlerHolder();
-        running = false;
+        killThis = false;
     }
 
     /**
@@ -105,12 +107,18 @@ public final class PcapManager implements Runnable{
      * PcapManagerはパケットをプロトコルの種類別に譲ります。<br>
     */
     public void run() {
-        running = true;
         long timer = 0;
         while(true) {
-        synchronized (this){
+
+            if (isKilled()) {
+                return;
+            }
+
             timer++;
             while(readyRun == false && pcap == null){
+                if (isKilled()) {
+                    return;
+                }
             }
             if (timer%100000 == 0) {
                 System.out.println("PcapManager is Running...");
@@ -132,7 +140,6 @@ public final class PcapManager implements Runnable{
                 //System.out.println("Inspect!");
                 handlerHolder.inspect(pkt);
             }
-        }
         }
     }
 
@@ -288,10 +295,16 @@ public final class PcapManager implements Runnable{
      *
      * @return スレッドで動いているならばtrueを返します。falseならば(new Thread(pm)).start()をしてください。
     */
-    public boolean isRunning() {
-        return running;
+    public boolean isKilled() {
+        return killThis;
     } 
 
+    /**
+     * スレッドを停止させます。
+    */
+    public void kill() {
+        killThis = true;
+    }
 
     /**
      * これまでlibpcapで発生した全てのエラーを返します。
@@ -329,9 +342,20 @@ public final class PcapManager implements Runnable{
     */
     public PcapPacket nextPacket() {
         PcapPacket packet = new PcapPacket(JMemory.POINTER);
-        if ( pcap.nextEx(packet) == Pcap.NEXT_EX_OK ) {
-          return packet;
-        } else {
+        try {
+            if ( pcap != null && pcap.nextEx(packet) == Pcap.NEXT_EX_OK ) {
+                return packet;
+            } else {
+                return null;
+            }
+        } catch (PcapClosedException e) {
+            System.out.println("PcapHasBeenClosed!");
+            System.out.println("GIVE ME MORE PCAP FILES!!!!");
+            System.out.println("PCAPMANAGER STOPPING RUNN...");
+            //ここでユーザにファイルのパケットをすべて消費したことを告げる。
+            pcap = null;
+            readyRun = false;
+            fromFile = false;
             return null;
         }
     }

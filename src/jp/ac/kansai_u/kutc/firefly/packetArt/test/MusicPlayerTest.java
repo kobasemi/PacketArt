@@ -52,11 +52,12 @@ public class MusicPlayerTest{
             }
         }).start();
 */
-        (new Thread(pm)).start();
+        pm.start();
         System.out.println("---------------------");
         //pm.openFile("jp/ac/kansai_u/kutc/firefly/packetArt/test/1000.cap");
         if ( pm.openFile("1000.cap" ) && pm.isReadyRun() ) {
             musicPlayer.playMusic(50);
+            pm.kill();
             pm.close();
         }
         pm = null;

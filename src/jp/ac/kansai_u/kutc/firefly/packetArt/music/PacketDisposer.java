@@ -10,18 +10,24 @@ import org.jnetpcap.protocol.network.Ip4;
  * 
  * @author midolin
  */
-public class PacketDisposer implements Ip4Handler{
-    private int max;//スレッドは急には止まれないかも
-    private int[] data;
-    private int counter;
-    private PcapManager pm = PcapManager.getInstance();
+public final class PacketDisposer implements Ip4Handler{
+    private static PacketDisposer instance = new PacketDisposer(24);
+    public static synchronized PacketDisposer getInstance() {
+        if (instance == null) {
+            instance = new PacketDisposer(24);
+        }
+        return instance;
+    }
+    private static int max;//スレッドは急には止まれないかも
+    private static int[] data;
+    private static int counter;
+    private static PcapManager pm = PcapManager.getInstance();
 
-    PacketDisposer(int maxInt) {
+    private PacketDisposer(int maxInt) {
         data = new int[maxInt];
         max = maxInt;
         counter = 0;
         System.out.println("PacketDisposer.handler atttached");
-        pm.addHandler(this);
     }
 
     public int[] bytes2ints(byte[] b) {
@@ -50,21 +56,23 @@ public class PacketDisposer implements Ip4Handler{
         } else {
             System.out.println("");
         }
+        synchronized(ip4){
         addData(ip4.destination());
         addData(ip4.source());
+        }
     }
 
     //MelodyAlgorithmから呼ばれる
-    public int[] disposePacket() {
-        //pm.addHandler(this);
+    public static int[] disposePacket() {
+        pm.addHandler(instance);
         while(counter < max){
         }
-        System.out.println("PacketDisposer.handler detached");
-        if ( pm.removeHandler(this) == false) {
+        System.out.println("PacketDisposer.handler detach!");
+        if ( pm.removeHandler(instance) == false) {
             //これが呼ばれた時点でこのhandleIp4関数はPcapManagerに呼ばれない
             System.out.println("PacketDisposer.handler detach FAIL!!!!");
         }
-        pm = null;
+        //pm = null;
         System.out.println("PacketDisposer: returning Data...");
         return data;
     }
