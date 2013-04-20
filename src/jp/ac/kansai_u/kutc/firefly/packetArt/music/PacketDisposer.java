@@ -11,7 +11,7 @@ import org.jnetpcap.protocol.network.Ip4;
  * @author midolin
  */
 public class PacketDisposer implements Ip4Handler{
-    private final int MAX_PACKETS = 100;//スレッドは急には止まれないかも
+    private final int MAX_PACKETS = 6;//スレッドは急には止まれないかも
     private int[] data;
     private int counter;
     private PcapManager pm = PcapManager.getInstance();

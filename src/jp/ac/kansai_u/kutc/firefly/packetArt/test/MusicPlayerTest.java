@@ -24,63 +24,65 @@ import javax.sound.midi.Sequencer;
  */
 public class MusicPlayerTest{
 
-	private Sequencer sequencer;
-	public boolean isPlaying() {
-		return sequencer.isRunning();
-	}
+    private Sequencer sequencer;
+    public boolean isPlaying() {
+        return sequencer.isRunning();
+    }
 
-	MusicPlayerTest() {
-		try {
-			sequencer  = MidiSystem.getSequencer();
-		} catch (MidiUnavailableException e) {
-			e.printStackTrace();
-			System.err.println("残念ながら、あなたのPCはMIDIを再生できない");
-		}
-	}
+    MusicPlayerTest() {
+        try {
+            sequencer  = MidiSystem.getSequencer();
+        } catch (MidiUnavailableException e) {
+            e.printStackTrace();
+            System.err.println("残念ながら、あなたのPCはMIDIを再生できない");
+        }
+    }
 
-	public static void main(String[] args) throws InvalidMidiDataException, MidiUnavailableException{
-		final MusicPlayerTest musicPlayer = new MusicPlayerTest();
-/*		new Thread(new Runnable(){
-			public void run(){
-			try{
-					Thread.sleep(10000);//10秒後、stopMusic()を呼ぶ
-					musicPlayer.stopMusic();
-				} catch(Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}).start();
-*/
+    public static void main(String[] args) throws InvalidMidiDataException, MidiUnavailableException{
+        MusicPlayerTest musicPlayer = new MusicPlayerTest();
         PcapManager pm = PcapManager.getInstance();
+/*        new Thread(new Runnable(){
+            public void run(){
+            try{
+                    Thread.sleep(10000);//10秒後、stopMusic()を呼ぶ
+                    musicPlayer.stopMusic();
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+*/
         (new Thread(pm)).start();
         System.out.println("---------------------");
         //pm.openFile("jp/ac/kansai_u/kutc/firefly/packetArt/test/1000.cap");
         if ( pm.openFile("1000.cap" ) && pm.isReadyRun() ) {
             musicPlayer.playMusic(50);
+            pm.close();
         }
+        pm = null;
         System.out.println("---------------------");
-	}
+    }
 
-	public void playMusic(int velo) throws InvalidMidiDataException, MidiUnavailableException{
-		VelocityModulator.setVelocity(velo);
-		Sequence sequence = DrumMaker.setDrumLine(velo);
-		try{
-			sequencer.open();
-			
-			sequencer.setSequence(sequence);
-			sequencer.start();
-			while(sequencer.isRunning()) Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}finally{
-			if (sequencer != null && sequencer.isOpen()) sequencer.close();
-		}
-	}
+    public void playMusic(int velo) throws InvalidMidiDataException, MidiUnavailableException{
+        VelocityModulator.setVelocity(velo);
+        Sequence sequence = DrumMaker.setDrumLine(velo);
+        try{
+            sequencer.open();
+            
+            sequencer.setSequence(sequence);
+            sequencer.start();
+            while(sequencer.isRunning()) Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }finally{
+            if (sequencer != null && sequencer.isOpen()) sequencer.close();
+        }
+    }
 
-	public void stopMusic() {
-		if (sequencer != null && isPlaying()) {
-			sequencer.stop();
-			//sequencer.setMicrosecondPosition(0);
-		}
-	}
+    public void stopMusic() {
+        if (sequencer != null && isPlaying()) {
+            sequencer.stop();
+            //sequencer.setMicrosecondPosition(0);
+        }
+    }
 }

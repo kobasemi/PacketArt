@@ -85,7 +85,7 @@ public class ProtocolHandlerBase {
      * 
      * @see org.jnetpcap.packet.PcapPacket
     */
-    public void inspect(PcapPacket packet) {
+    public synchronized void inspect(PcapPacket packet) {
         if (willHandlePackets == false) {
             if (packet != null) {
                 pkt = new PcapPacket(packet);
