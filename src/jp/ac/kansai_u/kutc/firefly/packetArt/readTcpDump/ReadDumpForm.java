@@ -6,7 +6,6 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-import jp.ac.kansai_u.kutc.firefly.packetArt.Form;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 
 import org.jnetpcap.protocol.tcpip.Tcp;
@@ -23,7 +22,6 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.UdpHandler;
 public class ReadDumpForm extends FormBase implements TcpHandler, UdpHandler {
 
     private LoadButton loadButton;
-    private int counter;
     private int X;
     private int Y;
     private int MAX;
