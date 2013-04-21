@@ -114,11 +114,11 @@ public final class PcapManager extends Thread{
     public void run() {
         //debugMe("PcapManager.run() start");
         killThis = false;
-        while(true) {
+        while (true) {
             if (isKilled()) {
                 return;
             }
-            while(readyRun == false && pcap == null){
+            while (readyRun == false || pcap == null){
                 if (isKilled()) {
                     return;
                     //スレッドの実行を停止します。
@@ -136,7 +136,8 @@ public final class PcapManager extends Thread{
             } else {
                 //パケットが無くなった場合、OnNoPacketsLeftハンドラを呼び出します。
                 //その場合、おそらく0.01秒ごとに呼び出されます。
-                handlerHolder.onNoPacketsLeft();
+                if (fromFile)
+                    handlerHolder.onNoPacketsLeft();
             }
             savePackets(PUSH_SIZE);
             //savePacketsの保存先のキューは、満タンになった時点で

@@ -134,8 +134,8 @@ public class LoadButton extends JButton implements ActionListener, OnPcapClosedH
     }
 
     public void onNoPacketsLeft() {
-//        setVisible(true);
-//        setText("");
+        setVisible(true);
+        setText("GIVE ME MORE PACKETS!!!! CLICK ME!!!");
     }
 
     public class Filter extends FileFilter {
