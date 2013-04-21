@@ -46,6 +46,7 @@ public class LoadButton extends JButton implements ActionListener, OnPcapClosedH
 
     public void init() {
         this.setBorderPainted(false);
+        this.setVisible(true);
         this.addActionListener(this);
         chooser = new JFileChooser();
         chooser.addChoosableFileFilter(new Filter());
@@ -96,6 +97,7 @@ public class LoadButton extends JButton implements ActionListener, OnPcapClosedH
         if (device != null) {
             if (pm.openDev(device)) {
                 setText("Opening Device   ' " + information +  " ' => Sucess.");
+                setVisible(false);
                 return;
             } else {
                 setText("Opening Device   ' " + information + " ' => FAIL."
@@ -113,6 +115,7 @@ public class LoadButton extends JButton implements ActionListener, OnPcapClosedH
             if (f != null) {
                 if (pm.openFile(f.getAbsolutePath())) {
                     setText("Opening File   ' " + f.getName() +  " ' => Sucess.");
+                    setVisible(false);
                     return;
                 } else {
                     setText("Opening File   ' " + f.getName() + " ' => FAIL."
@@ -126,12 +129,14 @@ public class LoadButton extends JButton implements ActionListener, OnPcapClosedH
     }
 
     public void onPcapClosed() {
+        setVisible(true);
         setText("File or Device Closed. Click me");
         pm = null;
     }
 
     public void onNoPacketsLeft() {
-        setText("GIVE ME MORE PCAP! CLICK ME!");
+//        setVisible(true);
+//        setText("");
     }
 
     public class Filter extends FileFilter {

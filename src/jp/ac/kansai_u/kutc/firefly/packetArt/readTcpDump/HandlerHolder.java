@@ -283,10 +283,10 @@ public class HandlerHolder extends ProtocolHandlerBase {
      *
      * @param o 登録解除したいオブジェクトです。
     */
-    public synchronized boolean removeHandler(Object o) {
+    public boolean removeHandler(Object o) {
         System.out.println("removing protocolHandler: " + o.getClass().getName());
         boolean removed = false;
-        synchronized(o) {
+        synchronized(this) {
             if ( tcpHandlers.remove(o) ) {
                 removed = true;
                 System.out.println("Removing a TcpHandler..");
@@ -405,6 +405,7 @@ public class HandlerHolder extends ProtocolHandlerBase {
     }
 //-----ProtocolHandlerBaseのメソッドをオーバーライドしたものです
 
+//-----PcapManagerのスレッドからのみ呼ばれるので排他制御しない
     public void onPcapClosed() {
         for (OnPcapClosedHandler h: onPcapClosedHandlers) {
             h.onPcapClosed();
@@ -420,4 +421,5 @@ public class HandlerHolder extends ProtocolHandlerBase {
             h.onNoPacketsLeft();
         }
     }
+//-----PcapManagerのスレッドからのみ呼ばれるので排他制御しない
 }

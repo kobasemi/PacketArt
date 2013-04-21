@@ -108,6 +108,20 @@ public class DevUtil {
         return errBuf;
     }
 
+    /**
+     * デバイス名からデバイスを取得します。
+     *
+     * @param name デバイス名です。
+     * @return デバイス名にひも付けされたデバイス(PcapIf)を返します。該当無しならnullが返ります。
+    */
+    public PcapIf getDevByName(String devName) {
+        for (DevInfo devInfo : allDevInfo) {
+            if (devName.equals(devInfo.name)) {
+                return devInfo.device;
+            }
+        }
+        return null;
+    }
 
     /**
      * デバイスのIPからデバイス名を取得します。

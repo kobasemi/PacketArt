@@ -93,7 +93,6 @@ public final class PcapManager extends Thread{
      * 何のエラーも引数も返り値もありません。
     */
     public void init() {
-        System.out.println("PcapManager.init()");
         File pcapFile = null;
         PcapIf pcapDev = null;
         pcap = null;
@@ -105,15 +104,9 @@ public final class PcapManager extends Thread{
         errBuf = new StringBuilder();
         handlerHolder = new HandlerHolder();
         killThis = false;
+        //debugMe("PcapManager.initDone()");
     }
     //この関数はfinalで一度しか呼べないのでスレッドセーフ
-
-    /**
-     * スレッドの実行を開始もしくは再開する際に呼び出されます。
-    */
-    public void start() {
-        killThis = false;
-    }
 
     /**
      * シングルトンでスレッドが無限ループします。<br>
@@ -123,6 +116,8 @@ public final class PcapManager extends Thread{
      * PcapManagerはパケットをプロトコルの種類別に譲ります。<br>
     */
     public void run() {
+        //debugMe("PcapManager.run() start");
+        killThis = false;
         while(true) {
             if (isKilled()) {
                 return;
@@ -162,7 +157,7 @@ public final class PcapManager extends Thread{
      * @param o ハンドラをimplementsしたオブジェクト。
      * @return oがハンドラじゃなかった場合、falseが返ります。
     */
-    public boolean addHandler(Object o) {
+    public synchronized boolean addHandler(Object o) {
         boolean wasOK = false;
         synchronized(handlerHolder) {
              wasOK = handlerHolder.classify(o);
@@ -178,7 +173,7 @@ public final class PcapManager extends Thread{
      * @param o ハンドラをimplementsしたオブジェクト。
      * @return oというハンドラが登録されていなかった場合、falseを返します。
     */
-    public boolean removeHandler(Object o) {
+    public synchronized boolean removeHandler(Object o) {
         synchronized(handlerHolder) {
             return handlerHolder.removeHandler(o);
         }
@@ -194,7 +189,6 @@ public final class PcapManager extends Thread{
     */
     public synchronized boolean openFile(String fname) {
         synchronized(openPcapLock) {
-            System.out.println("PcapManager.openFile(" + fname +")");
             if (pcap != null) {
                 System.out.println("You've already opened pcap! closing previous one..");
                 close();
@@ -214,6 +208,7 @@ public final class PcapManager extends Thread{
             filtered = false;
             readyRun = true;
             handlerHolder.onPcapOpened();
+            debugMe("PcapManager.openFile(" + fname +") Done");
             return true;
         }
     }
@@ -261,7 +256,9 @@ public final class PcapManager extends Thread{
             fromFile = false;
             filtered = false;
             readyRun = true;
+            pcapDev = (new DevUtil()).getDevByName(devName);
             handlerHolder.onPcapOpened();
+            debugMe("PcapManager.openDev(" + devName +") Done");
             return true;
         }
     }
@@ -378,7 +375,6 @@ public final class PcapManager extends Thread{
                 return null;
             }
         } catch (PcapClosedException e) {
-            System.out.println("PcapHasBeenClosed!");
             System.out.println("GIVE ME MORE PCAP FILES!!!!");
             handlerHolder.onPcapClosed();
             //ここでユーザにファイルのパケットをすべて消費したことを告げる。
@@ -538,5 +534,29 @@ public final class PcapManager extends Thread{
         fromFile = false;
         fromDev = false;
         filtered = false;
+    }
+
+    /**
+     * デバッグ用。<br>
+    */
+    public void debugMe(String header) {
+        System.out.println("----------------------------------" + header);
+        System.out.print("PcapManager Thread is ");
+        if (this.isAlive()) {
+            System.out.println("Alive");
+        } else {
+            System.out.println("Dead");
+        }
+        System.out.println("File pcapFile = " + pcapFile);
+        System.out.println("PcapIf pcapDev = " + pcapDev);
+        System.out.println("pcap = " + pcap);
+        System.out.println("fromFile = " + fromFile);
+        System.out.println("fromDev = " + fromDev);
+        System.out.println("readyRun = " + readyRun);
+        System.out.println("packetQueue = " + packetQueue);
+        System.out.println("filtered = " + filtered);
+        System.out.println("errBuf = " + errBuf.toString());
+        System.out.println("killThis = " + killThis);
+        System.out.println("----------------------------------");
     }
 }
