@@ -18,8 +18,8 @@ import org.jnetpcap.packet.PcapPacket;
 import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.*;
 
 /**
- * パケットに関するメソッドを、<br>
- * プロトコル別に呼び出します。
+ * PcapManagerが呼び出すべきあらゆるハンドラを<br>
+ * 保持するクラスです。
  *
  * @author sya-ke
 */
@@ -37,6 +37,10 @@ public class HandlerHolder extends ProtocolHandlerBase {
     private List<EthernetHandler> ethernetHandlers;
     private List<PacketHandler> packetHandlers;
 
+    private List<OnPcapClosedHandler> onPcapClosedHandlers;
+    private List<OnPcapOpenedHandler> onPcapOpenedHandlers;
+    private List<OnNoPacketsLeftHandler> onNoPacketsLeftHandlers;
+
     /**
      * 全部空に初期化します。<br>
      * 空の状態でinspect()しても無意味です。
@@ -53,6 +57,10 @@ public class HandlerHolder extends ProtocolHandlerBase {
         arpHandlers = Collections.synchronizedList(new ArrayList<ArpHandler>());
         ethernetHandlers = Collections.synchronizedList(new ArrayList<EthernetHandler>());
         packetHandlers = Collections.synchronizedList(new ArrayList<PacketHandler>());
+
+        onPcapClosedHandlers = Collections.synchronizedList(new ArrayList<OnPcapClosedHandler>());
+        onPcapOpenedHandlers = Collections.synchronizedList(new ArrayList<OnPcapOpenedHandler>());
+        onNoPacketsLeftHandlers = Collections.synchronizedList(new ArrayList<OnNoPacketsLeftHandler>());
     }
 
     /**
@@ -67,63 +75,77 @@ public class HandlerHolder extends ProtocolHandlerBase {
         boolean added = false;
         System.out.println("classifying protocolHandler: " + o.getClass().getName());
         synchronized(o){ 
-        if (o instanceof TcpHandler) {
-            addHandler((TcpHandler)o);
-            System.out.println("Adding a TcpHandler..");
-            added = true;
-        }
-        if (o instanceof UdpHandler) {
-            addHandler((UdpHandler)o);
-            System.out.println("Adding a UdpHandler..");
-            added = true;
-        }
-        if (o instanceof Ip6Handler) {
-            addHandler((Ip6Handler)o);
-            System.out.println("Adding a Ip6Handler..");
-            added = true;
-        }
-        if (o instanceof Ip4Handler) {
-            addHandler((Ip4Handler)o);
-            System.out.println("Adding a Ip4Handler..");
-            added = true;
-        }
-        if (o instanceof PPPHandler) {
-            addHandler((PPPHandler)o);
-            System.out.println("Adding a PPPHandler..");
-            added = true;
-        }
-        if (o instanceof L2TPHandler) {
-            addHandler((L2TPHandler)o);
-            System.out.println("Adding a L2TPHandler..");
-            added = true;
-        }
-        if (o instanceof IcmpHandler) {
-            addHandler((IcmpHandler)o);
-            System.out.println("Adding a IcmpHandler..");
-            added = true;
-        }
-        if (o instanceof ArpHandler) {
-            addHandler((ArpHandler)o);
-            System.out.println("Adding a ArpHandler..");
-            added = true;
-        }
-        if (o instanceof EthernetHandler) {
-            addHandler((EthernetHandler)o);
-            System.out.println("Adding a EthernetHandler..");
-            added = true;
-        }
-        if (o instanceof PacketHandler) {
-            addHandler((PacketHandler)o);
-            System.out.println("Adding a PacketHandler..");
-            added = true;
-        }
+            if (o instanceof TcpHandler) {
+                addHandler((TcpHandler)o);
+                System.out.println("Adding a TcpHandler..");
+                added = true;
+            }
+            if (o instanceof UdpHandler) {
+                addHandler((UdpHandler)o);
+                System.out.println("Adding a UdpHandler..");
+                added = true;
+            }
+            if (o instanceof Ip6Handler) {
+                addHandler((Ip6Handler)o);
+                System.out.println("Adding a Ip6Handler..");
+                added = true;
+            }
+            if (o instanceof Ip4Handler) {
+                addHandler((Ip4Handler)o);
+                System.out.println("Adding a Ip4Handler..");
+                added = true;
+            }
+            if (o instanceof PPPHandler) {
+                addHandler((PPPHandler)o);
+                System.out.println("Adding a PPPHandler..");
+                added = true;
+            }
+            if (o instanceof L2TPHandler) {
+                addHandler((L2TPHandler)o);
+                System.out.println("Adding a L2TPHandler..");
+                added = true;
+            }
+            if (o instanceof IcmpHandler) {
+                addHandler((IcmpHandler)o);
+                System.out.println("Adding a IcmpHandler..");
+                added = true;
+            }
+            if (o instanceof ArpHandler) {
+                addHandler((ArpHandler)o);
+                System.out.println("Adding a ArpHandler..");
+                added = true;
+            }
+            if (o instanceof EthernetHandler) {
+                addHandler((EthernetHandler)o);
+                System.out.println("Adding a EthernetHandler..");
+                added = true;
+            }
+            if (o instanceof PacketHandler) {
+                addHandler((PacketHandler)o);
+                System.out.println("Adding a PacketHandler..");
+                added = true;
+            }
+            if (o instanceof OnPcapClosedHandler) {
+                addHandler((OnPcapClosedHandler)o);
+                System.out.println("Adding a OnPcapClosedHandler..");
+                added = true;
+            }
+            if (o instanceof OnPcapOpenedHandler) {
+                addHandler((OnPcapOpenedHandler)o);
+                System.out.println("Adding a OnPcapOpenedHandler..");
+                added = true;
+            }
+            if (o instanceof OnNoPacketsLeftHandler) {
+                addHandler((OnNoPacketsLeftHandler)o);
+                System.out.println("Adding a OnNoPacketsLeftHandler..");
+                added = true;
+            }
         }
         return added;
     }
 
     /**
      * パケットのハンドラを登録します。<br>
-     * これらのハンドラはinspect関数が呼ばれる度に呼び出されます。<br>
      * いちいちインターフェース毎に登録するのも<br>
      * 面倒なので、classifyが便利です。
      *
@@ -223,6 +245,36 @@ public class HandlerHolder extends ProtocolHandlerBase {
     public  synchronized void addHandler(PacketHandler t) {
         packetHandlers.add(t);
     }
+    /**
+     * パケットのハンドラを登録します。<br>
+     * いちいちインターフェース毎に登録するのも<br>
+     * 面倒なので、classifyが便利です。
+     *
+     * @param t interfaceを実装したハンドラです。
+    */
+    public  synchronized void addHandler(OnPcapClosedHandler t) {
+        onPcapClosedHandlers.add(t);
+    }
+    /**
+     * パケットのハンドラを登録します。<br>
+     * いちいちインターフェース毎に登録するのも<br>
+     * 面倒なので、classifyが便利です。
+     *
+     * @param t interfaceを実装したハンドラです。
+    */
+    public  synchronized void addHandler(OnPcapOpenedHandler t) {
+        onPcapOpenedHandlers.add(t);
+    }
+    /**
+     * パケットのハンドラを登録します。<br>
+     * いちいちインターフェース毎に登録するのも<br>
+     * 面倒なので、classifyが便利です。
+     *
+     * @param t interfaceを実装したハンドラです。
+    */
+    public  synchronized void addHandler(OnNoPacketsLeftHandler t) {
+        onNoPacketsLeftHandlers.add(t);
+    }
 
     /**
      * パケットのハンドラを登録解除します。<br>
@@ -235,46 +287,58 @@ public class HandlerHolder extends ProtocolHandlerBase {
         System.out.println("removing protocolHandler: " + o.getClass().getName());
         boolean removed = false;
         synchronized(o) {
-        if ( tcpHandlers.remove(o) ) {
-            removed = true;
-            System.out.println("Removing a TcpHandler..");
-        }
-        if ( udpHandlers.remove(o) ) {
-            removed = true;
-            System.out.println("Removing a UdpHandler..");
-        }
-        if ( ip6Handlers.remove(o) ) {
-            removed = true;
-            System.out.println("Removing a Ip6Handler..");
-        }
-        if ( ip4Handlers.remove(o) ) {
-            removed = true;
-            System.out.println("Removing a Ip4Handler..");
-        }
-        if ( pppHandlers.remove(o) ) {
-            removed = true;
-            System.out.println("Removing a PPPHandler..");
-        }
-        if ( l2tpHandlers.remove(o) ) {
-            removed = true;
-            System.out.println("Removing a L2TPHandler..");
-        }
-        if ( icmpHandlers.remove(o) ) {
-            removed = true;
-            System.out.println("Removing a IcmpHandler..");
-        }
-        if ( arpHandlers.remove(o) ) {
-            removed = true;
-            System.out.println("Removing a ArpHandler..");
-        }
-        if ( ethernetHandlers.remove(o) ) {
-            removed = true;
-            System.out.println("Removing a EthernetHandler..");
-        }
-        if ( packetHandlers.remove(o) ) {
-            removed = true;
-            System.out.println("Removing a PacketHandler..");
-        }
+            if ( tcpHandlers.remove(o) ) {
+                removed = true;
+                System.out.println("Removing a TcpHandler..");
+            }
+            if ( udpHandlers.remove(o) ) {
+                removed = true;
+                System.out.println("Removing a UdpHandler..");
+            }
+            if ( ip6Handlers.remove(o) ) {
+                removed = true;
+                System.out.println("Removing a Ip6Handler..");
+            }
+            if ( ip4Handlers.remove(o) ) {
+                removed = true;
+                System.out.println("Removing a Ip4Handler..");
+            }
+            if ( pppHandlers.remove(o) ) {
+                removed = true;
+                System.out.println("Removing a PPPHandler..");
+            }
+            if ( l2tpHandlers.remove(o) ) {
+                removed = true;
+                System.out.println("Removing a L2TPHandler..");
+            }
+            if ( icmpHandlers.remove(o) ) {
+                removed = true;
+                System.out.println("Removing a IcmpHandler..");
+            }
+            if ( arpHandlers.remove(o) ) {
+                removed = true;
+                System.out.println("Removing a ArpHandler..");
+            }
+            if ( ethernetHandlers.remove(o) ) {
+                removed = true;
+                System.out.println("Removing a EthernetHandler..");
+            }
+            if ( packetHandlers.remove(o) ) {
+                removed = true;
+                System.out.println("Removing a PacketHandler..");
+            }
+            if ( onPcapClosedHandlers.remove(o) ) {
+                removed = true;
+                System.out.println("Removing a OnPcapClosedHandler..");
+            }
+            if ( onPcapOpenedHandlers.remove(o) ) {
+                removed = true;
+                System.out.println("Removing a OnPcapOpenedHandler..");
+            }
+            if ( onNoPacketsLeftHandlers.remove(o) ) {
+                removed = true;
+                System.out.println("Removing a NoPacketsLeftHandler..");
+            }
         }
         return removed;
     }
@@ -340,4 +404,20 @@ public class HandlerHolder extends ProtocolHandlerBase {
         }
     }
 //-----ProtocolHandlerBaseのメソッドをオーバーライドしたものです
+
+    public void onPcapClosed() {
+        for (OnPcapClosedHandler h: onPcapClosedHandlers) {
+            h.onPcapClosed();
+        }
+    }
+    public void onPcapOpened() {
+        for (OnPcapOpenedHandler h: onPcapOpenedHandlers) {
+            h.onPcapOpened();
+        }
+    }
+    public void onNoPacketsLeft() {
+        for (OnNoPacketsLeftHandler h: onNoPacketsLeftHandlers) {
+            h.onNoPacketsLeft();
+        }
+    }
 }

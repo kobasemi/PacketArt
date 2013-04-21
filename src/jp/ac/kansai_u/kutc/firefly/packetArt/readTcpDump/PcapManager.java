@@ -72,6 +72,7 @@ public final class PcapManager extends Thread{
 
     public final int TIMEOUT_OPENDEV = 10;//デバイスからの読み込みで、0.01秒のパケット待ちを許す。
     public final int QUEUE_SIZE = 30000;//30000パケットの保持をする。
+    public final int PUSH_SIZE = 1;//1パケットのロードにつき1パケットの確保をする。0.01秒ごとにパケットを間引く意味もある。
 
     private Object openPcapLock = new Object();
     private Object filterLock = new Object();
@@ -108,6 +109,13 @@ public final class PcapManager extends Thread{
     //この関数はfinalで一度しか呼べないのでスレッドセーフ
 
     /**
+     * スレッドの実行を開始もしくは再開する際に呼び出されます。
+    */
+    public void start() {
+        killThis = false;
+    }
+
+    /**
      * シングルトンでスレッドが無限ループします。<br>
      * PcapManagerは空中のグローバル空間を漂いパケットを拾い、蓄え続けます。<br>
      * PcapManagerは常にパケットを拾い続けつつ一部を捨て、libpcapが浪費する待ちパケットのメモリを開放します。<br>
@@ -115,50 +123,44 @@ public final class PcapManager extends Thread{
      * PcapManagerはパケットをプロトコルの種類別に譲ります。<br>
     */
     public void run() {
-        long timer = 0;
         while(true) {
-
             if (isKilled()) {
                 return;
             }
-
-            timer++;
             while(readyRun == false && pcap == null){
                 if (isKilled()) {
                     return;
+                    //スレッドの実行を停止します。
                 }
             }
-            if (timer%100000 == 0) {
-                System.out.println("PcapManager is Running...");
-            }
             pkt = null;
-
-            savePackets(3);
-            //savePacketsの保存先のキューは満タンになった時点で
-            //パケットを捨てていくので、この関数を空撃ちしてパケットを間引くこともできます。
-
             pkt = nextPacket();//0.01秒間パケットが来なかったらタイムアウトします。
             //パケットが来なかった場合、pktにはnullが入ります。
             if (pkt == null) {
-                //パケットが来なくても、キューから非常食のパケットを取り出します。
+                //パケットが来なくても、キューから非常食のパケットを取り出せます。
                 pkt = nextPacketFromQueue();
             }
-            //それでもパケットが来ないなら、どうしようもありません。
             if (pkt != null ) {
-                //System.out.println("Inspect!");
-                handlerHolder.inspect(pkt);
+                handlerHolder.inspect(pkt);//そのパケットをプロトコルハンドラへ渡し、ハンドラを実行します。
+            } else {
+                //パケットが無くなった場合、OnNoPacketsLeftハンドラを呼び出します。
+                //その場合、おそらく0.01秒ごとに呼び出されます。
+                handlerHolder.onNoPacketsLeft();
             }
+            savePackets(PUSH_SIZE);
+            //savePacketsの保存先のキューは、満タンになった時点で
+            //古いパケットを捨てていくので、この関数を空撃ちしてパケットを間引けます。
         }
     }
     //Threadのstart関数によってのみ呼び出されるので、スレッドセーフ（能動的に呼ばないで・・）
 
     /**
-     * パケットハンドラを追加し、実行の登録をします。<br>
-     * 追加するパケットハンドラはなんらかのhandlerを<br>
+     * ハンドラを追加し、実行の登録をします。<br>
+     * 追加するハンドラはなんらかのhandlerを<br>
      * implementsしていなければなりません。
      * 
-     * @param o パケットハンドラをimplementsしたオブジェクト。
-     * @return oがパケットハンドラじゃなかった場合、falseが返ります。
+     * @param o ハンドラをimplementsしたオブジェクト。
+     * @return oがハンドラじゃなかった場合、falseが返ります。
     */
     public boolean addHandler(Object o) {
         boolean wasOK = false;
@@ -169,12 +171,12 @@ public final class PcapManager extends Thread{
     }
 
     /**
-     * パケットハンドラを削除し、実行の登録解除をします。<br>
+     * ハンドラを削除し、実行の登録解除をします。<br>
      * オブジェクトの参照を比較しているので、登録したものと<br>
-     * 全く同一のパケットハンドラが引数でなければなりません。<br>
+     * 全く同一のハンドラが引数でなければなりません。<br>
      * 
-     * @param o パケットハンドラをimplementsしたオブジェクト。
-     * @return oというパケットハンドラが登録されていなかった場合、falseを返します。
+     * @param o ハンドラをimplementsしたオブジェクト。
+     * @return oというハンドラが登録されていなかった場合、falseを返します。
     */
     public boolean removeHandler(Object o) {
         synchronized(handlerHolder) {
@@ -192,7 +194,7 @@ public final class PcapManager extends Thread{
     */
     public synchronized boolean openFile(String fname) {
         synchronized(openPcapLock) {
-            System.out.println("openFile(" + fname +")");
+            System.out.println("PcapManager.openFile(" + fname +")");
             if (pcap != null) {
                 System.out.println("You've already opened pcap! closing previous one..");
                 close();
@@ -211,6 +213,7 @@ public final class PcapManager extends Thread{
             fromFile = true;
             filtered = false;
             readyRun = true;
+            handlerHolder.onPcapOpened();
             return true;
         }
     }
@@ -242,7 +245,7 @@ public final class PcapManager extends Thread{
     */
     public synchronized boolean openDev(String devName) {
         synchronized(openPcapLock) {
-            System.out.println("openDev(" + devName +")");
+            System.out.println("PcapManager.openDev(" + devName +")");
             //pcap = Pcap.openLive(devName, Pcap.DEFAULT_SNAPLEN, Pcap.MODE_PROMISCUOUS, Pcap.DEFAULT_TIMEOUT, errBuf);
             if (pcap != null) {
                 System.out.println("You've already opened pcap! closing previous one..");
@@ -258,6 +261,7 @@ public final class PcapManager extends Thread{
             fromFile = false;
             filtered = false;
             readyRun = true;
+            handlerHolder.onPcapOpened();
             return true;
         }
     }
@@ -342,7 +346,11 @@ public final class PcapManager extends Thread{
      * @return libpcapに関する最新のエラー情報だけを返します。
     */
     public String getErr() {
-        return pcap.getErr();
+        if (pcap != null) {
+            return pcap.getErr();
+        } else {
+            return getAllErr();
+        }
     }
 
     /**
@@ -372,7 +380,7 @@ public final class PcapManager extends Thread{
         } catch (PcapClosedException e) {
             System.out.println("PcapHasBeenClosed!");
             System.out.println("GIVE ME MORE PCAP FILES!!!!");
-            System.out.println("PCAPMANAGER STOPPING RUNN...");
+            handlerHolder.onPcapClosed();
             //ここでユーザにファイルのパケットをすべて消費したことを告げる。
             pcap = null;
             readyRun = false;
@@ -409,7 +417,6 @@ public final class PcapManager extends Thread{
         final int howManyEnqeued;
 
         if (pcap == null) {
-            System.out.println("PCAP NOT OPENED!");
             return false;
         }
 
@@ -475,7 +482,7 @@ public final class PcapManager extends Thread{
     public boolean setBPFfilter(String bpf) {
         synchronized(filterLock) {
             if (isFiltered()) {
-                System.out.println("ERRO: Has been Fltered!");
+                System.out.println("ERROR: Has been Fltered!");
                 return false;
             }
             final int OPTIMIZE = 1;//立てといた方がいいんでしょ？多分。
@@ -495,14 +502,14 @@ public final class PcapManager extends Thread{
                                     NETMASK);
             }
             if ( retCode == Pcap.NOT_OK ) { // 多分、String bpfがBPFの構文にあってない
-                System.out.println("PcapManager.getBPF('"+ bpf +"') Failed!");
+                System.out.println("PcapManager.setBPF('"+ bpf +"') Failed!");
                 if (pcap != null) {
                     System.out.println("ERROR is " + pcap.getErr());
                 }
                 return false;
             }
             if ( pcap != null && pcap.setFilter(filter) == Pcap.NOT_OK){
-                System.out.println("PcapManager.getBPF('"+ bpf +"') Failed!");
+                System.out.println("PcapManager.setBPF('"+ bpf +"') Failed!");
                 if (pcap != null) {
                     System.out.println("ERROR is " + pcap.getErr());
                 }
