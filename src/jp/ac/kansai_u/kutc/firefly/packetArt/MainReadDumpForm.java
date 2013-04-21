@@ -13,8 +13,6 @@ public class MainReadDumpForm {
 
         p.start();
         form.setVisible(true);
-        form.show();
-        System.out.println(" MainReadDump Closed.");
         p.debugMe("MainReadDumpForm.mainEnd");
 	}
 }

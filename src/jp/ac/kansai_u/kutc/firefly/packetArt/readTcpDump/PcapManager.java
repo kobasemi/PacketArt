@@ -1,13 +1,9 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump;
 
 import java.io.File;//File.existsに必要
-import java.util.ArrayList;
 import java.util.List;
 
-import java.lang.Runnable;
-
 import org.jnetpcap.Pcap;//こいつが心臓
-import org.jnetpcap.PcapAddr;
 import org.jnetpcap.PcapIf;
 import org.jnetpcap.nio.JMemory;
 import org.jnetpcap.packet.PcapPacket;

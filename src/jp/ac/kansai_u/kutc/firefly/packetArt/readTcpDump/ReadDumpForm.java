@@ -6,7 +6,6 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-import jp.ac.kansai_u.kutc.firefly.packetArt.Form;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 
 import org.jnetpcap.protocol.tcpip.Tcp;
@@ -23,18 +22,18 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.UdpHandler;
 public class ReadDumpForm extends FormBase implements TcpHandler, UdpHandler {
 
     private LoadButton loadButton;
-    private int counter;
     private int X;
     private int Y;
     private int MAX;
     private PcapManager pm;
     private int[][] rects;
+    private final Color[] colors = {Color.red,Color.green,Color.blue,Color.yellow};
     private boolean[] flag;
 
     public void initialize() {
         X = getSize().width;
         Y = getSize().height;
-        MAX = 5;
+        MAX = 4;
         pm = PcapManager.getInstance();
         //counter = 0;
         setBackground(Color.white);
@@ -103,14 +102,13 @@ public class ReadDumpForm extends FormBase implements TcpHandler, UdpHandler {
     }
 
     public void paint(Graphics g) {
-        if ( flag[0] & flag[1] & flag[2] & flag[3] ) {
-            for (int[] rect : rects) {
-                ((Graphics2D)g).draw3DRect(rect[0],rect[1],50,60, false);//rect[2],rect[3], false);
-            }
-            for (int i=0;i<4;i++) {
+        //if ( flag[0] & flag[1] & flag[2] & flag[3] ) {
+            for (int i= 0;i<4;i++) {
+                g.setColor(colors[i]);
+                ((Graphics2D)g).draw3DRect(rects[i][0],rects[i][1],50,60, true);//rect[2],rect[3], false);
                 flag[i] = false;
             }
-        }
+        //}
     }
 
     public void mouseClicked(MouseEvent e) {

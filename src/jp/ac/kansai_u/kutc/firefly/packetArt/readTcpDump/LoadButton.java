@@ -10,7 +10,6 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.OnPcapClosedHandler;
-import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.OnPcapOpenedHandler;
 import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.OnNoPacketsLeftHandler;
 
 /**
