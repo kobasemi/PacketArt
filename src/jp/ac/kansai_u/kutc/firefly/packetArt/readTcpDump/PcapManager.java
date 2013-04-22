@@ -62,6 +62,7 @@ public final class PcapManager extends Thread{
     private boolean filtered;
     private Pcap pcap;//jnetpcapの核。
     private PcapBpfProgram bpfFilter;
+    private String bpfText;
 
     private HandlerHolder handlerHolder;
     private PacketQueue packetQueue;
@@ -100,6 +101,7 @@ public final class PcapManager extends Thread{
         errBuf = new StringBuilder();
         handlerHolder = new HandlerHolder();
         killThis = false;
+        bpfText = null;
         //debugMe("PcapManager.initDone()");
     }
     //この関数はfinalで一度しか呼べないのでスレッドセーフ
@@ -206,6 +208,7 @@ public final class PcapManager extends Thread{
             readyRun = true;
             handlerHolder.onPcapOpened();
             debugMe("PcapManager.openFile(" + fname +") Done");
+            setBPFfilter(bpfText);
             return true;
         }
     }
@@ -256,6 +259,7 @@ public final class PcapManager extends Thread{
             pcapDev = (new DevUtil()).getDevByName(devName);
             handlerHolder.onPcapOpened();
             debugMe("PcapManager.openDev(" + devName +") Done");
+            setBPFfilter(bpfText);
             return true;
         }
     }
@@ -473,10 +477,15 @@ public final class PcapManager extends Thread{
      * @return 成功ならtrue、エラーならfalse。getErr()でエラー内容は見れます。
     */
     public boolean setBPFfilter(String bpf) {
+        if (bpf == null) {
+            errBuf.append("BPF You Entered is NULL");
+            return false;
+        }
         synchronized(filterLock) {
             if (isFiltered()) {
-                System.out.println("ERROR: Has been Fltered!");
-                return false;
+                Pcap.freecode(bpfFilter);
+                filtered = false;
+                System.out.println("PcapManager.setBPFfilter(), removing previous BPF !");
             }
             final int OPTIMIZE = 1;//立てといた方がいいんでしょ？多分。
             final int NETMASK = 0;//今回はWANのお話なので。。。
@@ -509,7 +518,9 @@ public final class PcapManager extends Thread{
                 return false;
             }
             bpfFilter = filter;//解放用ポインタの保持。
+            bpfText = bpf;
             filtered = true;
+            System.out.println("PcapManager.setBPF('"+ bpf +"') Success!");
         }
         return true;
     }
@@ -525,6 +536,7 @@ public final class PcapManager extends Thread{
         }
         if ( bpfFilter != null ) {
             Pcap.freecode(bpfFilter);
+            bpfText = null;
         }
         pcap = null;
         readyRun = false;
