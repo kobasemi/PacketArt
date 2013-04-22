@@ -2,14 +2,13 @@ package jp.ac.kansai_u.kutc.firefly.packetArt.playing;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.Location;
 
-import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.protocol.network.Arp.ProtocolType;
 
 /**
  * 1つのブロックを表すクラスです。このブロックを複数個組み合わせることで、盤面や落下中のテトリミノおよびペントミノを表現します。
  * このブロックは1つのパケットを保持することができます。このブロックはテトリミノの形状を保持します。<br>
  * もし、テトリミノの形状を保持していない場合、nullを持ちます。パケットを持たない場合も、nullを持ちます。
- * 
+ *
  * @author midolin
  */
 public class Block {
@@ -17,7 +16,6 @@ public class Block {
 	BlockType blockType;
 	Mino mino;
 	ProtocolType protocolType;
-	PcapPacket packet;
 
 	// getter and setter
 	/**
@@ -53,22 +51,6 @@ public class Block {
 	}
 
 	/**
-	 * 設定されているパケットを取得します。パケットが設定されていない場合、nullを返します。
-	 * @return 設定されているJnetPcap.PcapPacketパケット
-	 */
-	public PcapPacket getPacket() {
-		return packet;
-	}
-
-	/**
-	 * パケットを設定します。
-	 * @param packet
-	 */
-	public void setPacket(PcapPacket packet) {
-		this.packet = packet;
-	}
-
-	/**
 	 * ブロックに位置指定がされている場合、位置を返します。
 	 * @return
 	 */
@@ -93,11 +75,19 @@ public class Block {
 		location = new Location(x, y);
 	}
 
+	/**
+	 * ブロックを生成します。
+	 */
 	public Block() {
 		location = new Location();
 		blockType = BlockType.Void;
 	}
 
+	/**
+	 * ブロックを生成します。
+	 * @param location ブロックの位置
+	 * @param mino ミノの種類
+	 */
 	public Block(Location location, Mino mino) {
 		this.location = location;
 		this.mino = mino;

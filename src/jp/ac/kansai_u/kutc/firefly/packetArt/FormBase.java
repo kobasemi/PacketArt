@@ -17,7 +17,7 @@ import javax.swing.JFrame;
  * 描画を行うためのフォームの基底となる抽象クラスです。<br>
  * FormBaseを継承する場合は以下のメソッドを実装してください。<br>
  * initialize, paint, upadateメソッド <br>
- * MouseListener, KeyListener, MouseMotionListenerインタフェースの実装
+ * MouseListener, KeyListener, MouseMotionListenerインタフェースの実装(任意)
  * @author midolin
  */
 public abstract class FormBase extends Canvas implements MouseListener, KeyListener, MouseMotionListener {
@@ -39,7 +39,7 @@ public abstract class FormBase extends Canvas implements MouseListener, KeyListe
 
 	/**
 	 * クラスの初期化を行います。このメソッドはフォーム初期化時に1回だけ呼び出されます。
-	 * 
+	 *
 	 */
 	public abstract void initialize();
 
@@ -67,7 +67,7 @@ public abstract class FormBase extends Canvas implements MouseListener, KeyListe
 	public abstract void onFormChanged();
 
 	public void paintComponent(Graphics g){
-		((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+		((Graphics2D)g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 			getAntiAlias() ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
 	}
 

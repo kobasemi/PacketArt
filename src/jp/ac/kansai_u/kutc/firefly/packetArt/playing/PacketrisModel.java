@@ -19,11 +19,11 @@ public class PacketrisModel {
 	ArrayList<PacketBlock> currentMinos;
 	int currentMinoRotationPattern = 0;
 	Location parentLocation;
-	
+
 	public PacketrisModel(){
 		board = new PacketBlock[30][15];
 	}
-	
+
 	/**
 	 * 初期化を行います。
 	 */
@@ -44,14 +44,14 @@ public class PacketrisModel {
 
 	/**
 	 * 指定座標のブロックを返します。
-	 * @param x 
+	 * @param x
 	 * @param y
-	 * @return
+	 * @return その座標に設定されているブロック
 	 */
 	public Block getBoardBlock(int x, int y) {
 		return board[x][y];
 	}
-	
+
 	/**
 	 * 盤面を取得します。
 	 * @return 盤面
@@ -59,7 +59,7 @@ public class PacketrisModel {
 	public Block[][] getBoard(){
 		return board;
 	}
-	
+
 	/**
 	 * 現在操作対象に設定されているミノが反転可能かどうかを取得します。
 	 * @return 反転の可否
@@ -76,7 +76,7 @@ public class PacketrisModel {
 		this.canReverse = canReverse;
 	}
 
-	
+
 	/**
 	 * ミノを回転させます。
 	 * @param direction 回転方向
@@ -88,11 +88,11 @@ public class PacketrisModel {
 			// 回転行列を利用
 			if(direction == Direction.Left)
 				item.location.set(item.location.getY(), -1 * item.location.getX());
-			else 
+			else
 				item.location.set(-1 * item.location.getY(), item.location.getX());
-				
+
 	}
-	
+
 	/**
 	 * ミノを降下させます。
 	 * @return もしミノがこれ以上落下できない場合、falseを返し、落下が成功した場合、trueを返します。
@@ -103,7 +103,7 @@ public class PacketrisModel {
 			item.location.setY(item.location.getY() + 1);
 		return true;
 	}
-	
+
 	/**
 	 * ミノの反転を行います。
 	 */
@@ -112,7 +112,7 @@ public class PacketrisModel {
 			for(Block item : currentMinos)
 				item.location.setX(item.location.getX() * -1);
 	}
-	
+
 	/**
 	 * ミノを生成します。
 	 * @param mino 生成するミノの種類
@@ -125,7 +125,7 @@ public class PacketrisModel {
 			throw new InvalidParameterException("座標指定に問題があります");
 		if(mino == null)
 			throw new NullPointerException();
-		
+
 		// TODO: ミノを作る(相対座標)
 		if(mino instanceof TetroMino){
 			switch ((TetroMino)mino) {
@@ -279,7 +279,7 @@ public class PacketrisModel {
 			default:
 				assert(false);
 				break;
-			
+
 			}
 		}
 	}
