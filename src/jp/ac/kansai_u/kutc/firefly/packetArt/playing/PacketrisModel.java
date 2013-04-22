@@ -48,7 +48,7 @@ public class PacketrisModel {
 	 * @param y
 	 * @return その座標に設定されているブロック
 	 */
-	public Block getBoardBlock(int x, int y) {
+	public PacketBlock getBoardBlock(int x, int y) {
 		return board[x][y];
 	}
 
@@ -56,7 +56,7 @@ public class PacketrisModel {
 	 * 盤面を取得します。
 	 * @return 盤面
 	 */
-	public Block[][] getBoard(){
+	public PacketBlock[][] getBoard(){
 		return board;
 	}
 
@@ -283,8 +283,4 @@ public class PacketrisModel {
 			}
 		}
 	}
-}
-
-enum Direction{
-	Left, Right
 }
