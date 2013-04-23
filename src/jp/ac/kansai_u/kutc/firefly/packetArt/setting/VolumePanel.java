@@ -1,7 +1,8 @@
-package edu.self.Config;
-import java.awt.FlowLayout;
-
-import javax.swing.*;
+package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
+import javax.swing.ButtonGroup;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
 public class VolumePanel extends JPanel{
 	final String IMGPATH = new String("./Resources/image/");

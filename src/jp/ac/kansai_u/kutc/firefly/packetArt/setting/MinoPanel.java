@@ -1,5 +1,8 @@
-package edu.self.Config;
-import javax.swing.*;
+package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
+import javax.swing.ButtonGroup;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
 public class MinoPanel extends JPanel{
 	final String IMGPATH = new String("./Resources/image/");
@@ -9,7 +12,7 @@ public class MinoPanel extends JPanel{
 		//ImageIcon icon = new ImageIcon(IMGPATH + "temp.png");
 		//ImageIcon icon3 = new ImageIcon(IMGPATH + "img3.png");
 		
-		JLabel labelMino = new JLabel("É~ÉmÇÃèoåªê›íË");//icon);
+		JLabel labelMino = new JLabel("ÔøΩ~ÔøΩmÔøΩÃèoÔøΩÔøΩÔøΩ›íÔøΩ");//icon);
 		btnMino4 = new JRadioButton("4");//icon3);
 	    btnMino5 = new JRadioButton("5");//icon3);
 	    btnMinoBoth = new JRadioButton("Both");//icon3);

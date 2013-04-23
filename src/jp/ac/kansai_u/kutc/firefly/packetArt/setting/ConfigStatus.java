@@ -1,4 +1,4 @@
-package edu.self.Config;
+package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
 
 public class ConfigStatus {
 	/*

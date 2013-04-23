@@ -1,5 +1,6 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt;
 //import java.util.Arrays;
+import jp.ac.kansai_u.kutc.firefly.packetArt.title.TitleForm;
 
 /**
  * アプリケーションのエントリーポイントを含むクラスです。
@@ -12,8 +13,8 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String [] args) {
-		//new Form("Entry", EntryForm.class).show();
-		Form form = new Form("Entry", EntryForm.class);
+		//new Form("Title", EntryForm.class).show();
+		Form form = new Form("Title", TitleForm.class);
 		//if(Arrays.asList(args).contains("-verbose"))
 		form.setVisible(true);
 		//frame.show();

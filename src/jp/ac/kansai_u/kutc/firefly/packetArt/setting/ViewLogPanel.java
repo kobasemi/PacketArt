@@ -1,8 +1,10 @@
-package edu.self.Config;
-import java.awt.Dimension;
+package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
 import java.awt.FlowLayout;
 
-import javax.swing.*;
+import javax.swing.ButtonGroup;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
 public class ViewLogPanel extends JPanel{
 	final String IMGPATH = new String("./Resources/image/");
@@ -12,7 +14,8 @@ public class ViewLogPanel extends JPanel{
 		//ImageIcon icon = new ImageIcon(IMGPATH + "temp.png");
 		//ImageIcon icon2 = new ImageIcon(IMGPATH + "img2.png");
 		setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
-		JLabel labelViewLog = new JLabel("ÉçÉOÇÃï\é¶");//icon);
+		//JLabel labelViewLog = new JLabel("ÔøΩÔøΩÔøΩOÔøΩÃï\ÔøΩÔøΩ");//icon);
+		JLabel labelViewLog = new JLabel("test");//icon);
 		btnOn = new JRadioButton("On");//icon2);
 	    btnOff = new JRadioButton("Off");//icon2);
 	    ButtonGroup logViewGroup = new ButtonGroup();

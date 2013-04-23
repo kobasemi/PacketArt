@@ -1,5 +1,9 @@
-package edu.self.Config;
-import javax.swing.*;
+package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
 public class DifficultyPanel extends JPanel{
 	final public String IMGPATH = new String("./Resources/image/");
@@ -8,10 +12,10 @@ public class DifficultyPanel extends JPanel{
 	DifficultyPanel(byte b){
 		ImageIcon icon = new ImageIcon(IMGPATH + "temp.png");
 		
-		JLabel labelDifficulty = new JLabel("ìÔà’ìx");//icon);
-		btnDifficultyStatic = new JRadioButton("ê√ìI");
-	    btnDifficultyDynamic = new JRadioButton("ìÆìI");
-	    btnDifficultyAuto = new JRadioButton("é©ìÆ");
+		JLabel labelDifficulty = new JLabel("ÔøΩÔøΩ’ìx");//icon);
+		btnDifficultyStatic = new JRadioButton("ÔøΩ√ìI");
+	    btnDifficultyDynamic = new JRadioButton("ÔøΩÔøΩÔøΩI");
+	    btnDifficultyAuto = new JRadioButton("ÔøΩÔøΩÔøΩÔøΩ");
 	    ButtonGroup difficultyGroup = new ButtonGroup();
 	    difficultyGroup.add(btnDifficultyStatic); difficultyGroup.add(btnDifficultyDynamic);
 	    difficultyGroup.add(btnDifficultyAuto);

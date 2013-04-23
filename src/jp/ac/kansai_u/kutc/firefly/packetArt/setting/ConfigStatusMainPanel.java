@@ -1,6 +1,8 @@
-package edu.self.Config;
-import java.awt.*;
-import javax.swing.*;
+package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
+import java.awt.Color;
+
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
 
 public class ConfigStatusMainPanel extends JPanel{
 	//final public String IMGPATH = new String("./Resources/image/");
@@ -19,9 +21,9 @@ public class ConfigStatusMainPanel extends JPanel{
 		panelViewLog.setBackground(Color.yellow);
 		panelMino = new MinoPanel(stat.getMino());
 		panelMino.setBackground(Color.cyan);
-		panelMusic = new VolumePanel(stat.getVolMusic(), "‰¹Šy‚Ì‰¹—Ê");
+		panelMusic = new VolumePanel(stat.getVolMusic(), "ï¿½ï¿½ï¿½yï¿½Ì‰ï¿½ï¿½ï¿½");
 		panelMusic.setBackground(Color.magenta);
-		panelSound = new VolumePanel(stat.getVolSound(), "Œø‰Ê‰¹‚Ì‰¹—Ê");
+		panelSound = new VolumePanel(stat.getVolSound(), "ï¿½ï¿½Ê‰ï¿½ï¿½Ì‰ï¿½ï¿½ï¿½");
 		panelSound.setBackground(Color.gray);
 		panelDifficulty = new DifficultyPanel(stat.getDifficulty());
 		panelDifficulty.setBackground(Color.white);

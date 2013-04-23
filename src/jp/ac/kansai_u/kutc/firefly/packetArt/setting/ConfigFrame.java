@@ -1,8 +1,14 @@
-package edu.self.Config;
-import java.awt.*;
+package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.*;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 class ConfigFrame extends JFrame implements ActionListener{
 	ConfigStatus stat;
@@ -12,7 +18,7 @@ class ConfigFrame extends JFrame implements ActionListener{
 	 * @param args
 	 */
 	ConfigFrame(ConfigStatus stat){
-		// TODO ©“®¶¬‚³‚ê‚½ƒƒ\ƒbƒhEƒXƒ^ƒu
+		// TODO ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½Eï¿½Xï¿½^ï¿½u
 		this.stat = stat;
 		setTitle("Configuration");
 		setSize(600, 800);
@@ -23,7 +29,7 @@ class ConfigFrame extends JFrame implements ActionListener{
 		
 		Container homura = getContentPane();
 		
-		JLabel sayaka = new JLabel("İ’è‰æ–Ê");
+		JLabel sayaka = new JLabel("ï¿½İ’ï¿½ï¿½ï¿½");
 		sayaka.setFont(new Font("Self", Font.PLAIN, 48));
 		sayaka.setBounds(30, 30, 540, 100);
 		sayaka.setBackground(Color.red);
@@ -33,7 +39,7 @@ class ConfigFrame extends JFrame implements ActionListener{
 		madoka= new ConfigStatusMainPanel(stat);
 	    madoka.setBounds(30, 130, 540, 250);
 	    
-	    JLabel kusojo = new JLabel("ƒL[ƒRƒ“ƒtƒBƒO");
+	    JLabel kusojo = new JLabel("ï¿½Lï¿½[ï¿½Rï¿½ï¿½ï¿½tï¿½Bï¿½O");
 	    kusojo.setBounds(30, 380, 540, 50);
 	    KeyConfigPanel qbee = new KeyConfigPanel(stat.getKey());
 	    qbee.setBounds(30, 430, 540, 250);
@@ -41,8 +47,8 @@ class ConfigFrame extends JFrame implements ActionListener{
 	    JPanel kyoko = new JPanel();
 	    kyoko.setBounds(30, 680, 540, 70);
 	    kyoko.setBackground(Color.green);
-	    mami1 = new JButton("İ’è");
-	    mami2 = new JButton("ƒLƒƒƒ“ƒZƒ‹");
+	    mami1 = new JButton("ï¿½İ’ï¿½");
+	    mami2 = new JButton("ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Zï¿½ï¿½");
 	    mami1.addActionListener(this);
 	    mami2.addActionListener(this);
 	    kyoko.add(mami1);

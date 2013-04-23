@@ -1,8 +1,9 @@
-package edu.self.Config;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyListener;
-import java.awt.event.KeyEvent;
+package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
+import java.awt.Dimension;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 public class KeyConfigPanel extends JPanel {//implements KeyListener{
 	//final public String IMGPATH = new String("./Resources/image/");

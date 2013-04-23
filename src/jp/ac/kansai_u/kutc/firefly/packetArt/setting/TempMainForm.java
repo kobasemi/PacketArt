@@ -1,4 +1,4 @@
-package edu.self.Config;
+package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
 
 public class TempMainForm {
 
@@ -6,7 +6,7 @@ public class TempMainForm {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO ©“®¶¬‚³‚ê‚½ƒƒ\ƒbƒhEƒXƒ^ƒu
+		// TODO ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½Eï¿½Xï¿½^ï¿½u
 		ConfigStatus madoka = new ConfigStatus();
 		ConfigFrame homura = new ConfigFrame(madoka);
 		

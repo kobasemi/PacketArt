@@ -38,8 +38,9 @@ public class Form extends JFrame{
 		card = new CardLayout();
 		getContentPane().setLayout(card);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationByPlatform(true);
 		setTitle("Packet Art");
-		setSize(800, 450);
+		setSize(600, 800);
 		getRootPane().setDoubleBuffered(true);
 		((JComponent)getContentPane()).setDoubleBuffered(true);
 		try{
