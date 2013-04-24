@@ -1,4 +1,4 @@
-package jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump;
+package jp.ac.kansai_u.kutc.firefly.packetArt.util;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -15,18 +15,45 @@ public class LimitedQueue<E> extends LinkedList<E> {
 
     private int limit;
 
-    public LimitedQueue(int limit) {
-        if (limit <= 0) {
-            limit = 1;
+    /**
+     * 最大装填数を初期設定します。
+     *
+     * @param lim 最大装填数です。
+    */
+    public LimitedQueue(int lim) {
+        setLimit(lim);
+    }
+//ちょこっとかえるだけでlong limも行けそうだなあ。。
+//でもパケットをlong個も保持したらメモリが吹き飛ぶなあ・・
+
+    /**
+     * 動的にキューの長さを変更できます。
+     *
+     * @param lim 
+     * @return 向こうなキューの長さが与えられた場合はfalseが返ります。
+    */
+    public boolean setLimit(int lim) {
+        if (lim <= 0) {
+            lim = 1;
+            return false;
         }
-        this.limit = limit;
+        limit = lim;
+        return true;
     }
 
+    /**
+     * LinkedListの関数をオーバーライドしたものです。
+     *
+     * @return 基本的にtrueですが、nullが渡された場合はnullを要素に追加した後falseを返します。
+    */
     @Override
     public boolean add(E o) {
         super.add(o);
         while (size() > limit) {
             super.remove();
+        }
+        if (o == null) {
+            return false;
         }
         return true;
     }
