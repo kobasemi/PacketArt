@@ -442,7 +442,7 @@ public final class PcapManager extends Thread{
     */
     public List<PcapPacket> restorePackets(int howManyPackets) {
         synchronized(packetQueue) {
-            return packetQueue.pollPackets(howManyPackets);
+            return packetQueue.poll(howManyPackets);
         }
     }
 
@@ -462,7 +462,7 @@ public final class PcapManager extends Thread{
     */
     public PcapPacket nextPacketFromQueue() {
         synchronized(packetQueue) {
-            return packetQueue.pollPacket();
+            return packetQueue.poll();
         }
     }
 
@@ -567,7 +567,7 @@ public final class PcapManager extends Thread{
         System.out.println("fromFile = " + fromFile);
         System.out.println("fromDev = " + fromDev);
         System.out.println("readyRun = " + readyRun);
-        System.out.println("packetQueue = " + packetQueue);
+        System.out.println("packetQueue.size = " + packetQueue.size());
         System.out.println("filtered = " + filtered);
         System.out.println("errBuf = " + errBuf.toString());
         System.out.println("killThis = " + killThis);
