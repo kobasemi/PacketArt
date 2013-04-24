@@ -12,5 +12,8 @@
 #*.cap
 /bin
 
+# Mac DS_Store
+*.DS_Store
+
 .classpath
 .project
