@@ -123,7 +123,7 @@ public class Form extends JFrame{
 		if(formName == null || formName.equals("") || !instances.containsKey(formName))
 			throw new IllegalArgumentException("Invalid argument:"
 				+ formName == null ? "Argument is null." :
-					formName.equals("") ? "Please specify argument." : "Argument is not existed.");
+					formName.equals("") ? "Please specify argument." : "Argument \"" + formName  + "\" is not existed.");
 
 		// Timerを切り替える
 		System.out.println("Current thread is " + Thread.currentThread().getName());

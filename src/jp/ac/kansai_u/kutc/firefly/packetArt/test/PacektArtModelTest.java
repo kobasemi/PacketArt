@@ -50,8 +50,8 @@ public class PacektArtModelTest {
 	 */
 	@Test
 	public void pickZeroZeroBlockTest(){
-		assertTrue(model.getBoardBlock(0, 0).getBlockType() == BlockType.Wall);
-		assertTrue(model.getBoardBlock(0, 0).getLocation().equals(new Location(0, 0)));
+		assertTrue(model.getBlock(0, 0).getBlockType() == BlockType.Wall);
+		assertTrue(model.getBlock(0, 0).getLocation().equals(new Location(0, 0)));
 	}
 	
 	@Test

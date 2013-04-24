@@ -70,7 +70,8 @@ public class PlayForm extends FormBase {
 		// TODO: painting PacketBlocks using packet data.
 		for (PacketBlock[] column : model.getBoard()) {
 			for(PacketBlock item : column){
-				g.setColor(Color.getHSBColor(item.packet.getFrameNumber() % 360.0f, 0.7f, 0.7f));
+				//g.setColor(Color.getHSBColor(item.packet.getFrameNumber() % 360.0f, 0.7f, 0.7f));
+				g.setColor(Color.getHSBColor(item.location.getX() % 360.0f, 0.7f, 0.7f));
 				g.drawRect(item.location.getX() * 32, item.location.getY() * 32, 30, 30);
 			}
 		}

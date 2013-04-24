@@ -1,7 +1,7 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.title;
 import java.awt.AWTKeyStroke;
-import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -9,7 +9,6 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.awt.KeyboardFocusManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
@@ -23,7 +22,7 @@ import javax.swing.KeyStroke;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
-import jp.ac.kansai_u.kutc.firefly.packetArt.setting.SettingForm;
+import jp.ac.kansai_u.kutc.firefly.packetArt.playing.PlayForm;
 
 /* このファイルがクラスの基本的な構造と使い方 
  * テンプレートをコピー→メソッドを編集
@@ -166,7 +165,8 @@ public class TitleForm extends FormBase implements FocusListener {
     		JButton b = (JButton) e.getSource();
     		if (b == button[0]) {
     			System.out.println("Key Pressed : ENTER, Button GameStart");
-    			//FormUtil.getInstance().changeForm("");
+    			FormUtil.getInstance().createForm("Playing", PlayForm.class);
+    			FormUtil.getInstance().changeForm("Playing");
     		} else if (b == button[1]) {
     			System.out.println("Key Pressed : ENTER, Button Option");
     			//FormUtil.getInstance().changeForm("");

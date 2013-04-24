@@ -65,6 +65,14 @@ public class Location {
 	public int getY() {
 		return y;
 	}
+	
+	public Location add(int x, int y){
+		return new Location(getX() + x, getY() + y);
+	}
+	
+	public Location mul(int x, int y){
+		return new Location(getX() * x, getY() * y);
+	}
 
 	@Override
 	public boolean equals(Object comparison) {
