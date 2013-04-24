@@ -106,21 +106,29 @@ public class ProtocolHandlerBase {
             handled = false;
             if (packet.hasHeader(tcp) ) {  
                 handleTcp(tcp);//40％ここに来る
-            } else if (packet.hasHeader(udp) ) {  
+            }
+            if (packet.hasHeader(udp) ) {  
                 handleUdp(udp);//30％ここに来る
-            } else if ( packet.hasHeader(ip6) ) {  
+            }
+            if ( packet.hasHeader(ip6) ) {  
                 handleIp6(ip6);//IPv4より上にしてIPv6 over IPv4に対応させる
-            } else if ( packet.hasHeader(ip4) ) {  
+            }
+            if ( packet.hasHeader(ip4) ) {  
                 handleIp4(ip4);//20％ここニ来る
-            } else if ( packet.hasHeader(ppp) ) {  
+            }
+            if ( packet.hasHeader(ppp) ) {  
                 handlePPP(ppp);//実際PPPが来ることは殆ど無い
-            } else if ( packet.hasHeader(l2tp) ) {  
+            }
+            if ( packet.hasHeader(l2tp) ) {  
                 handleL2TP(l2tp);//実際くることはないだろう。
-            } else if ( packet.hasHeader(icmp) ) {  
+            }
+            if ( packet.hasHeader(icmp) ) {  
                 handleIcmp(icmp);//ちょっとしか来ない。
-            } else if ( packet.hasHeader(arp) ) {  
+            }
+            if ( packet.hasHeader(arp) ) {  
                 handleArp(arp);//実際来ることは無いだろう。
-            } else if ( packet.hasHeader(ethernet) ) {  
+            }
+            if ( packet.hasHeader(ethernet) ) {  
                 handleEthernet(ethernet);
             }
             handlePacket(packet);
@@ -191,137 +199,4 @@ public class ProtocolHandlerBase {
     */
     public void handlePacket(PcapPacket packet){};
 
-//以下、「保険」。TCPとIP、UDPとICMPとか、複数のプロトコルを使いたい人用。
-//ここでも受け皿をぶん回して使う。これらの関数を呼び出すのは
-//inspect前に呼び出すと、一つ前の情報が帰ってきます。どうでもいい？
-
-    public Tcp getTcp(PcapPacket packet) {
-        if (packet != null && packet.hasHeader(tcp) ) {
-            return tcp;
-        } else {
-            return null;
-        }
-    }
-    public Tcp getTcp() {
-        if (pkt != null && pkt.hasHeader(tcp) ) {
-            return tcp;
-        } else {
-            return null;
-        }
-    }
-    public Udp getUdp(PcapPacket packet) {
-        if (packet != null && packet.hasHeader(udp) ) {
-            return udp;
-        } else {
-            return null;
-        }
-    }
-    public Udp getUdp() {
-        if (pkt != null && pkt.hasHeader(udp) ) {
-            return udp;
-        } else {
-            return null;
-        }
-    }
-    public Ip6 getIp6(PcapPacket packet) {
-        if (packet != null && packet.hasHeader(ip6) ) {
-            return ip6;
-        } else {
-            return null;
-        }
-    }
-    public Ip6 getIp6() {
-        if (pkt != null && pkt.hasHeader(ip6) ) {
-            return ip6;
-        } else {
-            return null;
-        }
-    }
-    public Ip4 getIp4(PcapPacket packet) {
-        if (packet != null && packet.hasHeader(ip4) ) {
-            return ip4;
-        } else {
-            return null;
-        }
-    }
-    public Ip4 getIp4() {
-        if (pkt != null && pkt.hasHeader(ip4) ) {
-            return ip4;
-        } else {
-            return null;
-        }
-    }
-    public PPP getPPP(PcapPacket packet) {
-        if (packet != null && packet.hasHeader(ppp) ) {
-            return ppp;
-        } else {
-            return null;
-        }
-    }
-    public PPP getPPP() {
-        if (pkt != null && pkt.hasHeader(ppp) ) {
-            return ppp;
-        } else {
-            return null;
-        }
-    }
-    public L2TP getL2TP(PcapPacket packet) {
-        if (packet != null && packet.hasHeader(l2tp) ) {
-            return l2tp;
-        } else {
-            return null;
-        }
-    }
-    public L2TP getL2TP() {
-        if (pkt != null && pkt.hasHeader(l2tp) ) {
-            return l2tp;
-        } else {
-            return null;
-        }
-    }
-    public Icmp getIcmp(PcapPacket packet) {
-        if (packet != null && packet.hasHeader(icmp) ) {
-            return icmp;
-        } else {
-            return null;
-        }
-    }
-    public Icmp getIcmp() {
-        if (pkt != null && pkt.hasHeader(icmp) ) {
-            return icmp;
-        } else {
-            return null;
-        }
-    }
-    public Arp getArp(PcapPacket packet) {
-        if (packet != null && packet.hasHeader(arp) ) {
-            return arp;
-        } else {
-            return null;
-        }
-    }
-    public Arp getArp() {
-        if (pkt != null && pkt.hasHeader(arp) ) {
-            return arp;
-        } else {
-            return null;
-        }
-    }
-    public Ethernet getEthernet(PcapPacket packet) {
-        if (packet != null && packet.hasHeader(ethernet) ) {
-            return ethernet;
-        } else {
-            return null;
-        }
-    }
-    public Ethernet getEthernet() {
-        if (pkt != null && pkt.hasHeader(ethernet) ) {
-            return ethernet;
-        } else {
-            return null;
-        }
-    }
-    public PcapPacket getPacket() {
-        return pkt;
-    }
 }
