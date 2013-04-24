@@ -5,6 +5,8 @@ import org.jnetpcap.packet.PcapPacketHandler;
 
 import java.util.List;
 
+import jp.ac.kansai_u.kutc.firefly.packetArt.util.LimitedQueue;
+
 /**
  * PcapPacketを高速でlibpcapから読み込んだり、一時的に保持したりするクラスです。
  *

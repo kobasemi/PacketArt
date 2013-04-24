@@ -6,9 +6,9 @@ import org.jnetpcap.PcapSockAddr;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.net.InetAddress;
-import java.lang.StringBuilder;
 import java.io.IOException;
+
+import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketUtil;
 
 /**
  * このクラスはPcapIfのバイナリな情報を
@@ -56,7 +56,7 @@ public class DevInfo {
         name = device.getName();
         description = device.getDescription();
         try {
-            macAddr = getHex(device.getHardwareAddress());
+            macAddr = PacketUtil.getMacAddress(device.getHardwareAddress());
         } catch (IOException e) {
             //OSがMACアドレスのクエリを遮断した。なぜ！？
             System.out.println( "Retributing MAC ADDRESS '" + device.toString()
@@ -68,9 +68,9 @@ public class DevInfo {
         for (PcapAddr pcapAddr : addresses) {
             PcapSockAddr pcapSockAddr = pcapAddr.getAddr();
             if (pcapSockAddr.getFamily() == PcapSockAddr.AF_INET) {
-                ipAddr = getInetAddress(pcapSockAddr.getData());
+                ipAddr = PacketUtil.getInetAddress(pcapSockAddr.getData());
             } else {
-                ip6Addr.add( getInetAddress(pcapSockAddr.getData() ));
+                ip6Addr.add( PacketUtil.getInetAddress(pcapSockAddr.getData() ));
             }
         }
         if (ipAddr != null && ipAddr.equals("127.0.0.1") || ip6Addr.contains("::1")) {
@@ -88,48 +88,6 @@ public class DevInfo {
         ipAddr = "";
         ip6Addr = null;
         loopback = false;
-    }
-
-    /**
-     * バイト列のIPアドレスをStringにして、<br>
-     * ひとるにまとめる関数です。
-     * 
-     * @param raw IP(v4,v6)アドレスをバイト列で表現したものです。
-     * @return バイト列のIPアドレスを文字列にしたものが返ります。エラーならnullが返ります。
-    */
-    public static String getInetAddress(byte[] raw) {
-        String address = "";
-        try {
-            address = InetAddress.getByAddress(raw).getHostAddress();
-        } catch (Exception e){
-            return null;
-            //今回は正当なアドレスなので、ここには絶対にきません。
-        }
-        return address;
-    }
-
-    /**
-     * http://rgagnon.com/javadetails/java-0596.html を<br>
-     * MACアドレス用に魔改造した関数です。
-     *
-     * @param raw MACアドレスをバイト配列で表現したものです。
-     * @return StringなMACアドレスが返ります。例："AA:BB:CC:DD:EE:FF"。エラーならnullが返ります。
-    */
-    public static String getHex( byte [] raw ) {
-        final String HEXES = "0123456789ABCDEF";
-        if ( raw == null || raw.length != 6) {//isMacAddress
-            return null;
-        }
-        final StringBuilder hex = new StringBuilder( 3 * 6);
-        // 01-23-45-67-89-AB で、ちょうど17個のASCII.
-        for ( final byte b : raw ) {
-            hex.append(HEXES.charAt((b & 0xF0) >> 4));
-            hex.append(HEXES.charAt((b & 0x0F)));
-            hex.append(":");
-        }
-        //hex.lastIndexOf(":")
-        hex.deleteCharAt(hex.length() - 1);
-        return hex.toString();
     }
 
     /**

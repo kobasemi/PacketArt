@@ -69,7 +69,7 @@ public final class PcapManager extends Thread{
 
     public final int TIMEOUT_OPENDEV = 10;//デバイスからの読み込みで、0.01秒のパケット待ちを許す。
     public final int QUEUE_SIZE = 30000;//30000パケットの保持をする。
-    public final int PUSH_SIZE = 1;//1パケットのロードにつき1パケットの確保をする。0.01秒ごとにパケットを間引く意味もある。
+    public final int PUSH_SIZE = 2;//1パケットのロードにつき2パケットの確保をする。0.01秒ごとにパケットを間引く意味もある。
 
     private Object openPcapLock = new Object();
     private Object filterLock = new Object();
@@ -116,10 +116,7 @@ public final class PcapManager extends Thread{
     public void run() {
         //debugMe("PcapManager.run() start");
         killThis = false;
-        while (true) {
-            if (isKilled()) {
-                return;
-            }
+        while (killThis == false) {
             while (readyRun == false || pcap == null){
                 if (isKilled()) {
                     return;
@@ -127,6 +124,9 @@ public final class PcapManager extends Thread{
                 }
             }
             pkt = null;
+            savePackets(PUSH_SIZE);
+            //savePacketsの保存先のキューは、満タンになった時点で
+            //古いパケットを捨てていくので、この関数を空撃ちしてパケットを間引けます。
             pkt = nextPacket();//0.01秒間パケットが来なかったらタイムアウトします。
             //パケットが来なかった場合、pktにはnullが入ります。
             if (pkt == null) {
@@ -141,9 +141,6 @@ public final class PcapManager extends Thread{
                 if (fromFile)
                     handlerHolder.onNoPacketsLeft();
             }
-            savePackets(PUSH_SIZE);
-            //savePacketsの保存先のキューは、満タンになった時点で
-            //古いパケットを捨てていくので、この関数を空撃ちしてパケットを間引けます。
         }
     }
     //Threadのstart関数によってのみ呼び出されるので、スレッドセーフ（能動的に呼ばないで・・）
@@ -370,8 +367,14 @@ public final class PcapManager extends Thread{
     public synchronized PcapPacket nextPacket() {
         PcapPacket packet = new PcapPacket(JMemory.POINTER);
         try {
-            if ( pcap != null && pcap.nextEx(packet) == Pcap.NEXT_EX_OK ) {
-                return packet;
+            if ( pcap != null ) {
+                synchronized(pcap) {
+                    if ( pcap.nextEx(packet) == Pcap.NEXT_EX_OK ) {
+                        return packet;
+                    } else {
+                        return null;
+                    }
+                }
             } else {
                 return null;
             }
@@ -419,7 +422,9 @@ public final class PcapManager extends Thread{
 
         DLT = pcap.datalink();
         synchronized(packetQueue) {
-            howManyEnqeued = pcap.dispatch(howManyPackets, DLT, packetQueue, dummy);
+            synchronized(pcap) {
+                howManyEnqeued = pcap.dispatch(howManyPackets, DLT, packetQueue, dummy);
+            }
         }
         if (howManyEnqeued < 0) {
             return false;//ループ中にブレークループシグナルを受け取った。
