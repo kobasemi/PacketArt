@@ -5,10 +5,18 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+/**
+ * 難易度に関するパネル
+ * @author akasaka
+ */
 public class DifficultyPanel extends JPanel{
 	final public String IMGPATH = new String("./Resources/image/");
-	
 	private JRadioButton btnDifficultyStatic, btnDifficultyDynamic, btnDifficultyAuto;
+	
+	/**
+	 * コンストラクタ
+	 * @param 初期化前の難易度の設定
+	 */
 	DifficultyPanel(byte b){
 		ImageIcon icon = new ImageIcon(IMGPATH + "temp.png");
 		
@@ -29,6 +37,10 @@ public class DifficultyPanel extends JPanel{
 		else            btnDifficultyAuto.setSelected(true);
 	}
 	
+	/**
+	 * 難易度の設定を取得する
+	 * @return 難易度（0_静的, 1_動的, 2_自動）
+	 */
 	public byte getStatus(){
 		if(btnDifficultyStatic.isSelected()) return (byte)0;
 		else if(btnDifficultyDynamic.isSelected()) return (byte)1;

@@ -14,6 +14,7 @@ class ConfigFrame extends JFrame implements ActionListener{
 	ConfigStatus stat;
 	ConfigStatusMainPanel madoka;
 	JButton mami1, mami2;
+	KeyConfigPanel qbee;
 	/**
 	 * @param args
 	 */
@@ -41,7 +42,7 @@ class ConfigFrame extends JFrame implements ActionListener{
 	    
 	    JLabel kusojo = new JLabel("キーコンフィグ");
 	    kusojo.setBounds(30, 380, 540, 50);
-	    KeyConfigPanel qbee = new KeyConfigPanel(stat.getKey());
+	    qbee = new KeyConfigPanel(stat.getKey());
 	    qbee.setBounds(30, 430, 540, 250);
 	    
 	    JPanel kyoko = new JPanel();
@@ -69,6 +70,13 @@ class ConfigFrame extends JFrame implements ActionListener{
 			stat.setVolMusic(madoka.panelMusic.getStatus());
 			stat.setVolSound(madoka.panelSound.getStatus());
 			stat.setDifficulty(madoka.panelDifficulty.getStatus());
+			stat.setUp(qbee.labelUp.getText().charAt(0));
+			stat.setDown(qbee.labelDown.getText().charAt(0));
+			stat.setLeft(qbee.labelLeft.getText().charAt(0));
+			stat.setRight(qbee.labelRight.getText().charAt(0));
+			stat.setLeftSpin(qbee.labelLeftSpin.getText().charAt(0));
+			stat.setRightSpin(qbee.labelRightSpin.getText().charAt(0));
+			stat.setKey();
 			stat.printStatus();
 		}else if(e.getSource() == mami2)
 			System.out.println("CANCEL pushed");
