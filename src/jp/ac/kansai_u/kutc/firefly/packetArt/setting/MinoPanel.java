@@ -12,7 +12,7 @@ public class MinoPanel extends JPanel{
 		//ImageIcon icon = new ImageIcon(IMGPATH + "temp.png");
 		//ImageIcon icon3 = new ImageIcon(IMGPATH + "img3.png");
 		
-		JLabel labelMino = new JLabel("�~�m�̏o���ݒ�");//icon);
+		JLabel labelMino = new JLabel("ミノの出現設定");//icon);
 		btnMino4 = new JRadioButton("4");//icon3);
 	    btnMino5 = new JRadioButton("5");//icon3);
 	    btnMinoBoth = new JRadioButton("Both");//icon3);

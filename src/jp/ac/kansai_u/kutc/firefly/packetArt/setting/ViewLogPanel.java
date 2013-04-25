@@ -14,8 +14,7 @@ public class ViewLogPanel extends JPanel{
 		//ImageIcon icon = new ImageIcon(IMGPATH + "temp.png");
 		//ImageIcon icon2 = new ImageIcon(IMGPATH + "img2.png");
 		setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
-		//JLabel labelViewLog = new JLabel("���O�̕\��");//icon);
-		JLabel labelViewLog = new JLabel("test");//icon);
+		JLabel labelViewLog = new JLabel("ログの表示");//icon);
 		btnOn = new JRadioButton("On");//icon2);
 	    btnOff = new JRadioButton("Off");//icon2);
 	    ButtonGroup logViewGroup = new ButtonGroup();

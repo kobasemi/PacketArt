@@ -12,10 +12,10 @@ public class DifficultyPanel extends JPanel{
 	DifficultyPanel(byte b){
 		ImageIcon icon = new ImageIcon(IMGPATH + "temp.png");
 		
-		JLabel labelDifficulty = new JLabel("��Փx");//icon);
-		btnDifficultyStatic = new JRadioButton("�ÓI");
-	    btnDifficultyDynamic = new JRadioButton("���I");
-	    btnDifficultyAuto = new JRadioButton("����");
+		JLabel labelDifficulty = new JLabel("難易度");//icon);
+		btnDifficultyStatic = new JRadioButton("静的");
+	    btnDifficultyDynamic = new JRadioButton("動的");
+	    btnDifficultyAuto = new JRadioButton("自動");
 	    ButtonGroup difficultyGroup = new ButtonGroup();
 	    difficultyGroup.add(btnDifficultyStatic); difficultyGroup.add(btnDifficultyDynamic);
 	    difficultyGroup.add(btnDifficultyAuto);
