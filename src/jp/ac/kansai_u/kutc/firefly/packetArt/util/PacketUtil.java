@@ -69,6 +69,9 @@ public class PacketUtil {
 
     /**
      *  「実際にキャプチャした時点での」1970年からの秒数を返します。
+     *
+     * @param jPacket PcapPacketオブジェクト
+     * @return パケットの到着時刻(sec)
     */
     public static long getTimeStamp(JPacket jPacket) {
         return jPacket.getCaptureHeader().seconds();
@@ -76,6 +79,9 @@ public class PacketUtil {
 
     /**
      *  「実際にキャプチャした時点での」1970年からの秒数をミリ秒で返します。
+     *
+     * @param jPacket PcapPacketオブジェクト
+     * @return パケットの到着時刻(milli sec)
     */
     public static long getMilliTimeStamp(JPacket jPacket) {
         return jPacket.getCaptureHeader().timestampInMillis();
@@ -84,6 +90,9 @@ public class PacketUtil {
     /**
      *  「実際にキャプチャした時点での」1970年からの秒数をナノ秒で返します。パケット到着間隔がほぼ同じ場合<br>
      * ミリ単位で区別することができるかもしれません。
+     *
+     * @param jPacket PcapPacketオブジェクト
+     * @return パケットの到着時刻(nano sec)
     */
     public static long getNanos(JPacket jPacket) {
         return jPacket.getCaptureHeader().nanos();
