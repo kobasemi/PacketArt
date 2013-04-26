@@ -7,7 +7,7 @@ import org.jnetpcap.Pcap;//こいつが心臓
 import org.jnetpcap.PcapIf;
 import org.jnetpcap.nio.JMemory;
 import org.jnetpcap.packet.PcapPacket;
-import org.jnetpcap.PcapDLT;//イーサネット２。
+import org.jnetpcap.PcapDLT;
 import org.jnetpcap.PcapBpfProgram;
 
 import org.jnetpcap.PcapClosedException;
@@ -68,7 +68,7 @@ public final class PcapManager extends Thread{
     private PacketQueue packetQueue;
 
     public final int TIMEOUT_OPENDEV = 10;//デバイスからの読み込みで、0.01秒のパケット待ちを許す。
-    public final int QUEUE_SIZE = 30000;//30000パケットの保持をする。
+    public final int QUEUE_SIZE = 30000;//30000パケットの保持をする。MAXでだいたい3MBくらいメモリを食う。
     public final int PUSH_SIZE = 2;//1パケットのロードにつき2パケットの確保をする。0.01秒ごとにパケットを間引く意味もある。
 
     private Object openPcapLock = new Object();
@@ -264,6 +264,7 @@ public final class PcapManager extends Thread{
 
     /**
      * 現在開いているtcpdumpのファイルオブジェクトを返します。
+     * ファイル名はフルパスです。
      *
      * @return Fileオブジェクトです。ファイルからパケットを読んでいない場合はnullが返ります。
     */
@@ -349,7 +350,7 @@ public final class PcapManager extends Thread{
     }
 
     /**
-     * 未テストです。フィルターが有効か否かを返します。
+     * フィルターが有効か否かを返します。
      *
      * @return BPFフィルターが適用されているならtrueを返します。
     */
@@ -447,7 +448,7 @@ public final class PcapManager extends Thread{
     }
 
     /**
-     * 「非常食」の残りパケットを返します。
+     * 「非常食」の残りパケット数を返します。
      *
      * @return キューに保持している残りパケット数を返します。
     */
@@ -533,7 +534,6 @@ public final class PcapManager extends Thread{
     /**
      * アロケートしたメモリや開いたファイルをガベコレの前に閉じます。<br>
      * この関数では自分（シングルトンinstance）を解放しません。<br>
-     * 別のクラスから開放してください。
     */
     public synchronized void close() {
         if ( pcap != null && fromFile == true) {
