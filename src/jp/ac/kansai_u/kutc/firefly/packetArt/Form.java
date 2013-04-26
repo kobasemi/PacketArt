@@ -124,6 +124,9 @@ public class Form extends JFrame{
 			throw new IllegalArgumentException("Invalid argument:"
 				+ formName == null ? "Argument is null." :
 					formName.equals("") ? "Please specify argument." : "Argument \"" + formName  + "\" is not existed.");
+		
+		// フォーム変更イベントを発行する
+		getCurrentForm().onFormChanged();
 
 		// Timerを切り替える
 		System.out.println("Current thread is " + Thread.currentThread().getName());

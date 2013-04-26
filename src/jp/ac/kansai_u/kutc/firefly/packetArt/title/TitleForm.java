@@ -23,6 +23,7 @@ import javax.swing.KeyStroke;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
 import jp.ac.kansai_u.kutc.firefly.packetArt.playing.PlayForm;
+import jp.ac.kansai_u.kutc.firefly.packetArt.setting.SettingForm;
 
 /* このファイルがクラスの基本的な構造と使い方 
  * テンプレートをコピー→メソッドを編集
@@ -169,8 +170,10 @@ public class TitleForm extends FormBase implements FocusListener {
     			FormUtil.getInstance().changeForm("Playing");
     		} else if (b == button[1]) {
     			System.out.println("Key Pressed : ENTER, Button Option");
-    			//FormUtil.getInstance().changeForm("");
+    			FormUtil.getInstance().createForm("Option", SettingForm.class);
+    			FormUtil.getInstance().changeForm("Option");
     		} else if (b == button[2]) {
+    			// TODO: SoundTestの実装を検討する
     			System.out.println("Key Pressed : ENTER, Button SoundTest");
     			//FormUtil.getInstance().changeForm("");
     		}
@@ -191,7 +194,14 @@ public class TitleForm extends FormBase implements FocusListener {
     }
     public void focusLost(FocusEvent e) {}
     
-    public void onFormChanged(){}
+    public void onFormChanged(){
+    	for(JButton item : button){
+    		item.removeKeyListener(this);
+    		item.removeMouseListener(this);
+    		item.removeFocusListener(this);
+    	}
+    }
+    
     public void onClose(){}
     
     private static final int TITLE_MARGIN = 100;
