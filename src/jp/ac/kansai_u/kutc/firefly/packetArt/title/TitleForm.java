@@ -33,23 +33,30 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.setting.SettingForm;
  * タイトルフォームです.
  */
 public class TitleForm extends FormBase implements FocusListener {
-	BufferedImage imgBackground, imgTitle, imgCursor;
-	JLabel labelBackground, labelTitle, labelCursor;
-	BufferedImage[] imgButton = new BufferedImage[BUTTON_NUMBER];
-	JButton[] button = new JButton[BUTTON_NUMBER];
-	Point[] posCursor = new Point[BUTTON_NUMBER];
+	int center;
+	BufferedImage imgBackground, imgTitle, imgCursor, imgCredit;
+	JLabel labelBackground, labelTitle, labelCursor, labelCredit;
+	BufferedImage[] imgButton;
+	JButton[] button;
+	Point[] posCursor;
 	
 	// あらゆるオブジェクトの初期化はここから(jnetpcap関連クラスなど)
 	// あくまでフォームなのでフォームを使ってなんでもやらないこと推奨
 	public void initialize() {
+		center = getSize().width / 2;
+		imgButton = new BufferedImage[BUTTON_NUMBER];
+		button = new JButton[BUTTON_NUMBER];
+		posCursor = new Point[BUTTON_NUMBER];
+		
 		// 画像ファイルを読み込む
 		try {
-			imgBackground = ImageIO.read(new File("resource/image/background.png"));
-			imgTitle = ImageIO.read(new File("resource/image/title.png"));
-			imgCursor = ImageIO.read(new File("resource/image/cursor.png"));
-			imgButton[0] = ImageIO.read(new File("resource/image/gamestart.png"));
-			imgButton[1] = ImageIO.read(new File("resource/image/option.png"));
-			imgButton[2] = ImageIO.read(new File("resource/image/soundtest.png"));
+			imgBackground = ImageIO.read(new File(PATH + "background.png"));
+			imgTitle = ImageIO.read(new File(PATH + "title.png"));
+			imgCursor = ImageIO.read(new File(PATH + "cursor.png"));
+			imgCredit = ImageIO.read(new File(PATH + "credit.png"));
+			imgButton[0] = ImageIO.read(new File(PATH + "start.png"));
+			imgButton[1] = ImageIO.read(new File(PATH + "option.png"));
+			imgButton[2] = ImageIO.read(new File(PATH + "music.png"));
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}
@@ -61,45 +68,51 @@ public class TitleForm extends FormBase implements FocusListener {
 		
 		// タイトルを配置する
 		labelTitle = new JLabel(new ImageIcon(imgTitle));
-		labelTitle.setBounds((getSize().width - imgTitle.getWidth()) / 2, TITLE_MARGIN, imgTitle.getWidth(), imgTitle.getHeight());
+		labelTitle.setBounds(center - imgTitle.getWidth() / 2, TITLE_MARGIN, imgTitle.getWidth(), imgTitle.getHeight());
 		getContentPane().add(labelTitle, 0);
 		
 		// ボタンを配置する
-		int minLeft = Integer.MAX_VALUE;
+		int min = Integer.MAX_VALUE;
 		for (int i = 0; i < BUTTON_NUMBER; i++) {
 			button[i] = new JButton(new ImageIcon(imgButton[i]));
 			button[i].setContentAreaFilled(false);
 			button[i].setFocusPainted(false);
+			button[i].setName(BUTTON_NAME[i]);
 			button[i].addFocusListener(this);
 			button[i].addKeyListener(this);
 			button[i].addMouseListener(this);
 			if (i == 0) {
-				button[i].setBounds((getSize().width - imgButton[i].getWidth()) / 2, labelTitle.getHeight() + TITLE_MARGIN * 3, imgButton[i].getWidth(), imgButton[i].getHeight());
+				button[i].setBounds(center - imgButton[i].getWidth() / 2, labelTitle.getY() + labelTitle.getHeight() + BUTTON_MARGIN, imgButton[i].getWidth(), imgButton[i].getHeight());
 			} else {
-				button[i].setBounds((getSize().width - imgButton[i].getWidth()) / 2, button[i - 1].getY() + button[i - 1].getHeight() + BUTTON_MARGIN, imgButton[i].getWidth(), imgButton[i].getHeight());
+				button[i].setBounds(center - imgButton[i].getWidth() / 2, button[i - 1].getY() + button[i - 1].getHeight() + BUTTON_INTERVAL, imgButton[i].getWidth(), imgButton[i].getHeight());
 			}
 			getContentPane().add(button[i], 0);
 			
 			// カーソル位置のために記憶しておく
-			if (minLeft > button[i].getX()) {
-				minLeft = button[i].getX();
+			if (min > button[i].getX()) {
+				min = button[i].getX();
 			}
 		}
 		
 		// カーソル位置を設定する
 		for (int i = 0; i < BUTTON_NUMBER; i++) {
 			// カーソルの上端とボタンの上端を合わせる
-			//posCursor[i] = new Point(minLeft - imgCursor.getWidth(), button[i].getY());
+			//posCursor[i] = new Point((int) (min - imgCursor.getWidth() * 1.5), button[i].getY());
 			// カーソルの中央とボタンの中央を合わせる
-			posCursor[i] = new Point(minLeft - imgCursor.getWidth(), button[i].getY() + (button[i].getHeight() / 2) - (imgCursor.getHeight() / 2));
+			posCursor[i] = new Point((int) (min - imgCursor.getWidth() * 1.5), button[i].getY() + (button[i].getHeight() / 2) - (imgCursor.getHeight() / 2));
 			// カーソルの下端とボタンの下端を合わせる
-			//posCursor[i] = new Point(minLeft - imgCursor.getWidth(), button[i].getY() + button[i].getHeight() - imgCursor.getHeight());
+			//posCursor[i] = new Point((int) (min - imgCursor.getWidth() * 1.5), button[i].getY() + button[i].getHeight() - imgCursor.getHeight());
 		}
 		
 		// カーソルを配置する
 		labelCursor = new JLabel(new ImageIcon(imgCursor));
 		labelCursor.setBounds((int) posCursor[0].getX(), (int) posCursor[0].getY(), imgCursor.getWidth(), imgCursor.getHeight());
 		getContentPane().add(labelCursor, 0);
+		
+		// クレジットを配置する
+		labelCredit = new JLabel(new ImageIcon(imgCredit));
+		labelCredit.setBounds(center - imgCredit.getWidth() / 2, button[BUTTON_NUMBER - 1].getY() + button[BUTTON_NUMBER - 1].getHeight() + CREDIT_MARGIN, imgCredit.getWidth(), imgCredit.getHeight());
+		getContentPane().add(labelCredit, 0);
 		
 		// カーソルキーとスペースキーでフォーカスを変えられるようにする
 		KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
@@ -132,27 +145,27 @@ public class TitleForm extends FormBase implements FocusListener {
 	// Eventを切り離すときれいに見えますがめんどくさくなります
 	// MouseListener
 	public void mouseClicked(MouseEvent e) {
-		JButton b = (JButton) e.getSource();
-		if (b == button[0]) {
-			System.out.println("Mouse Clicked : Button GameStart");
-			//FormUtil.getInstance().createForm("test", SettingForm.class); // TODO: 遷移先の名称を全体で統一する
-			//FormUtil.getInstance().changeForm("test");
-		} else if (b == button[1]) {
-			System.out.println("Mouse Clicked : Button Option");
-			//FormUtil.getInstance().changeForm("");
-		} else if (b == button[2]) {
-			System.out.println("Mouse Clicked : Button SoundTest");
-			//FormUtil.getInstance().changeForm("");
+		Object obj = e.getSource();
+		if (obj instanceof JButton) {
+			JButton b = (JButton) obj;
+			
+			System.out.println("Mouse Clicked : [" + b.getName() + "] Button");
+			if (b == button[0]) {
+				FormUtil.getInstance().createForm("Playing", PlayForm.class);
+				FormUtil.getInstance().changeForm("Playing");
+			} else if (b == button[1]) {
+    			FormUtil.getInstance().createForm("Option", SettingForm.class);
+    			FormUtil.getInstance().changeForm("Option");
+			} else if (b == button[2]) {
+				//FormUtil.getInstance().createForm("", .class);
+				//FormUtil.getInstance().changeForm("");
+			}
 		}
 	}
     public void mouseEntered(MouseEvent e) {
-    	JButton b = (JButton) e.getSource();
-    	if (b == button[0]) {
-    		button[0].requestFocusInWindow();
-    	} else if (b == button[1]) {
-    		button[1].requestFocusInWindow();
-    	} else if (b == button[2]) {
-    		button[2].requestFocusInWindow();
+    	Object obj = e.getSource();
+    	if (obj instanceof JButton) {
+    		((JButton) obj).requestFocusInWindow();
     	}
     }
     public void mouseDragged(MouseEvent e){}
@@ -162,35 +175,42 @@ public class TitleForm extends FormBase implements FocusListener {
     public void mouseReleased(MouseEvent e) {}
     // KeyListener
     public void keyPressed(KeyEvent e) {
-    	if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-    		JButton b = (JButton) e.getSource();
-    		if (b == button[0]) {
-    			System.out.println("Key Pressed : ENTER, Button GameStart");
-    			FormUtil.getInstance().createForm("Playing", PlayForm.class);
-    			FormUtil.getInstance().changeForm("Playing");
-    		} else if (b == button[1]) {
-    			System.out.println("Key Pressed : ENTER, Button Option");
-    			FormUtil.getInstance().createForm("Option", SettingForm.class);
-    			FormUtil.getInstance().changeForm("Option");
-    		} else if (b == button[2]) {
-    			// TODO: SoundTestの実装を検討する
-    			System.out.println("Key Pressed : ENTER, Button SoundTest");
-    			//FormUtil.getInstance().changeForm("");
-    		}
-    	}
+		Object obj = e.getSource();
+		if (obj instanceof JButton) {
+			JButton b = (JButton) obj;
+			
+			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				System.out.println("[ENTER] Key Pressed : [" + b.getName() + "] Button");
+				if (b == button[0]) {
+					FormUtil.getInstance().createForm("Playing", PlayForm.class);
+					FormUtil.getInstance().changeForm("Playing");
+				} else if (b == button[1]) {
+					FormUtil.getInstance().createForm("Option", SettingForm.class);
+					FormUtil.getInstance().changeForm("Option");
+				} else if (b == button[2]) {
+					// TODO: SoundTestの実装を検討する
+					//FormUtil.getInstance().createForm("", .class);
+					//FormUtil.getInstance().changeForm("");
+				}
+			}
+		}
     }
     public void keyReleased(KeyEvent e) {}
     public void keyTyped(KeyEvent e) {}
     // FocusListener
     public void focusGained(FocusEvent e) {
-    	JButton b = (JButton) e.getSource();
-    	if (b == button[0]) {
-    		labelCursor.setLocation(posCursor[0]);
-    	} else if (b == button[1]) {
-    		labelCursor.setLocation(posCursor[1]);
-    	} else if (b == button[2]) {
-    		labelCursor.setLocation(posCursor[2]);
-    	}
+    	Object obj = e.getSource();
+		if (obj instanceof JButton) {
+			JButton b = (JButton) e.getSource();
+			
+			if (b == button[0]) {
+				labelCursor.setLocation(posCursor[0]);
+			} else if (b == button[1]) {
+				labelCursor.setLocation(posCursor[1]);
+			} else if (b == button[2]) {
+				labelCursor.setLocation(posCursor[2]);
+			}
+		}
     }
     public void focusLost(FocusEvent e) {}
     
@@ -204,7 +224,11 @@ public class TitleForm extends FormBase implements FocusListener {
     
     public void onClose(){}
     
-    private static final int TITLE_MARGIN = 100;
-    private static final int BUTTON_MARGIN = 20;
+    private static final int TITLE_MARGIN = 50;
+    private static final int BUTTON_INTERVAL = 20;
+    private static final int BUTTON_MARGIN = 250;
     private static final int BUTTON_NUMBER = 3;
+    private static final int CREDIT_MARGIN = 100;
+    private static final String PATH = "resource/image/title/";
+    private static final String[] BUTTON_NAME = {"Playing", "Option", "Music"};
 }
