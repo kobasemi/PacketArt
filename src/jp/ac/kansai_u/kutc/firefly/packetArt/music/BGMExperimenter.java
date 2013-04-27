@@ -61,7 +61,7 @@ public class BGMExperimenter{
 	 */
 	
 	public static Sequence getSequenceData() throws Exception{
-		Sequence sequence0 = MidiSystem.getSequence(new File("resource/image/title/BGMTestSound.mid"));
+		Sequence sequence0 = MidiSystem.getSequence(new File("resource/se/BGMTestSound.mid"));
 		float division = sequence0.getDivisionType();
 		int resolution = sequence0.getResolution();
 		
@@ -88,7 +88,7 @@ public class BGMExperimenter{
 		
 		//int coefficient = XXXX.getVolMusic();
 		
-		Sequence sequence0 = MidiSystem.getSequence(new File("resource/image/title/BGMTestSound.mid"));
+		Sequence sequence0 = MidiSystem.getSequence(new File("resource/se/BGMTestSound.mid"));
 		Sequence sequence = getSequenceData();
 		Track track1 = sequence.createTrack();
 
