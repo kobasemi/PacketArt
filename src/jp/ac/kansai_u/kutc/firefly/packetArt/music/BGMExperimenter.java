@@ -30,7 +30,6 @@ public class BGMExperimenter{
 	 * 
 	 * @throws Exception
 	 */
-	
 
 	public static void playChangedBGM(int coefficient) throws Exception{
 		Sequencer sequencer = null;
@@ -100,17 +99,15 @@ public class BGMExperimenter{
 					int command = sm.getCommand();
 					int data1 = sm.getData1();
 					int basicvelocity = sm.getData2();
-					
-					//このvelocityの値が確認用BGMの音量となる。
-					int velocity = basicvelocity * (coefficient / 3);
+					int velocity = (int)(basicvelocity * coefficient / 100);
 					
 					if(i == 0){
 						message1[i] = new ShortMessage();
-						message1[i].setMessage(command, channel, data1, velocity);
+						message1[i].setMessage(command, channel, data1, basicvelocity);
 						track1.add(new MidiEvent(message1[i], time));
 					}else{
 						message1[i] = new ShortMessage();
-						message1[i].setMessage(command, channel, data1, basicvelocity);
+						message1[i].setMessage(command, channel, data1, velocity);
 						track1.add(new MidiEvent(message1[i], time));
 					}
 				}
