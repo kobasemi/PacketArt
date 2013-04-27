@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
+import jp.ac.kansai_u.kutc.firefly.packetArt.Form;//TEST
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 
 import org.jnetpcap.protocol.tcpip.Tcp;
@@ -135,5 +136,12 @@ public class ReadDumpForm extends FormBase implements TcpHandler, UdpHandler {
     }
     public void onClose(){
         pm.removeHandler(this);
+    }
+
+    public static void main(String[] args) {
+        PcapManager pm = PcapManager.getInstance();
+        pm.start();
+        Form form = new Form("ReadDump", ReadDumpForm.class);
+        form.setVisible(true);
     }
 }
