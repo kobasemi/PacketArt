@@ -1,30 +1,44 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.music;
 
+import java.io.File;
+
 import javax.sound.midi.MidiEvent;
+import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 
-//形だけ作った感じです。改良必須。
+
+//エラー吐いていますが、後々解消されるものであり
+//致命的なものでもないので無視してます。実験で動かしたい場合は
+//int coefficientに0～3の数字を入れた上で実行して下さい。
 
 /**
- * コンフィグ画面でBGM音量調節にて、確認用のBGMを再生、生成するときに使用するクラスです。<br>
- * 実行時は<br>
- * <code>BGMExperimenter.playExperimentBGM();</code>
- * などと指定していただければ動くと思います。
+ * 設定画面で音量調整の確認用BGMを扱うクラスです。
+ * 基本的にplayChangedBGM()を使ってもらえればいいはずです。
  * 
  * @author Lisa
  *
  */
+
 public class BGMExperimenter{
 	
-	public static void playExperimentBGM() throws Exception{
+	/**
+	 * 音量が調整されたBGMを鳴らすメソッドです。
+	 * getVolMusic()で数字が取ってこれるようになってから
+	 * playChangedBGM()を呼び出してもらえたら
+	 * 要求が実現できると思います
+	 * 
+	 * @throws Exception
+	 */
+	
+	public static void playChangedBGM() throws Exception{
 		Sequencer sequencer = null;
-		Sequence sequence = makeExperimentBGM();
+		Sequence sequence = setNewSequence();
 		try{
-			sequencer  = MidiSystem.getSequencer();
+			sequencer = MidiSystem.getSequencer();
 			sequencer.open();
 			
 			sequencer.setSequence(sequence);
@@ -36,123 +50,75 @@ public class BGMExperimenter{
 			if (sequencer != null && sequencer.isOpen()) sequencer.close();
 		}
 	}
-
+	
 	
 	/**
-	 * 音量調整テストの時に流れるBGMを生成します。
-	 * この関数はplayExperiment()BGMからのみ呼び出されます。
+	 * 読み込んだ曲の解像度を解析して、新しいSequenceを返すメソッドです。
+	 * changeVelocity()からのみ読み出されます。
 	 * 
 	 * @return sequence
 	 * @throws Exception
 	 */
 	
-	public static Sequence makeExperimentBGM() throws Exception{
+	public static Sequence getSequenceData() throws Exception{
+		Sequence sequence0 = MidiSystem.getSequence(new File("resource/image/title/BGMTestSound.mid"));
+		float division = sequence0.getDivisionType();
+		int resolution = sequence0.getResolution();
 		
-		//本当はやりたくないけど音量確認用のBGMを指定された音量で、『ここで』作成。
-		//TODO: 予め用意しておいたMidiファイルを読み込み、音量を変換した上で再出力できるように。
-		Sequence sequence = new Sequence(Sequence.PPQ, 24);
-		Track track = sequence.createTrack();
-		
-		int channel = 0; //トラックチャンネル
-		
-		//暫定的に音の強さは100固定になっています。
-		//TODOが達成できるようになれば、コメントアウトをはずしてそっちにして下さい。
-		//TODO: Config系統からの音量情報の受け取り(設定画面でのBGM再生)
-		//int velocity = XXXX.getVolMusic();
-		int velocity = 100; //音の強さ
-		
-		int instrument = 0; //音色の種類：リード
-		
-		int i = 0;
-		ShortMessage[] message = new ShortMessage[24];
-		message[i] = new ShortMessage();
-		message[i].setMessage(ShortMessage.PROGRAM_CHANGE, channel, instrument, 0);
-		track.add(new MidiEvent(message[i], 0));
-		
-		//C
-		message[i] = new ShortMessage();
-		message[i].setMessage(ShortMessage.NOTE_ON, channel, 60, velocity);
-		track.add(new MidiEvent(message[i], 0));
-
-		message[i] = new ShortMessage();
-		message[i].setMessage(ShortMessage.NOTE_OFF, channel, 60, velocity);
-		track.add(new MidiEvent(message[i], 12));
-		
-		//E
-		message[i] = new ShortMessage();
-		message[i].setMessage(ShortMessage.NOTE_ON, channel, 64, velocity);
-		track.add(new MidiEvent(message[i], 12));
-
-		message[i] = new ShortMessage();
-		message[i].setMessage(ShortMessage.NOTE_OFF, channel, 64, velocity);
-		track.add(new MidiEvent(message[i], 24));
-		
-		
-		//G
-		message[i] = new ShortMessage();
-		message[i].setMessage(ShortMessage.NOTE_ON, channel, 67, velocity);
-		track.add(new MidiEvent(message[i], 24));
-
-		message[i] = new ShortMessage();
-		message[i].setMessage(ShortMessage.NOTE_OFF, channel, 67, velocity);
-		track.add(new MidiEvent(message[i], 36));
-		
-		//C 8va
-		message[i] = new ShortMessage();
-		message[i].setMessage(ShortMessage.NOTE_ON, channel, 72, velocity);
-		track.add(new MidiEvent(message[i], 36));
-
-		message[i] = new ShortMessage();
-		message[i].setMessage(ShortMessage.NOTE_OFF, channel, 72, velocity);
-		track.add(new MidiEvent(message[i], 48));
-		
-		//C
-		message[i] = new ShortMessage();
-		message[i].setMessage(ShortMessage.NOTE_ON, channel, 60, velocity);
-		track.add(new MidiEvent(message[i], 48));
-
-		message[i] = new ShortMessage();
-		message[i].setMessage(ShortMessage.NOTE_OFF, channel, 60, velocity);
-		track.add(new MidiEvent(message[i], 72));
-		
-		//最後の和音
-		//C
-		message[i] = new ShortMessage();
-		message[i].setMessage(ShortMessage.NOTE_ON, channel, 60, velocity);
-		track.add(new MidiEvent(message[i], 72));
-
-		message[i] = new ShortMessage();
-		message[i].setMessage(ShortMessage.NOTE_OFF, channel, 60, velocity);
-		track.add(new MidiEvent(message[i], 120));
-		
-		//E
-		message[i] = new ShortMessage();
-		message[i].setMessage(ShortMessage.NOTE_ON, channel, 64, velocity);
-		track.add(new MidiEvent(message[i], 72));
-
-		message[i] = new ShortMessage();
-		message[i].setMessage(ShortMessage.NOTE_OFF, channel, 64, velocity);
-		track.add(new MidiEvent(message[i], 120));
-		
-		//G
-		message[i] = new ShortMessage();
-		message[i].setMessage(ShortMessage.NOTE_ON, channel, 67, velocity);
-		track.add(new MidiEvent(message[i], 72));
-
-		message[i] = new ShortMessage();
-		message[i].setMessage(ShortMessage.NOTE_OFF, channel, 67, velocity);
-		track.add(new MidiEvent(message[i], 120));
-		
-		//C8va
-		message[i] = new ShortMessage();
-		message[i].setMessage(ShortMessage.NOTE_ON, channel, 72, velocity);
-		track.add(new MidiEvent(message[i], 72));
-
-		message[i] = new ShortMessage();
-		message[i].setMessage(ShortMessage.NOTE_OFF, channel, 72, velocity);
-		track.add(new MidiEvent(message[i], 120));
+		Sequence sequence = new Sequence(division, resolution);
 		return sequence;
-		
 	}
+	
+	
+	/**
+	 * 音量を調節した新しいSequenceを返すメソッドです。
+	 * playChengedBGM()からのみ読み出されます。
+	 * 
+	 * @return sequence
+	 * @throws Exception
+	 */
+	
+	public static Sequence setNewSequence() throws Exception{
+		
+		//TODO: Config系統からの音量情報の受け取り(設定画面でのBGM再生)
+		
+		//初期velocity(basicvelocity)は100で、coefficientには0～3の間で数値が来るので
+		//velocity * (coefficient / 3)とすることで
+		//音量をミュートを含む4段階で表現する。
+		
+		//int coefficient = XXXX.getVolMusic();
+		
+		Sequence sequence0 = MidiSystem.getSequence(new File("resource/image/title/BGMTestSound.mid"));
+		Sequence sequence = getSequenceData();
+		Track track1 = sequence.createTrack();
 
+		ShortMessage[] message1 = new ShortMessage[96];
+		
+		for(Track track : sequence0.getTracks()){
+			for(int i = 0; i < track.size(); i++){
+				System.out.println("");
+				MidiEvent event = track.get(i);
+				long time = event.getTick();
+				System.out.println("Time:" + time);
+				
+				MidiMessage message = event.getMessage();
+				if(message instanceof ShortMessage){
+					ShortMessage sm = (ShortMessage) message;
+
+					int channel = sm.getChannel();
+					int command = sm.getCommand();
+					int data1 = sm.getData1();
+					int basicvelocity = sm.getData2();
+					
+					//このvelocityの値が確認用BGMの音量となる。
+					int velocity = basicvelocity * (coefficient / 3);
+					
+					message1[i] = new ShortMessage();
+					message1[i].setMessage(command, channel, data1, velocity);
+					track1.add(new MidiEvent(message1[i], time));
+				}
+			}
+		}
+		return sequence;
+	}
 }
