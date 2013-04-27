@@ -63,28 +63,28 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == "btnVolumeMute")
+		if(e.getSource() == btnVolumeMute)
 			try {
 				BGMExperimenter.playChangedBGM(0);
 			} catch (Exception e1) {
 				// TODO 自動生成された catch ブロック
 				e1.printStackTrace();
 			}
-		else if(e.getSource() == "btnVolumeLow")
+		else if(e.getSource() == btnVolumeLow)
 			try {
 				BGMExperimenter.playChangedBGM(1);
 			} catch (Exception e1) {
 				// TODO 自動生成された catch ブロック
 				e1.printStackTrace();
 			}
-		else if(e.getSource() == "btnVolumeMed")
+		else if(e.getSource() == btnVolumeMed)
 			try {
 				BGMExperimenter.playChangedBGM(2);
 			} catch (Exception e1) {
 				// TODO 自動生成された catch ブロック
 				e1.printStackTrace();
 			}
-		else if(e.getSource() == "btnVolumeHigh")
+		else if(e.getSource() == btnVolumeHigh)
 			try {
 				BGMExperimenter.playChangedBGM(3);
 			} catch (Exception e1) {
