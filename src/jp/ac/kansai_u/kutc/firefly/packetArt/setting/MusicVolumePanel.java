@@ -39,7 +39,10 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 	    add(btnVolumeMed);
 	    add(btnVolumeHigh);
 	    
+	    btnVolumeMute.addActionListener(this);
+	    btnVolumeLow.addActionListener(this);
 	    btnVolumeMed.addActionListener(this);
+	    btnVolumeHigh.addActionListener(this);
 	    
 	    if(b == 0)      btnVolumeMute.setSelected(true);
 	    else if(b == 1) btnVolumeLow.setSelected(true);
@@ -60,11 +63,33 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		try {
-			BGMExperimenter.playChangedBGM(2);
-		} catch (Exception e1) {
-			// TODO 自動生成された catch ブロック
-			e1.printStackTrace();
-		}
+		if(e.getSource() == "btnVolumeMute")
+			try {
+				BGMExperimenter.playChangedBGM(0);
+			} catch (Exception e1) {
+				// TODO 自動生成された catch ブロック
+				e1.printStackTrace();
+			}
+		else if(e.getSource() == "btnVolumeLow")
+			try {
+				BGMExperimenter.playChangedBGM(1);
+			} catch (Exception e1) {
+				// TODO 自動生成された catch ブロック
+				e1.printStackTrace();
+			}
+		else if(e.getSource() == "btnVolumeMed")
+			try {
+				BGMExperimenter.playChangedBGM(2);
+			} catch (Exception e1) {
+				// TODO 自動生成された catch ブロック
+				e1.printStackTrace();
+			}
+		else if(e.getSource() == "btnVolumeHigh")
+			try {
+				BGMExperimenter.playChangedBGM(3);
+			} catch (Exception e1) {
+				// TODO 自動生成された catch ブロック
+				e1.printStackTrace();
+			}
 	}
 }
