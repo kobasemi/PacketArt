@@ -14,7 +14,8 @@ public class ConfigStatusMainPanel extends JPanel{
 	
 	ViewLogPanel panelViewLog;
 	MinoPanel panelMino;
-	VolumePanel panelMusic, panelSound;
+	MusicVolumePanel panelMusic;
+	SoundVolumePanel panelSound;
 	DifficultyPanel panelDifficulty;
 	
 	/**
@@ -29,9 +30,9 @@ public class ConfigStatusMainPanel extends JPanel{
 		panelViewLog.setBackground(Color.yellow);
 		panelMino = new MinoPanel(stat.getMino());
 		panelMino.setBackground(Color.cyan);
-		panelMusic = new VolumePanel(stat.getVolMusic(), "音楽の音量");
+		panelMusic = new MusicVolumePanel(stat.getVolMusic());
 		panelMusic.setBackground(Color.magenta);
-		panelSound = new VolumePanel(stat.getVolSound(), "効果音の音量");
+		panelSound = new SoundVolumePanel(stat.getVolSound());
 		panelSound.setBackground(Color.gray);
 		panelDifficulty = new DifficultyPanel(stat.getDifficulty());
 		panelDifficulty.setBackground(Color.white);

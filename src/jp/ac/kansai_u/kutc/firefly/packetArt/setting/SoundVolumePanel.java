@@ -1,4 +1,7 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -8,20 +11,19 @@ import javax.swing.JRadioButton;
  * ボリューム設定に関するパネル
  * @author akasaka
  */
-public class VolumePanel extends JPanel{
+public class SoundVolumePanel extends JPanel{
 	final String IMGPATH = new String("./Resources/image/");
 	private JRadioButton btnVolumeMute, btnVolumeLow, btnVolumeMed, btnVolumeHigh;
 	
 	/**
 	 * コンストラクタ
 	 * @param 初期化前のボリューム設定
-	 * @param ラベルのタイトル
 	 */
-	VolumePanel(byte b, String label){
+	SoundVolumePanel(byte b){
 		//ImageIcon icon = new ImageIcon(IMGPATH + "temp.png");
 		//ImageIcon icon4 = new ImageIcon(IMGPATH + "img4.png");
 		
-		JLabel labelVolume = new JLabel(label);//icon);
+		JLabel labelVolume = new JLabel("効果音の音量");//icon);
 		btnVolumeMute = new JRadioButton("Mute");//icon4);
 	    btnVolumeLow = new JRadioButton("Low");//icon4);
 	    btnVolumeMed = new JRadioButton("Medium");//icon4);
@@ -51,4 +53,5 @@ public class VolumePanel extends JPanel{
 	    else if(btnVolumeMed.isSelected()) return (byte)2;
 	    else return (byte)3;
 	}
+
 }
