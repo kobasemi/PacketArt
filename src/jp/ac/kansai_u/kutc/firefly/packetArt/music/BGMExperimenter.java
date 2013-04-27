@@ -34,9 +34,9 @@ public class BGMExperimenter{
 	 * @throws Exception
 	 */
 	
-	public static void playChangedBGM() throws Exception{
+	public static void playChangedBGM(int coefficient) throws Exception{
 		Sequencer sequencer = null;
-		Sequence sequence = setNewSequence();
+		Sequence sequence = setNewSequence(coefficient);
 		try{
 			sequencer = MidiSystem.getSequencer();
 			sequencer.open();
@@ -78,7 +78,7 @@ public class BGMExperimenter{
 	 * @throws Exception
 	 */
 	
-	public static Sequence setNewSequence() throws Exception{
+	public static Sequence setNewSequence(int coefficient) throws Exception{
 		
 		//TODO: Config系統からの音量情報の受け取り(設定画面でのBGM再生)
 		
