@@ -11,13 +11,10 @@ import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 
 
-//エラー吐いていますが、後々解消されるものであり
-//致命的なものでもないので無視してます。実験で動かしたい場合は
-//int coefficientに0～3の数字を入れた上で実行して下さい。
-
 /**
  * 設定画面で音量調整の確認用BGMを扱うクラスです。
- * 基本的にplayChangedBGM()を使ってもらえればいいはずです。
+ * 基本的にplayChangedBGM(int coefficient)を使ってもらえればいいはずです。
+ * int coefficientには0～3の数字を指定して下さい。
  * 
  * @author Lisa
  *
@@ -34,6 +31,7 @@ public class BGMExperimenter{
 	 * @throws Exception
 	 */
 	
+
 	public static void playChangedBGM(int coefficient) throws Exception{
 		Sequencer sequencer = null;
 		Sequence sequence = setNewSequence(coefficient);
@@ -79,14 +77,9 @@ public class BGMExperimenter{
 	 */
 	
 	public static Sequence setNewSequence(int coefficient) throws Exception{
-		
-		//TODO: Config系統からの音量情報の受け取り(設定画面でのBGM再生)
-		
+
 		//初期velocity(basicvelocity)は100で、coefficientには0～3の間で数値が来るので
-		//velocity * (coefficient / 3)とすることで
-		//音量をミュートを含む4段階で表現する。
-		
-		//int coefficient = XXXX.getVolMusic();
+		//velocity * (coefficient / 3)とすることで音量を調節する。
 		
 		Sequence sequence0 = MidiSystem.getSequence(new File("resource/se/BGMTestSound.mid"));
 		Sequence sequence = getSequenceData();
@@ -96,10 +89,8 @@ public class BGMExperimenter{
 		
 		for(Track track : sequence0.getTracks()){
 			for(int i = 0; i < track.size(); i++){
-				System.out.println("");
 				MidiEvent event = track.get(i);
 				long time = event.getTick();
-				System.out.println("Time:" + time);
 				
 				MidiMessage message = event.getMessage();
 				if(message instanceof ShortMessage){
@@ -113,9 +104,15 @@ public class BGMExperimenter{
 					//このvelocityの値が確認用BGMの音量となる。
 					int velocity = basicvelocity * (coefficient / 3);
 					
-					message1[i] = new ShortMessage();
-					message1[i].setMessage(command, channel, data1, velocity);
-					track1.add(new MidiEvent(message1[i], time));
+					if(i == 0){
+						message1[i] = new ShortMessage();
+						message1[i].setMessage(command, channel, data1, velocity);
+						track1.add(new MidiEvent(message1[i], time));
+					}else{
+						message1[i] = new ShortMessage();
+						message1[i].setMessage(command, channel, data1, basicvelocity);
+						track1.add(new MidiEvent(message1[i], time));
+					}
 				}
 			}
 		}
