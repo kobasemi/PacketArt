@@ -155,9 +155,7 @@ public final class PcapManager extends Thread{
     */
     public synchronized boolean addHandler(Object o) {
         boolean wasOK = false;
-        synchronized(handlerHolder) {
-             wasOK = handlerHolder.classify(o);
-        }
+         wasOK = handlerHolder.classify(o);
         return wasOK;
     }
 
@@ -170,9 +168,7 @@ public final class PcapManager extends Thread{
      * @return oというハンドラが登録されていなかった場合、falseを返します。
     */
     public synchronized boolean removeHandler(Object o) {
-        synchronized(handlerHolder) {
-            return handlerHolder.removeHandler(o);
-        }
+        return handlerHolder.removeHandler(o);
     }
 
     /**
@@ -221,7 +217,6 @@ public final class PcapManager extends Thread{
      * @return 成功ならtrueを返します。失敗ならerrBufにエラーが入ってます。
     */
     public synchronized boolean openDev() {
-        //synchronized(errBuf) {
         String devName = Pcap.lookupDev(errBuf);
         //}
         return openDev(devName);
@@ -422,10 +417,8 @@ public final class PcapManager extends Thread{
         }
 
         DLT = pcap.datalink();
-        synchronized(packetQueue) {
-            synchronized(pcap) {
-                howManyEnqeued = pcap.dispatch(howManyPackets, DLT, packetQueue, dummy);
-            }
+        synchronized(pcap) {
+            howManyEnqeued = pcap.dispatch(howManyPackets, DLT, packetQueue, dummy);
         }
         if (howManyEnqeued < 0) {
             return false;//ループ中にブレークループシグナルを受け取った。
@@ -442,9 +435,7 @@ public final class PcapManager extends Thread{
      * @return 実際のリストが返ってきます。非常食が無かった場合は空のリストが返ります。
     */
     public List<PcapPacket> restorePackets(int howManyPackets) {
-        synchronized(packetQueue) {
-            return packetQueue.poll(howManyPackets);
-        }
+        return packetQueue.poll(howManyPackets);
     }
 
     /**
@@ -462,9 +453,7 @@ public final class PcapManager extends Thread{
      * @return PcapPacketを返します。非常食が空の場合はnullが返ります。
     */
     public PcapPacket nextPacketFromQueue() {
-        synchronized(packetQueue) {
-            return packetQueue.poll();
-        }
+        return packetQueue.poll();
     }
 
     /*TODO:

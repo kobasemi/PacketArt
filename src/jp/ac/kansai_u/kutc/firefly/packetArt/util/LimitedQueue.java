@@ -1,7 +1,8 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.util;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 //http://stackoverflow.com/questions/5498865/size-limited-queue-that-holds-last-n-elements-in-java
 
 /**
@@ -11,9 +12,10 @@ import java.util.LinkedList;
  *
  * @author sya-ke
 */
-public class LimitedQueue<E> extends LinkedList<E> {
+public class LimitedQueue<E> extends ConcurrentLinkedQueue<E> {
 
     private int limit;
+    private Object limitLock = new Object();
 
     /**
      * 最大装填数を初期設定します。
@@ -37,7 +39,9 @@ public class LimitedQueue<E> extends LinkedList<E> {
             lim = 1;
             return false;
         }
-        limit = lim;
+        synchronized(limitLock) {
+            limit = lim;
+        }
         return true;
     }
 
@@ -47,10 +51,12 @@ public class LimitedQueue<E> extends LinkedList<E> {
      * @return 基本的にtrueですが、nullが渡された場合はnullを要素に追加した後falseを返します。
     */
     @Override
-    public boolean add(E o) {
+    public synchronized boolean add(E o) {
         super.add(o);
-        while (size() > limit) {
-            super.remove();
+        synchronized(limitLock) {
+            while (size() > limit) {
+                super.remove();
+            }
         }
         if (o == null) {
             return false;
