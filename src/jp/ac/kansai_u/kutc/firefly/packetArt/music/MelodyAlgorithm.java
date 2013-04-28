@@ -45,7 +45,11 @@ public class MelodyAlgorithm {
 			PcapPacket pkt = pm.nextPacketFromQueue();
 			if (pkt != null) {
 				ph.setPacket(pkt);
-				Ip4 ip4 = ph.getIp4();
+			    Ip4 ip4 = null;
+                try {
+			    	ip4 = ph.getIp4();
+                }catch (Exception e) {
+                }
 				if (ip4 != null) {
 					int[] ints = PacketUtil.bytes2ints(ip4.source());
 					for (int j : ints) {

@@ -47,7 +47,7 @@ public class MelodyMaker {
 			track0.add(new MidiEvent(message[i], a + 24));
 			
 			//再抽選
-			//int[] melody = MelodyAlgorithm.melodyAlgorithm();
+			melody = MelodyAlgorithm.melodyAlgorithm();
 			Random rnd = new Random();
 			int tmp = rnd.nextInt(3);
 			
