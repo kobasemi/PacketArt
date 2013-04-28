@@ -7,11 +7,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+//import jp.ac.kansai_u.kutc.firefly.packetArt.playSE;
+
 /**
- * ボリューム設定に関するパネル
+ * SEボリューム設定に関するパネル
  * @author akasaka
  */
-public class SoundVolumePanel extends JPanel{
+public class SoundVolumePanel extends JPanel implements ActionListener{
 	final String IMGPATH = new String("./Resources/image/");
 	private JRadioButton btnVolumeMute, btnVolumeLow, btnVolumeMed, btnVolumeHigh;
 	
@@ -37,10 +39,14 @@ public class SoundVolumePanel extends JPanel{
 	    add(btnVolumeMed);
 	    add(btnVolumeHigh);
 	    
-	    if(b == 0)      btnVolumeMute.setSelected(true);
-	    else if(b == 1) btnVolumeLow.setSelected(true);
-	    else if(b == 2) btnVolumeMed.setSelected(true);
-	    else btnVolumeHigh.setSelected(true);
+	    btnVolumeLow.addActionListener(this);
+	    btnVolumeMed.addActionListener(this);
+	    btnVolumeHigh.addActionListener(this);
+	    
+	    if     (b == 0) btnVolumeMute.setSelected(true);
+	    else if(b == 1) btnVolumeLow .setSelected(true);
+	    else if(b == 2) btnVolumeMed .setSelected(true);
+	    else            btnVolumeHigh.setSelected(true);
 	}
 	
 	/**
@@ -48,10 +54,20 @@ public class SoundVolumePanel extends JPanel{
 	 * @return ボリューム設定（0_Mute, 1_Low, 2_Medium, 3_High）
 	 */
 	public byte getStatus(){
-		if(btnVolumeMute.isSelected()) return (byte)0;
-	    else if(btnVolumeLow.isSelected()) return (byte)1; 
-	    else if(btnVolumeMed.isSelected()) return (byte)2;
-	    else return (byte)3;
+		if     (btnVolumeMute.isSelected()) return (byte)0;
+	    else if(btnVolumeLow.isSelected())  return (byte)1;
+	    else if(btnVolumeMed.isSelected())  return (byte)2;
+	    else                                return (byte)3;
 	}
 
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		/*if(e.getSource() == btnVolumeLow)
+			playSE.volume = playSE.Volume.LOW;
+		else if(e.getSource() == btnVolumeMed)
+			playSE.volume = playSE.Volume.MEDIUM;
+		else if(e.getSource() == btnVolumeHigh)
+			playSE.volume = playSE.Volume.HIGH;
+		playSE.SELECT.play();*/
+	}
 }
