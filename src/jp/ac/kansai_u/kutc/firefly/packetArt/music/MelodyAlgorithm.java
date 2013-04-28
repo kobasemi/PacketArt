@@ -1,5 +1,17 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.music;
 
+import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
+import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketHolder;
+
+import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketUtil;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import org.jnetpcap.protocol.network.Ip4;
+import org.jnetpcap.packet.PcapPacket;
+
+
 /**
  * 
  * ゲーム中BGMのメインメロディを生成アルゴリズムを持つクラスです。
@@ -21,9 +33,29 @@ public class MelodyAlgorithm {
 		
 		//コード情報が入ったString配列を持ってくる．
 		String[] code = CodeMaker.codeMaker();
-		
-		//Disposeされたパケットが入っている配列を持ってくる．
-		int[] desposedip = PacketDisposer.disposePacket();
+//----------------------------------------------------------------
+		PacketHolder ph = new PacketHolder();
+		PcapManager pm = PcapManager.getInstance();
+
+		while (!pm.isReadyRun() ){
+		}
+
+		List<Integer> desposedipArrayList = new ArrayList<Integer>(24);
+		while (desposedipArrayList.size() < 24) {
+			PcapPacket pkt = pm.nextPacketFromQueue();
+			if (pkt != null) {
+				ph.setPacket(pkt);
+				Ip4 ip4 = ph.getIp4();
+				if (ip4 != null) {
+					int[] ints = PacketUtil.bytes2ints(ip4.source());
+					for (int j : ints) {
+						desposedipArrayList.add(j);
+					}
+				}
+			}
+		}
+		Integer[] desposedip = desposedipArrayList.toArray(new Integer[desposedipArrayList.size()]);
+//----------------------------------------------------------------
 		
 		//音程情報が入る配列．
 		int[] melody = new int[24];
