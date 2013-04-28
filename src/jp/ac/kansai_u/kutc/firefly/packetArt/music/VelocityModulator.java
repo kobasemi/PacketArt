@@ -2,11 +2,23 @@ package jp.ac.kansai_u.kutc.firefly.packetArt.music;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
 
-//BGMの音量を調節するクラス
+/**
+ * 音量の例外処理を行うクラスです。
+ * @author Lisa
+ *
+ */
 public class VelocityModulator {
-	public static void main(String[] args) {
-	}
 	
+	/**
+	 * 音量の例外処理を行うメソッドです。
+	 * Midiの音量の下限と上限は0～127なので
+	 * それを超えたものは強制的に数値を変更します。
+	 *
+	 * @param velo
+	 * @return velo
+	 * @throws InvalidMidiDataException
+	 * @throws MidiUnavailableException
+	 */
 	public static int setVelocity (int velo) throws InvalidMidiDataException, MidiUnavailableException{
 		if(velo > 128){
 			velo = 127;

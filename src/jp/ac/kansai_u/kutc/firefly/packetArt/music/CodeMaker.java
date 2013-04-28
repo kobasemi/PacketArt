@@ -1,11 +1,19 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.music;
 
 
-//BGMのコード生成を担当するクラス．
+/**
+ * ゲーム中BGMに使用されるコードが入っているだけのクラスです。
+ * 最終的にはどこかのクラスに統合するかもしれません。
+ * @author Lisa
+ *
+ */
 public class CodeMaker {
-	public static void main(String[] args) {
-	}
 	
+	/**
+	 * ゲーム中BGMに使用されるコードが入っているだけのメソッドです。
+	 * MelodyAlgorithmからのみ呼び出されます。
+	 * @return Code[]
+	 */
 	public static String[] codeMaker(){
 		
 		//配列の長さは24。1/2小節ごとにコードを使用。

@@ -1,12 +1,22 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.music;
-//import java.util.Random;
 
-//BGMのメロディを作成するアルゴリズム
+/**
+ * 
+ * ゲーム中BGMのメインメロディを生成アルゴリズムを持つクラスです。
+ * @author Lisa
+ *
+ */
+
 public class MelodyAlgorithm {
 
-	public static void main(String[] args) {
-	}
-
+	/**
+	 * 
+	 * 処理されたパケット情報から音高情報を作成し、配列に格納するメソッドです。
+	 * 返されるint配列は0～9の数値のどれかとなります。
+	 * MelodyMakerからのみ呼び出されます。
+	 * 
+	 * @return melody[]
+	 */
 	public static int[] melodyAlgorithm(){
 		
 		//コード情報が入ったString配列を持ってくる．

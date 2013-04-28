@@ -10,6 +10,11 @@ import javax.sound.midi.Sequencer;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 
+//For Asakasa
+//
+//int coefficient = x;
+//Thread thread = new BGMExperimenter(coefficient);
+//thread.start();
 
 /**
  * 設定画面で音量調整の確認用BGMを扱うクラスです。
@@ -20,7 +25,8 @@ import javax.sound.midi.Track;
  *
  */
 
-public class BGMExperimenter{
+public class BGMExperimenter extends Thread{
+	private int coefficient;
 	
 	/**
 	 * 音量が調整されたBGMを鳴らすメソッドです。
@@ -30,6 +36,19 @@ public class BGMExperimenter{
 	 * 
 	 * @throws Exception
 	 */
+	
+	public BGMExperimenter(int coef){
+		coefficient = coef;
+	}
+	
+	public void run(){
+		try {
+			playChangedBGM(coefficient);
+		} catch (Exception e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+	}
 
 	public static void playChangedBGM(int coefficient) throws Exception{
 		Sequencer sequencer = null;

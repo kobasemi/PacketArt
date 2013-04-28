@@ -52,7 +52,7 @@ public class MusicPlayer{
 		//TODO: Config系統からの音量情報の受け取り
 //		int velo = XXXX.getVolMusic();
 		VelocityModulator.setVelocity(velo);
-		Sequence sequence = DrumMaker.setDrumLine(velo);
+		Sequence sequence = AccompanimentMaker.setAccompaniment(velo);
 		try{
 			sequencer.open();
 			
