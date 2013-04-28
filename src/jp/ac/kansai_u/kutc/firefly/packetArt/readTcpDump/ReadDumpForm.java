@@ -1,115 +1,121 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.BasicStroke;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
+import org.jnetpcap.packet.PcapPacket;
+
+import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
 import jp.ac.kansai_u.kutc.firefly.packetArt.Form;//TEST
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 
-import org.jnetpcap.protocol.tcpip.Tcp;
-import org.jnetpcap.protocol.tcpip.Udp;
-
-import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.TcpHandler;
-import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.UdpHandler;
+import jp.ac.kansai_u.kutc.firefly.packetArt.util.DrawUtil;
 
 /**
  * このフォームはPcapManagerのopenDevとopenFileを実行するためだけのフォームです。
  *
  * @author sya-ke
  */
-public class ReadDumpForm extends FormBase implements TcpHandler, UdpHandler {
+public class ReadDumpForm extends FormBase{
 
     private LoadButton loadButton;
     private int X;
     private int Y;
-    private int MAX;
+    private int counter;
+    private final int MAX_ROOT = 30;//30個の始点
+    private final int MAX = 1000;//1000個のつぎはぎ
+    private PacketBar[] rootBars;
     private PcapManager pm;
-    private int[][] rects;
-    private final Color[] colors = {Color.red,Color.green,Color.blue,Color.yellow};
-    private boolean[] flag;
 
     public void initialize() {
-        X = getSize().width;
-        Y = getSize().height;
-        MAX = 4;
-        pm = PcapManager.getInstance();
-        //counter = 0;
-        setBackground(Color.white);
+        X = getSize().width;//なんども呼び出さないように。
+        Y = getSize().height;//なんども呼び出さないように。
+
+        //本来必要な機能ここから
         loadButton = new LoadButton();
-        System.out.println(X);
-        System.out.println(Y);
         loadButton.setBounds(0,0,X,Y);
         getContentPane().add(loadButton, 0);
-        pm.addHandler(this);
-        pm.debugMe("ReadDumpForm.init");
-        rects = new int[4][MAX];//4つの隅。
-        //[x,y,width,height][個数]
-        flag = new boolean[4];
+        //本来必要な機能ここまで
+
+        //描画用初期化ここから
+        pm = PcapManager.getInstance();
+        setBackground(Color.white);
+        counter = 0;
+        rootBars = new PacketBar[MAX_ROOT];
+        for (int i=0;i<MAX_ROOT;i++)
+            rootBars[i] = PacketBar.getStartPacketBar(new Point(X/2,Y/2));
+        System.out.println(rootBars);
+        //描画用初期化ここまで
+
+        pm.debugMe("readumpform.init");
     }
 
-//    http://jnetpcap.com/docs/javadoc/latest/org/jnetpcap/protocol/tcpip/Tcp.html
-    public void handleTcp(Tcp tcp){
-        //if (MAX <= counter) {
-        //    pm.removeHandler(this);
-        //    return;
-        //}
-        //counter++;
-        if (tcp.flags_SYN()) {
-            rects[0][0] = tcp.source() % X;
-            rects[0][1] = tcp.destination() % Y;
-            rects[0][2] = tcp.checksum() % X; 
-            rects[0][3] = tcp.window() % Y;
-            System.out.println("rects[0] => OK");
-            flag[0] = true;
-        } else if (tcp.flags_PSH()){
-            rects[1][0] = tcp.source() % X;
-            rects[1][1] = tcp.destination() % Y;
-            rects[1][2] = tcp.checksum() % X; 
-            rects[1][3] = tcp.window() % Y;
-            System.out.println("rects[1] => OK");
-            flag[1] = true;
+    //パケットが残ってるなら棒を追加
+    private synchronized void addBar(PacketBar root) {
+        synchronized(barLock){
+        if (root == null) {
+            return;
+        }
+        int counter = 0;
+        while(root.next != null) {
+            root = root.next;//木の先端へ
+            counter++;
+        }
+        if ( !(counter < MAX) ) {
+            return;
+        }
+        PcapPacket pkt = null;
+        PacketBar buf = null;
+        pkt = pm.nextPacketFromQueue();
+        if (pkt != null) {
+            synchronized(root) {
+                if (root == null) {
+                    return;
+                }
+                buf = new PacketBar(root, pkt);
+            }
+            DrawUtil.pointResolver(buf.endPoint,X,Y);
+            System.out.println(buf.endPoint);
+            root.next = buf;
+            return;
+        }
         }
     }
 
-
-// http://jnetpcap.com/docs/javadoc/latest/org/jnetpcap/protocol/tcpip/Udp.html
-    public void handleUdp(Udp udp){
-        //if (MAX <= counter) {
-        //    pm.removeHandler(this);
-        //    return;
-        //}
-        //counter++;
-        if (udp.length() % 2 == 0) {
-            rects[2][0] = udp.source() % X;
-            rects[2][1] = udp.destination() % Y;
-            rects[2][2] = udp.checksum() % X;
-            rects[2][3] = udp.length() % Y;
-            System.out.println("rects[2] => OK");
-            flag[2] = true;
-        } else if (udp.length() % 2 == 1){
-            rects[3][0] = udp.source() % X;
-            rects[3][1] = udp.destination() % Y;
-            rects[3][2] = udp.checksum() % X;
-            rects[3][3] = udp.length() % Y;
-            System.out.println("rects[3] => OK");
-            flag[3] = true;
-        }
-    }
-
+    private Object barLock = new Object();
     public void update() {
+        synchronized(barLock) {
+            for (PacketBar root : rootBars) {
+                    addBar(root);
+            }
+        }
     }
 
     public void paint(Graphics g) {
-        //if ( flag[0] & flag[1] & flag[2] & flag[3] ) {
-            for (int i= 0;i<4;i++) {
-                g.setColor(colors[i]);
-                ((Graphics2D)g).draw3DRect(rects[i][0],rects[i][1],50,60, true);//rect[2],rect[3], false);
-                flag[i] = false;
+        synchronized(barLock) {
+            Graphics2D g2 = (Graphics2D)g;
+            BasicStroke wideStroke = new BasicStroke(2.0f);
+            g2.setStroke(wideStroke);
+            for (PacketBar root : rootBars) {
+                if (root != null) {
+                    int counter = 0;
+                    while (root.next != null) {
+                        root = root.next;
+                        if (root.endPoint != null) {
+                            g2.setColor(root.color);
+                            g2.drawLine((int)root.prev.endPoint.getX(), (int)root.prev.endPoint.getY(),
+                                (int)root.endPoint.getX(), (int)root.endPoint.getY() );
+                            counter++;
+                        }
+                    }
+                }
             }
-        //}
+        }
     }
 
     public void mouseClicked(MouseEvent e) {
@@ -141,6 +147,7 @@ public class ReadDumpForm extends FormBase implements TcpHandler, UdpHandler {
     public static void main(String[] args) {
         PcapManager pm = PcapManager.getInstance();
         pm.start();
+        pm.debugMe("pm.start()");
         Form form = new Form("ReadDump", ReadDumpForm.class);
         form.setVisible(true);
     }

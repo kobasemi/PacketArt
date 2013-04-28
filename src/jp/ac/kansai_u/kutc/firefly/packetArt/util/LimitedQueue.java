@@ -52,14 +52,14 @@ public class LimitedQueue<E> extends ConcurrentLinkedQueue<E> {
     */
     @Override
     public synchronized boolean add(E o) {
+        if (o == null) {
+            return false;
+        }
         super.add(o);
         synchronized(limitLock) {
             while (size() > limit) {
                 super.remove();
             }
-        }
-        if (o == null) {
-            return false;
         }
         return true;
     }

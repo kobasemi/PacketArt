@@ -11,6 +11,7 @@ import java.net.InetAddress;
  * @author sya-ke
 */
 public class PacketUtil {
+    private PacketUtil(){};
 
     /**
      * 「実際にキャプチャした時点での」パケットのサイズを返します。<br>

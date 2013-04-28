@@ -69,7 +69,7 @@ public final class PcapManager extends Thread{
 
     public final int TIMEOUT_OPENDEV = 10;//デバイスからの読み込みで、0.01秒のパケット待ちを許す。
     public final int QUEUE_SIZE = 30000;//30000パケットの保持をする。MAXでだいたい3MBくらいメモリを食う。
-    public final int PUSH_SIZE = 2;//1パケットのロードにつき2パケットの確保をする。0.01秒ごとにパケットを間引く意味もある。
+    public final int PUSH_SIZE = 1;//1パケットのロードにつき2パケットの確保をする。0.01秒ごとにパケットを間引く意味もある。
 
     private Object openPcapLock = new Object();
     private Object filterLock = new Object();
@@ -114,6 +114,7 @@ public final class PcapManager extends Thread{
      * PcapManagerはパケットをプロトコルの種類別に譲ります。<br>
     */
     public void run() {
+        debugMe("pm.run");
         //debugMe("PcapManager.run() start");
         killThis = false;
         while (killThis == false) {
@@ -124,22 +125,22 @@ public final class PcapManager extends Thread{
                 }
             }
             pkt = null;
-            savePackets(PUSH_SIZE);
-            //savePacketsの保存先のキューは、満タンになった時点で
-            //古いパケットを捨てていくので、この関数を空撃ちしてパケットを間引けます。
             pkt = nextPacket();//0.01秒間パケットが来なかったらタイムアウトします。
             //パケットが来なかった場合、pktにはnullが入ります。
-            if (pkt == null) {
-                //パケットが来なくても、キューから非常食のパケットを取り出せます。
-                pkt = nextPacketFromQueue();
-            }
+            savePacket(pkt);
+            //キューは古いパケットを捨てていくので、この関数を空撃ちしてパケットを間引けます。
             if (pkt != null ) {
                 handlerHolder.inspect(pkt);//そのパケットをプロトコルハンドラへ渡し、ハンドラを実行します。
             } else {
-                //パケットが無くなった場合、OnNoPacketsLeftハンドラを呼び出します。
-                //その場合、おそらく0.01秒ごとに呼び出されます。
-                if (fromFile)
-                    handlerHolder.onNoPacketsLeft();
+      //          pkt = nextPacketFromQueue();
+        //        if (pkt !=null) {
+          //          handlerHolder.inspect(pkt);
+            //    } else {
+                    //パケットが無くなった場合、OnNoPacketsLeftハンドラを呼び出します。
+                    //その場合、おそらく0.01秒ごとに呼び出されます。
+                    if (fromFile)
+                        handlerHolder.onNoPacketsLeft();
+            //    }
             }
         }
     }
@@ -416,14 +417,26 @@ public final class PcapManager extends Thread{
             return false;
         }
 
-        DLT = pcap.datalink();
         synchronized(pcap) {
+            DLT = pcap.datalink();
             howManyEnqeued = pcap.dispatch(howManyPackets, DLT, packetQueue, dummy);
         }
         if (howManyEnqeued < 0) {
             return false;//ループ中にブレークループシグナルを受け取った。
         }
         return true;
+    }
+
+    /**
+     * Javaのメモリ上にある、「非常食」へパケットを蓄えます。<br>
+     * nullなら捨てられます。
+     *
+     * @param pkt 突っ込むパケットです。
+     * @return 成功ならtrueを返します。
+    */
+    public void savePacket(PcapPacket pkt) {
+        System.out.println("queue.size = " + packetQueue.size());
+        packetQueue.add(pkt);
     }
 
     /**
