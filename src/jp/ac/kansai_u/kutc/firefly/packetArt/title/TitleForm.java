@@ -18,6 +18,7 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
@@ -33,86 +34,23 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.setting.SettingForm;
  * タイトルフォームです.
  */
 public class TitleForm extends FormBase implements FocusListener {
-	int center;
-	BufferedImage imgBackground, imgTitle, imgCursor, imgCredit;
-	JLabel labelBackground, labelTitle, labelCursor, labelCredit;
-	BufferedImage[] imgButton;
+	JLabel labelCursor;
+	JPanel panel;
 	JButton[] button;
 	Point[] posCursor;
 	
 	// あらゆるオブジェクトの初期化はここから(jnetpcap関連クラスなど)
 	// あくまでフォームなのでフォームを使ってなんでもやらないこと推奨
 	public void initialize() {
-		center = getSize().width / 2;
-		imgButton = new BufferedImage[BUTTON_NUMBER];
+		panel = new JPanel(null);
 		button = new JButton[BUTTON_NUMBER];
 		posCursor = new Point[BUTTON_NUMBER];
 		
-		// 画像ファイルを読み込む
-		try {
-			imgBackground = ImageIO.read(new File(PATH + "background.png"));
-			imgTitle = ImageIO.read(new File(PATH + "title.png"));
-			imgCursor = ImageIO.read(new File(PATH + "cursor.png"));
-			imgCredit = ImageIO.read(new File(PATH + "credit.png"));
-			imgButton[0] = ImageIO.read(new File(PATH + "start.png"));
-			imgButton[1] = ImageIO.read(new File(PATH + "option.png"));
-			imgButton[2] = ImageIO.read(new File(PATH + "music.png"));
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-		}
+		// パネルを設定する
+		configurePanel();
 		
-		// 背景を配置する
-		labelBackground = new JLabel(new ImageIcon(imgBackground));
-		labelBackground.setBounds(0, 0, imgBackground.getWidth(), imgBackground.getHeight());
-		getContentPane().add(labelBackground, 0);
-		
-		// タイトルを配置する
-		labelTitle = new JLabel(new ImageIcon(imgTitle));
-		labelTitle.setBounds(center - imgTitle.getWidth() / 2, TITLE_MARGIN, imgTitle.getWidth(), imgTitle.getHeight());
-		getContentPane().add(labelTitle, 0);
-		
-		// ボタンを配置する
-		int min = Integer.MAX_VALUE;
-		for (int i = 0; i < BUTTON_NUMBER; i++) {
-			button[i] = new JButton(new ImageIcon(imgButton[i]));
-			button[i].setContentAreaFilled(false);
-			button[i].setFocusPainted(false);
-			button[i].setName(BUTTON_NAME[i]);
-			button[i].addFocusListener(this);
-			button[i].addKeyListener(this);
-			button[i].addMouseListener(this);
-			if (i == 0) {
-				button[i].setBounds(center - imgButton[i].getWidth() / 2, labelTitle.getY() + labelTitle.getHeight() + BUTTON_MARGIN, imgButton[i].getWidth(), imgButton[i].getHeight());
-			} else {
-				button[i].setBounds(center - imgButton[i].getWidth() / 2, button[i - 1].getY() + button[i - 1].getHeight() + BUTTON_INTERVAL, imgButton[i].getWidth(), imgButton[i].getHeight());
-			}
-			getContentPane().add(button[i], 0);
-			
-			// カーソル位置のために記憶しておく
-			if (min > button[i].getX()) {
-				min = button[i].getX();
-			}
-		}
-		
-		// カーソル位置を設定する
-		for (int i = 0; i < BUTTON_NUMBER; i++) {
-			// カーソルの上端とボタンの上端を合わせる
-			//posCursor[i] = new Point((int) (min - imgCursor.getWidth() * 1.5), button[i].getY());
-			// カーソルの中央とボタンの中央を合わせる
-			posCursor[i] = new Point((int) (min - imgCursor.getWidth() * 1.5), button[i].getY() + (button[i].getHeight() / 2) - (imgCursor.getHeight() / 2));
-			// カーソルの下端とボタンの下端を合わせる
-			//posCursor[i] = new Point((int) (min - imgCursor.getWidth() * 1.5), button[i].getY() + button[i].getHeight() - imgCursor.getHeight());
-		}
-		
-		// カーソルを配置する
-		labelCursor = new JLabel(new ImageIcon(imgCursor));
-		labelCursor.setBounds((int) posCursor[0].getX(), (int) posCursor[0].getY(), imgCursor.getWidth(), imgCursor.getHeight());
-		getContentPane().add(labelCursor, 0);
-		
-		// クレジットを配置する
-		labelCredit = new JLabel(new ImageIcon(imgCredit));
-		labelCredit.setBounds(center - imgCredit.getWidth() / 2, button[BUTTON_NUMBER - 1].getY() + button[BUTTON_NUMBER - 1].getHeight() + CREDIT_MARGIN, imgCredit.getWidth(), imgCredit.getHeight());
-		getContentPane().add(labelCredit, 0);
+		// パネルを配置する
+		getContentPane().add(panel, 0);
 		
 		// カーソルキーとスペースキーでフォーカスを変えられるようにする
 		KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
@@ -128,6 +66,11 @@ public class TitleForm extends FormBase implements FocusListener {
 		backwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_DOWN, InputEvent.SHIFT_MASK));
 		backwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_SPACE, InputEvent.SHIFT_MASK));
 		focusManager.setDefaultFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, backwardKeys);
+		
+		// 遷移先のフォームを生成する
+		FormUtil.getInstance().createForm("Playing", PlayForm.class);
+		FormUtil.getInstance().createForm("Option", SettingForm.class);
+		//FormUtil.getInstance().createForm("", );
 	}
 
 	// 描画関連のコードはここに
@@ -146,50 +89,51 @@ public class TitleForm extends FormBase implements FocusListener {
 	// MouseListener
 	public void mouseClicked(MouseEvent e) {
 		Object obj = e.getSource();
+		
+		// クリックされたボタンに従って画面を変化させる
 		if (obj instanceof JButton) {
 			JButton b = (JButton) obj;
 			
 			System.out.println("Mouse Clicked : [" + b.getName() + "] Button");
+			
 			if (b == button[0]) {
-				FormUtil.getInstance().createForm("Playing", PlayForm.class);
 				FormUtil.getInstance().changeForm("Playing");
 			} else if (b == button[1]) {
-    			FormUtil.getInstance().createForm("Option", SettingForm.class);
     			FormUtil.getInstance().changeForm("Option");
 			} else if (b == button[2]) {
-				//FormUtil.getInstance().createForm("", .class);
 				//FormUtil.getInstance().changeForm("");
 			}
 		}
 	}
     public void mouseEntered(MouseEvent e) {
     	Object obj = e.getSource();
+    	
+    	// マウスカーソルが乗っているボタンにフォーカスを取得させる
     	if (obj instanceof JButton) {
     		((JButton) obj).requestFocusInWindow();
     	}
     }
-    public void mouseDragged(MouseEvent e){}
+    public void mouseDragged(MouseEvent e) {}
     public void mouseExited(MouseEvent e) {}
-    public void mouseMoved(MouseEvent e){}
+    public void mouseMoved(MouseEvent e) {}
     public void mousePressed(MouseEvent e) {}
     public void mouseReleased(MouseEvent e) {}
     // KeyListener
     public void keyPressed(KeyEvent e) {
 		Object obj = e.getSource();
+		
+		// エンターキーが押下されたボタンに従って画面を変化させる
 		if (obj instanceof JButton) {
 			JButton b = (JButton) obj;
 			
 			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 				System.out.println("[ENTER] Key Pressed : [" + b.getName() + "] Button");
 				if (b == button[0]) {
-					FormUtil.getInstance().createForm("Playing", PlayForm.class);
 					FormUtil.getInstance().changeForm("Playing");
 				} else if (b == button[1]) {
-					FormUtil.getInstance().createForm("Option", SettingForm.class);
 					FormUtil.getInstance().changeForm("Option");
 				} else if (b == button[2]) {
 					// TODO: SoundTestの実装を検討する
-					//FormUtil.getInstance().createForm("", .class);
 					//FormUtil.getInstance().changeForm("");
 				}
 			}
@@ -200,6 +144,8 @@ public class TitleForm extends FormBase implements FocusListener {
     // FocusListener
     public void focusGained(FocusEvent e) {
     	Object obj = e.getSource();
+    	
+    	// フォーカスを得たボタンの横にカーソルを移動させる
 		if (obj instanceof JButton) {
 			JButton b = (JButton) e.getSource();
 			
@@ -224,11 +170,97 @@ public class TitleForm extends FormBase implements FocusListener {
     
     public void onClose(){}
     
-    private static final int TITLE_MARGIN = 50;
-    private static final int BUTTON_INTERVAL = 20;
-    private static final int BUTTON_MARGIN = 250;
+    // 定数
     private static final int BUTTON_NUMBER = 3;
-    private static final int CREDIT_MARGIN = 100;
-    private static final String PATH = "resource/image/title/";
-    private static final String[] BUTTON_NAME = {"Playing", "Option", "Music"};
+    
+    // パネルの設定をする
+    private void configurePanel() {
+		int min = Integer.MAX_VALUE;
+    	final int center = getSize().width / 2;
+        final int titleMargin = 50;
+        final int buttonInterval = 20;
+        final int buttonMargin = 250;
+        final int creditMargin = 100;
+        final String imagePath = "resource/image/title/";
+        final String[] buttonName = {"Playing", "Option", "Music"};
+		BufferedImage imgBackground = null;
+		BufferedImage imgTitle = null;
+		BufferedImage imgCursor = null;
+		BufferedImage imgCredit = null;
+		BufferedImage[] imgButton = new BufferedImage[BUTTON_NUMBER];
+		JLabel labelBackground = null;
+		JLabel labelTitle = null;
+		JLabel labelCredit = null;
+		
+		// 画像ファイルを読み込む
+		try {
+			imgBackground = ImageIO.read(new File(imagePath + "background.png"));
+			imgTitle = ImageIO.read(new File(imagePath + "title.png"));
+			imgCursor = ImageIO.read(new File(imagePath + "cursor.png"));
+			imgCredit = ImageIO.read(new File(imagePath + "credit.png"));
+			imgButton[0] = ImageIO.read(new File(imagePath + "start.png"));
+			imgButton[1] = ImageIO.read(new File(imagePath + "option.png"));
+			imgButton[2] = ImageIO.read(new File(imagePath + "music.png"));
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		}
+		
+		// 背景を設定する
+		labelBackground = new JLabel(new ImageIcon(imgBackground));
+		labelBackground.setBounds(0, 0, imgBackground.getWidth(), imgBackground.getHeight());
+		
+		// タイトルを設定する
+		labelTitle = new JLabel(new ImageIcon(imgTitle));
+		labelTitle.setBounds(center - imgTitle.getWidth() / 2, titleMargin, imgTitle.getWidth(), imgTitle.getHeight());
+		
+		// ボタンを設定する
+		for (int i = 0; i < BUTTON_NUMBER; i++) {
+			button[i] = new JButton(new ImageIcon(imgButton[i]));
+			button[i].setContentAreaFilled(false);
+			button[i].setFocusPainted(false);
+			button[i].setName(buttonName[i]);
+			button[i].addFocusListener(this);
+			button[i].addKeyListener(this);
+			button[i].addMouseListener(this);
+
+			if (i == 0) {
+				button[i].setBounds(center - imgButton[i].getWidth() / 2, labelTitle.getY() + labelTitle.getHeight() + buttonMargin, imgButton[i].getWidth(), imgButton[i].getHeight());
+			} else {
+				button[i].setBounds(center - imgButton[i].getWidth() / 2, button[i - 1].getY() + button[i - 1].getHeight() + buttonInterval, imgButton[i].getWidth(), imgButton[i].getHeight());
+			}
+			
+			// カーソル位置のために記憶しておく
+			if (min > button[i].getX()) {
+				min = button[i].getX();
+			}
+		}
+		
+		// カーソルを設定する
+		for (int i = 0; i < BUTTON_NUMBER; i++) {
+			// カーソルの上端とボタンの上端を合わせる
+			//posCursor[i] = new Point((int) (min - imgCursor.getWidth() * 1.5), button[i].getY());
+			// カーソルの中央とボタンの中央を合わせる
+			posCursor[i] = new Point((int) (min - imgCursor.getWidth() * 1.5), button[i].getY() + (button[i].getHeight() / 2) - (imgCursor.getHeight() / 2));
+			// カーソルの下端とボタンの下端を合わせる
+			//posCursor[i] = new Point((int) (min - imgCursor.getWidth() * 1.5), button[i].getY() + button[i].getHeight() - imgCursor.getHeight());
+		}
+		labelCursor = new JLabel(new ImageIcon(imgCursor));
+		labelCursor.setBounds((int) posCursor[0].getX(), (int) posCursor[0].getY(), imgCursor.getWidth(), imgCursor.getHeight());
+		
+		// クレジットを設定する
+		labelCredit = new JLabel(new ImageIcon(imgCredit));
+		labelCredit.setBounds(center - imgCredit.getWidth() / 2, button[BUTTON_NUMBER - 1].getY() + button[BUTTON_NUMBER - 1].getHeight() + creditMargin, imgCredit.getWidth(), imgCredit.getHeight());
+		
+		// パネルを設定する
+		panel.setBounds(0, 0, getSize().width, getSize().height);
+		
+		// パネルにコンポーネントを配置する
+		panel.add(labelBackground, 0);
+		panel.add(labelTitle, 0);
+		panel.add(button[0], 0);
+		panel.add(button[1], 0);
+		panel.add(button[2], 0);
+		panel.add(labelCursor, 0);
+		panel.add(labelCredit, 0);
+    }
 }
