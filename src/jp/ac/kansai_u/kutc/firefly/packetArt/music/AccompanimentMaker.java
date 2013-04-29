@@ -115,28 +115,28 @@ public class AccompanimentMaker {
 		track9.add(new MidiEvent(drummessage[i], 0));
 		
 		//クラッシュシンバルとハイハット
-//		int d = 0;
+		a = 0;
 		for (int c = 0; c < 6; c++) {
-			drummessage[i] = new ShortMessage();
-			drummessage[i].setMessage(ShortMessage.NOTE_ON, drumchannel, 49, velocity);
-			track9.add(new MidiEvent(drummessage[i], a));
+			drummessage[j] = new ShortMessage();
+			drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 49, velocity);
+			track9.add(new MidiEvent(drummessage[j], a));
 			
 			a = a + 12;
 
-			drummessage[i] = new ShortMessage();
-			drummessage[i].setMessage(ShortMessage.NOTE_OFF, drumchannel, 49, velocity);
-			track9.add(new MidiEvent(drummessage[i], a));
+			drummessage[j] = new ShortMessage();
+			drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 49, velocity);
+			track9.add(new MidiEvent(drummessage[j], a));
 			
 			for (int e = 0; e < 15; e++){
-				drummessage[i] = new ShortMessage();
-				drummessage[i].setMessage(ShortMessage.NOTE_ON, drumchannel, 42, velocity);
-				track9.add(new MidiEvent(drummessage[i], a));
+				drummessage[j] = new ShortMessage();
+				drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 42, velocity);
+				track9.add(new MidiEvent(drummessage[j], a));
 				
 				a = a + 12;
 	
-				drummessage[i] = new ShortMessage();
-				drummessage[i].setMessage(ShortMessage.NOTE_OFF, drumchannel, 42, velocity);
-				track9.add(new MidiEvent(drummessage[i], a));
+				drummessage[j] = new ShortMessage();
+				drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 42, velocity);
+				track9.add(new MidiEvent(drummessage[j], a));
 			}
 		}
 		
@@ -144,95 +144,95 @@ public class AccompanimentMaker {
 		int e = 0;
 		for(int h = 0; h < 3; h++){
 			for(int f = 0; f < 3; f++){
-				drummessage[i] = new ShortMessage();
-				drummessage[i].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
-				track9.add(new MidiEvent(drummessage[i], e));
+				drummessage[j] = new ShortMessage();
+				drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
+				track9.add(new MidiEvent(drummessage[j], e));
 				
-				drummessage[i] = new ShortMessage();
-				drummessage[i].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
-				track9.add(new MidiEvent(drummessage[i], e + 24));
+				drummessage[j] = new ShortMessage();
+				drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
+				track9.add(new MidiEvent(drummessage[j], e + 24));
 				
-				drummessage[i] = new ShortMessage();
-				drummessage[i].setMessage(ShortMessage.NOTE_ON, drumchannel, 38, velocity);
-				track9.add(new MidiEvent(drummessage[i], e + 24));
+				drummessage[j] = new ShortMessage();
+				drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 38, velocity);
+				track9.add(new MidiEvent(drummessage[j], e + 24));
 				
-				drummessage[i] = new ShortMessage();
-				drummessage[i].setMessage(ShortMessage.NOTE_OFF, drumchannel, 38, velocity);
-				track9.add(new MidiEvent(drummessage[i], e + 48));
+				drummessage[j] = new ShortMessage();
+				drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 38, velocity);
+				track9.add(new MidiEvent(drummessage[j], e + 48));
 				
-				drummessage[i] = new ShortMessage();
-				drummessage[i].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
-				track9.add(new MidiEvent(drummessage[i], e + 48));
+				drummessage[j] = new ShortMessage();
+				drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
+				track9.add(new MidiEvent(drummessage[j], e + 48));
 				
-				drummessage[i] = new ShortMessage();
-				drummessage[i].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
-				track9.add(new MidiEvent(drummessage[i], e + 60));
+				drummessage[j] = new ShortMessage();
+				drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
+				track9.add(new MidiEvent(drummessage[j], e + 60));
 				
-				drummessage[i] = new ShortMessage();
-				drummessage[i].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
-				track9.add(new MidiEvent(drummessage[i], e + 60));
+				drummessage[j] = new ShortMessage();
+				drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
+				track9.add(new MidiEvent(drummessage[j], e + 60));
 				
-				drummessage[i] = new ShortMessage();
-				drummessage[i].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
-				track9.add(new MidiEvent(drummessage[i], e + 72));
+				drummessage[j] = new ShortMessage();
+				drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
+				track9.add(new MidiEvent(drummessage[j], e + 72));
 				
-				drummessage[i] = new ShortMessage();
-				drummessage[i].setMessage(ShortMessage.NOTE_ON, drumchannel, 38, velocity);
-				track9.add(new MidiEvent(drummessage[i], e + 72));
+				drummessage[j] = new ShortMessage();
+				drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 38, velocity);
+				track9.add(new MidiEvent(drummessage[j], e + 72));
 				
-				drummessage[i] = new ShortMessage();
-				drummessage[i].setMessage(ShortMessage.NOTE_OFF, drumchannel, 38, velocity);
-				track9.add(new MidiEvent(drummessage[i], e + 96));
+				drummessage[j] = new ShortMessage();
+				drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 38, velocity);
+				track9.add(new MidiEvent(drummessage[j], e + 96));
 				e = e + 96;
 			}
 		
-		drummessage[i] = new ShortMessage();
-		drummessage[i].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
-		track9.add(new MidiEvent(drummessage[i], e));
+		drummessage[j] = new ShortMessage();
+		drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
+		track9.add(new MidiEvent(drummessage[j], e));
 		
-		drummessage[i] = new ShortMessage();
-		drummessage[i].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
-		track9.add(new MidiEvent(drummessage[i], e + 24));
+		drummessage[j] = new ShortMessage();
+		drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
+		track9.add(new MidiEvent(drummessage[j], e + 24));
 		
-		drummessage[i] = new ShortMessage();
-		drummessage[i].setMessage(ShortMessage.NOTE_ON, drumchannel, 38, velocity);
-		track9.add(new MidiEvent(drummessage[i], e + 24));
+		drummessage[j] = new ShortMessage();
+		drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 38, velocity);
+		track9.add(new MidiEvent(drummessage[j], e + 24));
 		
-		drummessage[i] = new ShortMessage();
-		drummessage[i].setMessage(ShortMessage.NOTE_OFF, drumchannel, 38, velocity);
-		track9.add(new MidiEvent(drummessage[i], e + 48));
+		drummessage[j] = new ShortMessage();
+		drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 38, velocity);
+		track9.add(new MidiEvent(drummessage[j], e + 48));
 		
-		drummessage[i] = new ShortMessage();
-		drummessage[i].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
-		track9.add(new MidiEvent(drummessage[i], e + 48));
+		drummessage[j] = new ShortMessage();
+		drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
+		track9.add(new MidiEvent(drummessage[j], e + 48));
 		
-		drummessage[i] = new ShortMessage();
-		drummessage[i].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
-		track9.add(new MidiEvent(drummessage[i], e + 60));
+		drummessage[j] = new ShortMessage();
+		drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
+		track9.add(new MidiEvent(drummessage[j], e + 60));
 		
-		drummessage[i] = new ShortMessage();
-		drummessage[i].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
-		track9.add(new MidiEvent(drummessage[i], e + 60));
+		drummessage[j] = new ShortMessage();
+		drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
+		track9.add(new MidiEvent(drummessage[j], e + 60));
 		
-		drummessage[i] = new ShortMessage();
-		drummessage[i].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
-		track9.add(new MidiEvent(drummessage[i], e + 72));
+		drummessage[j] = new ShortMessage();
+		drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
+		track9.add(new MidiEvent(drummessage[j], e + 72));
 		
-		drummessage[i] = new ShortMessage();
-		drummessage[i].setMessage(ShortMessage.NOTE_ON, drumchannel, 38, velocity);
-		track9.add(new MidiEvent(drummessage[i], e + 72));
+		drummessage[j] = new ShortMessage();
+		drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 38, velocity);
+		track9.add(new MidiEvent(drummessage[j], e + 72));
 		
-		drummessage[i] = new ShortMessage();
-		drummessage[i].setMessage(ShortMessage.NOTE_OFF, drumchannel, 38, velocity);
-		track9.add(new MidiEvent(drummessage[i], e + 84));
+		drummessage[j] = new ShortMessage();
+		drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 38, velocity);
+		track9.add(new MidiEvent(drummessage[j], e + 84));
 		
-		drummessage[i] = new ShortMessage();
-		drummessage[i].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
-		track9.add(new MidiEvent(drummessage[i], e + 84));
+		drummessage[j] = new ShortMessage();
+		drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
+		track9.add(new MidiEvent(drummessage[j], e + 84));
 		
-		drummessage[i] = new ShortMessage();
-		drummessage[i].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
-		track9.add(new MidiEvent(drummessage[i], e + 96));
+		drummessage[j] = new ShortMessage();
+		drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
+		track9.add(new MidiEvent(drummessage[j], e + 96));
 		e = e + 96;
 		}
 		
