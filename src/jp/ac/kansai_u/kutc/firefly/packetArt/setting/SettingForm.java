@@ -80,6 +80,7 @@ public class SettingForm extends FormBase implements ActionListener {
 			stat.printStatus();
 		}else if(e.getSource() == mami2){
 			System.out.println("CANCEL pushed");
+			madoka.panelMusic.thread.stop();
 			FormUtil.getInstance().changeForm("Title");
 		}
 	}
