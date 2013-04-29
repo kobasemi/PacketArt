@@ -36,7 +36,7 @@ public class TitleForm extends FormBase implements FocusListener {
 		panel = new TitlePanel(getSize().width, getSize().height);
 		
 		// イベントリスナーを追加する
-		for (JButton b:panel.button){
+		for (JButton b:panel.getButton()) {
 			b.addFocusListener(this);
 			b.addKeyListener(this);
 			b.addMouseListener(this);
@@ -97,11 +97,11 @@ public class TitleForm extends FormBase implements FocusListener {
 
 			// TODO:実装時にthreadのコメントアウトをはずす。	
 			// thread.stop();
-			if (b == panel.button[0]) {
+			if (b == panel.getButton(0)) {
 				FormUtil.getInstance().changeForm("Playing");
-			} else if (b == panel.button[1]) {
+			} else if (b == panel.getButton(1)) {
     			FormUtil.getInstance().changeForm("Option");
-			} else if (b == panel.button[2]) {
+			} else if (b == panel.getButton(2)) {
 				//FormUtil.getInstance().changeForm("");
 			}
 		}
@@ -129,11 +129,11 @@ public class TitleForm extends FormBase implements FocusListener {
 			
 			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 				System.out.println("[ENTER] Key Pressed : [" + b.getName() + "] Button");
-				if (b == panel.button[0]) {
+				if (b == panel.getButton(0)) {
 					FormUtil.getInstance().changeForm("Playing");
-				} else if (b == panel.button[1]) {
-					FormUtil.getInstance().changeForm("Option");
-				} else if (b == panel.button[2]) {
+				} else if (b == panel.getButton(1)) {
+	    			FormUtil.getInstance().changeForm("Option");
+				} else if (b == panel.getButton(2)) {
 					//FormUtil.getInstance().changeForm("");
 				}
 			}
@@ -149,19 +149,19 @@ public class TitleForm extends FormBase implements FocusListener {
 		if (obj instanceof JButton) {
 			JButton b = (JButton) e.getSource();
 			
-			if (b == panel.button[0]) {
-				panel.labelCursor.setLocation(panel.posCursor[0]);
-			} else if (b == panel.button[1]) {
-				panel.labelCursor.setLocation(panel.posCursor[1]);
-			} else if (b == panel.button[2]) {
-				panel.labelCursor.setLocation(panel.posCursor[2]);
+			if (b == panel.getButton(0)) {
+				panel.moveCursor(0);
+			} else if (b == panel.getButton(1)) {
+				panel.moveCursor(1);
+			} else if (b == panel.getButton(2)) {
+				panel.moveCursor(2);
 			}
 		}
     }
     public void focusLost(FocusEvent e) {}
     
     public void onFormChanged() {
-    	for(JButton b : panel.button){
+    	for(JButton b : panel.getButton()){
     		b.removeKeyListener(this);
     		b.removeMouseListener(this);
     		b.removeFocusListener(this);

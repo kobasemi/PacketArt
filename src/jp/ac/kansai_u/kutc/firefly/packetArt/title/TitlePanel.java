@@ -12,16 +12,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 class TitlePanel extends JPanel {
-	JLabel labelCursor;
-	JButton[] button;
-	Point[] posCursor;
+	private static final int BUTTON_NUMBER = 3;
+	private JLabel labelCursor;
+	private JButton[] button;
+	private Point[] posCursor;
 	
 	// コンストラクタ
 	TitlePanel(final int panelWidth, final int panelHeight) {
 		int min = Integer.MAX_VALUE;
         final int buttonInterval = 20;
         final int buttonMargin = 250;
-        final int buttonNumber = 3;
     	final int center = panelWidth / 2;
         final int creditMargin = 100;
         final int titleMargin = 50;
@@ -31,12 +31,12 @@ class TitlePanel extends JPanel {
 		BufferedImage imgCursor = null;
 		BufferedImage imgCredit = null;
 		BufferedImage imgTitle = null;
-		BufferedImage[] imgButton = new BufferedImage[buttonNumber];
+		BufferedImage[] imgButton = new BufferedImage[BUTTON_NUMBER];
 		JLabel labelBackground = null;
 		JLabel labelCredit = null;
 		JLabel labelTitle = null;
-		button = new JButton[buttonNumber];
-		posCursor = new Point[buttonNumber];
+		button = new JButton[BUTTON_NUMBER];
+		posCursor = new Point[BUTTON_NUMBER];
 		
 		// 画像ファイルを読み込む
 		try {
@@ -60,7 +60,7 @@ class TitlePanel extends JPanel {
 		labelTitle.setBounds(center - imgTitle.getWidth() / 2, titleMargin, imgTitle.getWidth(), imgTitle.getHeight());
 		
 		// ボタンを設定する
-		for (int i = 0; i < buttonNumber; i++) {
+		for (int i = 0; i < BUTTON_NUMBER; i++) {
 			button[i] = new JButton(new ImageIcon(imgButton[i]));
 			button[i].setContentAreaFilled(false);
 			button[i].setFocusPainted(false);
@@ -79,7 +79,7 @@ class TitlePanel extends JPanel {
 		}
 		
 		// カーソルを設定する
-		for (int i = 0; i < buttonNumber; i++) {
+		for (int i = 0; i < BUTTON_NUMBER; i++) {
 			// カーソルの上端とボタンの上端を合わせる
 			//posCursor[i] = new Point((int) (min - imgCursor.getWidth() * 1.5), button[i].getY());
 			// カーソルの中央とボタンの中央を合わせる
@@ -92,7 +92,7 @@ class TitlePanel extends JPanel {
 		
 		// クレジットを設定する
 		labelCredit = new JLabel(new ImageIcon(imgCredit));
-		labelCredit.setBounds(center - imgCredit.getWidth() / 2, button[buttonNumber - 1].getY() + button[buttonNumber - 1].getHeight() + creditMargin, imgCredit.getWidth(), imgCredit.getHeight());
+		labelCredit.setBounds(center - imgCredit.getWidth() / 2, button[BUTTON_NUMBER - 1].getY() + button[BUTTON_NUMBER - 1].getHeight() + creditMargin, imgCredit.getWidth(), imgCredit.getHeight());
 		
 		// パネルを設定する
 		setBounds(0, 0, panelWidth, panelHeight);
@@ -106,5 +106,23 @@ class TitlePanel extends JPanel {
 		add(button[2], 0);
 		add(labelCursor, 0);
 		add(labelCredit, 0);
+	}
+	
+	JButton[] getButton() {
+		return button;
+	}
+	
+	JButton getButton(int index) {
+		if (0 <= index && index < BUTTON_NUMBER) {
+			return button[index];
+		} else {
+			return null;
+		}
+	}
+	
+	void moveCursor(int index) {
+		if (0 <= index && index < BUTTON_NUMBER) {
+			labelCursor.setLocation(posCursor[index]);
+		}
 	}
 }
