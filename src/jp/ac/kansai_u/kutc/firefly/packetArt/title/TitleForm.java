@@ -23,8 +23,6 @@ import javax.swing.KeyStroke;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
-import jp.ac.kansai_u.kutc.firefly.packetArt.playing.PlayForm;
-import jp.ac.kansai_u.kutc.firefly.packetArt.setting.SettingForm;
 
 /* このファイルがクラスの基本的な構造と使い方 
  * テンプレートをコピー→メソッドを編集
@@ -38,6 +36,9 @@ public class TitleForm extends FormBase implements FocusListener {
 	JPanel panel;
 	JButton[] button;
 	Point[] posCursor;
+
+	// TODO:実装時にコメントアウトをはずす。
+//	Thread thread;
 	
 	// あらゆるオブジェクトの初期化はここから(jnetpcap関連クラスなど)
 	// あくまでフォームなのでフォームを使ってなんでもやらないこと推奨
@@ -71,6 +72,12 @@ public class TitleForm extends FormBase implements FocusListener {
 		//FormUtil.getInstance().createForm("Playing", PlayForm.class);
 		//FormUtil.getInstance().createForm("Option", SettingForm.class);
 		//FormUtil.getInstance().createForm("", ); // TODO: SoundTestの実装を検討する
+		
+		// TODO:実装時にコメントアウトをはずす。
+		// はずしたらタイトルで音楽が流れるようになります。
+		// PostScript by Lisa
+//		thread = new TitleMusic(75);
+//		thread.start();
 	}
 	
 	// 描画関連のコードはここに
@@ -95,7 +102,9 @@ public class TitleForm extends FormBase implements FocusListener {
 			JButton b = (JButton) obj;
 			
 			System.out.println("Mouse Clicked : [" + b.getName() + "] Button");
-			
+
+// TODO:実装時にthreadのコメントアウトをはずす。	
+//			thread.stop();
 			if (b == button[0]) {
 				FormUtil.getInstance().changeForm("Playing");
 			} else if (b == button[1]) {
