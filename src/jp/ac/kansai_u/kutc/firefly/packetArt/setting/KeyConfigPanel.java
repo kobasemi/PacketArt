@@ -1,5 +1,5 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
-import java.awt.Dimension;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -17,6 +17,7 @@ public class KeyConfigPanel extends JPanel implements KeyListener, ActionListene
 	//final public String IMGPATH = new String("./Resources/image/");
 	JButton btnUp, btnDown, btnLeft, btnRight, btnLeftSpin, btnRightSpin;
 	JLabel labelUp, labelDown, labelLeft, labelRight, labelLeftSpin, labelRightSpin;
+	JLabel[] labelArray;
 	String cmd;
 	
 	/**
@@ -38,6 +39,8 @@ public class KeyConfigPanel extends JPanel implements KeyListener, ActionListene
 		labelRight = new JLabel(String.valueOf(key[3]));
 		labelLeftSpin = new JLabel(String.valueOf(key[4]));
 		labelRightSpin = new JLabel(String.valueOf(key[5]));
+		labelArray = new JLabel[]{labelUp, labelDown, labelLeft, labelRight,
+				labelLeftSpin, labelRightSpin};
 		
 		add(btnUp);
 		add(labelUp);
@@ -73,19 +76,74 @@ public class KeyConfigPanel extends JPanel implements KeyListener, ActionListene
 	}
 
 	@Override
+	public void actionPerformed(ActionEvent e) {
+		cmd = e.getActionCommand();
+	}
+
+	@Override
 	public void keyPressed(KeyEvent e) {
+		char key = e.getKeyChar();
+		int code = e.getKeyCode();
+		
+		// キー入力のうち，Space, Enter, Escape, BackSpaceのキーコード，
+		// そして未定義の文字を読み飛ばそう
+		if( code == KeyEvent.VK_SPACE ||
+			code == KeyEvent.VK_ENTER ||
+			code == KeyEvent.VK_ESCAPE ||
+			code == KeyEvent.VK_BACK_SPACE ||
+			key == KeyEvent.CHAR_UNDEFINED) return;
+		
+		// キーの重複を探索
+		int idx = KeyInputLinerSearch(key);
+		if(idx != -1)
+			// キーが衝突したら，今からインプットするラベルの文字を
+			// キーが衝突したラベルに挿入．
+			InsertKeyConflictLabel(idx);
+		
+		// 各ラベルに文字をセットする
 		if(cmd == "Up")
-			labelUp.setText(String.valueOf(e.getKeyCode()));
+			labelUp.setText(String.valueOf(key));
 		else if(cmd == "Down")
-			labelDown.setText(String.valueOf(e.getKeyCode()));
+			labelDown.setText(String.valueOf(key));
 		else if(cmd == "Left")
-			labelLeft.setText(String.valueOf(e.getKeyCode()));
+			labelLeft.setText(String.valueOf(key));
 		else if(cmd == "Right")
-			labelRight.setText(String.valueOf(e.getKeyCode()));
+			labelRight.setText(String.valueOf(key));
 		else if(cmd == "LeftSpin")
-			labelLeftSpin.setText(String.valueOf(e.getKeyCode()));
+			labelLeftSpin.setText(String.valueOf(key));
 		else if(cmd == "RightSpin")
-			labelRightSpin.setText(String.valueOf(e.getKeyCode()));
+			labelRightSpin.setText(String.valueOf(key));
+	}
+	
+	/**
+	 * 入力キーの重複を探査する
+	 * @param 入力キー
+	 * @return 衝突したラベルのインデックス，-1の場合衝突なし
+	 */
+	private int KeyInputLinerSearch(char key){
+		for(int i=0; i<labelArray.length; i++)
+			if(labelArray[i].getText().equals(String.valueOf(key)))
+				return i;
+		return -1;
+	}
+	
+	/**
+	 * 衝突があったラベルに，今からインプットするラベルのキーを挿入する
+	 * @param 衝突したインデックスナンバー
+	 */
+	private void InsertKeyConflictLabel(int idx){
+		if(cmd == "Up")
+			labelArray[idx].setText(labelUp.getText());
+		else if(cmd == "Down")
+			labelArray[idx].setText(labelDown.getText());
+		else if(cmd == "Left")
+			labelArray[idx].setText(labelLeft.getText());
+		else if(cmd == "Right")
+			labelArray[idx].setText(labelRight.getText());
+		else if(cmd == "LeftSpin")
+			labelArray[idx].setText(labelLeftSpin.getText());
+		else if(cmd == "RightSpin")
+			labelArray[idx].setText(labelRightSpin.getText());
 	}
 
 	@Override
@@ -93,9 +151,4 @@ public class KeyConfigPanel extends JPanel implements KeyListener, ActionListene
 
 	@Override
 	public void keyTyped(KeyEvent arg0) {}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		cmd = e.getActionCommand();
-	}
 }
