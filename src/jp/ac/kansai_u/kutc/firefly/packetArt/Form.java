@@ -10,6 +10,9 @@ import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import jp.ac.kansai_u.kutc.firefly.packetArt.playing.PlayForm;
+import jp.ac.kansai_u.kutc.firefly.packetArt.setting.SettingForm;
+
 /**
  * 利用者に表示される画面です。
  * @author midolin
@@ -76,6 +79,11 @@ public class Form extends JFrame{
 	 	} catch(Exception e){
 	 		e.printStackTrace();
 	 	}
+ 		
+		// タイトルから遷移する先のフォームを生成する
+		FormUtil.getInstance().createForm("Playing", PlayForm.class);
+		FormUtil.getInstance().createForm("Option", SettingForm.class);
+		//FormUtil.getInstance().createForm("", ); // TODO: SoundTestの実装を検討する
  	}
 
 	// インスタンスを追加

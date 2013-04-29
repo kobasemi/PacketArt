@@ -68,11 +68,11 @@ public class TitleForm extends FormBase implements FocusListener {
 		focusManager.setDefaultFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, backwardKeys);
 		
 		// 遷移先のフォームを生成する
-		FormUtil.getInstance().createForm("Playing", PlayForm.class);
-		FormUtil.getInstance().createForm("Option", SettingForm.class);
-		//FormUtil.getInstance().createForm("", );
+		//FormUtil.getInstance().createForm("Playing", PlayForm.class);
+		//FormUtil.getInstance().createForm("Option", SettingForm.class);
+		//FormUtil.getInstance().createForm("", ); // TODO: SoundTestの実装を検討する
 	}
-
+	
 	// 描画関連のコードはここに
 	public void paint(Graphics g) {
 		
@@ -133,7 +133,6 @@ public class TitleForm extends FormBase implements FocusListener {
 				} else if (b == button[1]) {
 					FormUtil.getInstance().changeForm("Option");
 				} else if (b == button[2]) {
-					// TODO: SoundTestの実装を検討する
 					//FormUtil.getInstance().changeForm("");
 				}
 			}
