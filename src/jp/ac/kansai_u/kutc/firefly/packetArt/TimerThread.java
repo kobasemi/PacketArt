@@ -38,7 +38,7 @@ public class TimerThread extends Thread {
 		System.out.println("This thread is " + Thread.currentThread().getName());
 		long currentTime = System.currentTimeMillis();
 		long oldTime = currentTime;
-		long sleepTime = 16;
+		long sleepTime = 32;
 
 		while(!isTerminated){
 			// スレッドが止まることを要求されているなら止まる

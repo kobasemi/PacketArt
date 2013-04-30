@@ -35,8 +35,6 @@ public class TitleForm extends FormBase implements FocusListener {
 	// コンストラクタ
 	public TitleForm() {
 		// 遷移先のフォームを生成する
-		FormUtil.getInstance().createForm("Playing", PlayForm.class);
-		FormUtil.getInstance().createForm("Option", SettingForm.class);
 		//FormUtil.getInstance().createForm("", ); // TODO: SoundTestの実装を検討する
 	}
 	
@@ -75,6 +73,10 @@ public class TitleForm extends FormBase implements FocusListener {
 		// PostScript by Lisa
 		// thread = new TitleMusic(75);
 		// thread.start();
+		if(!FormUtil.getInstance().getForm().isExistForm("Playing"))
+			FormUtil.getInstance().createForm("Playing", PlayForm.class);
+		else if(!FormUtil.getInstance().getForm().isExistForm("Option"))
+			FormUtil.getInstance().createForm("Option", SettingForm.class);
 	}
 	
 	// 描画関連のコードはここに

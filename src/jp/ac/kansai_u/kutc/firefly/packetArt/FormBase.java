@@ -34,6 +34,7 @@ public abstract class FormBase extends Canvas implements MouseListener, KeyListe
 		addMouseMotionListener(this);
 		addKeyListener(this);
 		enableAntiAlias = true;
+		setVisible(false);
 		setBackground(Color.black);
 	}
 
