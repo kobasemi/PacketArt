@@ -1,13 +1,12 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.test;
 
-import jp.ac.kansai_u.kutc.firefly.packetArt.music.*;
-import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.*;
-
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
+
+import jp.ac.kansai_u.kutc.firefly.packetArt.music.VelocityModulator;
+import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
 
 
 
@@ -66,7 +65,7 @@ public class MusicPlayerTest{
 
     public void playMusic(int velo) throws InvalidMidiDataException, MidiUnavailableException{
         VelocityModulator.setVelocity(velo);
-        Sequence sequence = DrumMaker.setDrumLine(velo);
+        /* Sequence sequence = DrumMaker.setDrumLine(velo);
         try{
             sequencer.open();
             
@@ -77,7 +76,7 @@ public class MusicPlayerTest{
             e.printStackTrace();
         }finally{
             if (sequencer != null && sequencer.isOpen()) sequencer.close();
-        }
+        }*/
     }
 
     public void stopMusic() {

@@ -37,7 +37,7 @@ class ConfigFrame extends JFrame implements ActionListener{
 		sayaka.setOpaque(true);
 		sayaka.setHorizontalAlignment(JLabel.CENTER);
 		
-		madoka= new ConfigStatusMainPanel(stat);
+		//madoka= new ConfigStatusMainPanel(stat);
 	    madoka.setBounds(30, 130, 540, 250);
 	    
 	    JLabel kusojo = new JLabel("キーコンフィグ");
@@ -64,6 +64,7 @@ class ConfigFrame extends JFrame implements ActionListener{
 	}
 	
 	public void actionPerformed(ActionEvent e){
+		/*
 		if(e.getSource() == mami1){
 			stat.setViewLog(madoka.panelViewLog.getStatus());
 			stat.setMino(madoka.panelMino.getStatus());
@@ -80,5 +81,6 @@ class ConfigFrame extends JFrame implements ActionListener{
 			stat.printStatus();
 		}else if(e.getSource() == mami2)
 			System.out.println("CANCEL pushed");
+		*/	
 	}
 }

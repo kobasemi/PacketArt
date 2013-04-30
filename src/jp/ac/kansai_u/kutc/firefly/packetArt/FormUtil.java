@@ -89,6 +89,10 @@ public class FormUtil {
 			e.printStackTrace();
 		}
 	}
+	
+	public Form getForm(){
+		return targetForm;
+	}
 
 }
 
