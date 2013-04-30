@@ -75,7 +75,7 @@ public class TitleForm extends FormBase implements FocusListener {
 		// thread.start();
 		if(!FormUtil.getInstance().getForm().isExistForm("Playing"))
 			FormUtil.getInstance().createForm("Playing", PlayForm.class);
-		else if(!FormUtil.getInstance().getForm().isExistForm("Option"))
+		if(!FormUtil.getInstance().getForm().isExistForm("Option"))
 			FormUtil.getInstance().createForm("Option", SettingForm.class);
 	}
 	
