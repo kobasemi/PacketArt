@@ -35,6 +35,8 @@ public class PacketQueue extends LimitedQueue<PcapPacket> implements PcapPacketH
      * @param dummy 気にしないでください。。
     */
     public void nextPacket(PcapPacket packet, Object dummy) {
-        add(packet);
+        if (packet != null) {
+            add(packet);
+        }
     }
 }

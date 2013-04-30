@@ -1,26 +1,33 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.music;
 
-//BGMの鍵盤生成を担当するクラス．
+/**
+ * ゲーム中BGMに使用する鍵盤を作成するクラスです。
+ * @author Lisa
+ *
+ */
 public class ScaleMaker {
-	public static void main(String[] args) {
-	}
+
+	/**
+	 * ベースに使用する鍵盤を作成するメソッドです。
+	 * AccompanimentMakerからのみ呼び出されます。
+	 * 
+	 * @return bassscale[]
+	 */
+	
+	/*
+	XXXXscale[0] = E
+	XXXXscale[1] = F# 
+	XXXXscale[2] = G
+	XXXXscale[3] = A
+	XXXXscale[4] = B
+	XXXXscale[5] = C
+	XXXXscale[6] = D
+	XXXXscale[7] = E#8va
+	XXXXscale[8] = F#8va
+	XXXXscale[9] = G8va
+	*/
 	
 	public static int[] setBassScale(){
-	 
-	/**
-	 * XXXXscale[0] = E
-	 * XXXXscale[1] = F# 
-	 * XXXXscale[2] = G
-	 * XXXXscale[3] = A
-	 * XXXXscale[4] = B
-	 * XXXXscale[5] = C
-	 * XXXXscale[6] = D
-	 * XXXXscale[7] = E#8va
-	 * XXXXscale[8] = F#8va
-	 * XXXXscale[9] = G8va
-	 * 
-	 */
-	 
 		int[] bassscale = new int[9];
 		bassscale[0] = 40;
 		for(int i = 1; i < 9; i++){
@@ -33,8 +40,14 @@ public class ScaleMaker {
 		return bassscale;
 		}
 
+	
+	/**
+	 * メロディ作成に使用する鍵盤を作成するメソッドです。
+	 * AccompanimentMakerからのみ呼び出されます。
+	 * 
+	 * @return melodyscale
+	 */
 	public static int[] setMelodyScale(){
-		
 		int[] melodyscale = new int[10];
 		melodyscale[0] = 64;
 		for(int i = 1; i < 9; i++){

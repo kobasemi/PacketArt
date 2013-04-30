@@ -5,20 +5,19 @@ import org.jnetpcap.protocol.tcpip.Tcp;
 
 /**
  * PcapManagerに搭載するためのインターフェースです。<br>
- * 搭載完了した場合、tcpHandler関数はTCPパケットの到着毎に毎回呼ばれます。<br>
+ * 搭載完了した場合、tcpHandler関数はTCPのレイヤを含むパケットの到着毎に毎回呼ばれます。<br>
  * 使い方の例<br>
- * <code>
- * public class TcpMusic extends ProtocolHandler implements TcpHandler{
- *     MusicPlayer mp;
- *     TcpMusic(){
- *         mp = new MusicPlayer();
- *     }
+ * <code>{
+ *
+ * public class TcpMusic implements TcpHandler{
  *     public void handleTcp(Tcp tcp){
  *         int dstPort = tcp.destination();
- *         mp.playInt(dstPort);
+ *         (MusicPlayer.getInstance()).playInt(dstPort);
  *     }
  * }
- * </code>
+ *
+ * }</code>
+ *
  * @author sya-ke
 */
 public interface TcpHandler{

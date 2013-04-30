@@ -5,24 +5,28 @@ package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
  * @author akasaka
  */
 public class ConfigStatus {
-	private boolean viewLog;	// ビューの表示のオン・オフ
-	private byte    mino;		// ミノの設定（4つ，5つ，両方）
-	private byte    volMusic;	// 音楽の音量の設定（Mute, Low, Medium, High）
-	private byte    volSound;	// 効果音の音量の設定（Mute, Low, Medium, High）
-	private byte    difficulty;	// 難易度（静的，動的，自動）
-	private char    up, down, left, right, leftSpin, rightSpin;	// キーコンフィグ
-	private char[]  key;		// キーコンフィグの配列（up, down, left, right, leftSpin, rightSpin)
-	
+	final static byte MUTE=0;
+	final static byte MINO4=0, MINO5=1, MINOBOTH=2;
+	final static byte BGMLOW=50, BGMMEDIUM=75, BGMHIGH=100;
+	final static byte SELOW=1, SEMEDIUM=2, SEHIGH=3;
+	final static byte STATIC=0, DYNAMIC=2, AUTO=3;
+	private static boolean viewLog;		// ビューの表示のオン・オフ
+	private static byte    mino;		// ミノの設定（4つ，5つ，両方）
+	private static byte    volMusic;	// 音楽の音量の設定（Mute, Low, Medium, High）
+	private static byte    volSound;	// 効果音の音量の設定（Mute, Low, Medium, High）
+	private static byte    difficulty;	// 難易度（静的，動的，自動）
+	private static char    up, down, left, right, leftSpin, rightSpin;	// キーコンフィグ
+	private static char[]  key;			// キーコンフィグの配列（up, down, left, right, leftSpin, rightSpin)
 	
 	/**
 	 * コンストラクタ
 	 */
 	public ConfigStatus(){
 		viewLog = false;
-		mino = 0;
-		volMusic = 2;
-		volSound = 2;
-		difficulty = 2;
+		mino = MINO4;
+		volMusic = BGMMEDIUM;
+		volSound = SEMEDIUM;
+		difficulty = AUTO;
 		up = 'i';
 		down = 'k';
 		left = 'j';
@@ -36,134 +40,124 @@ public class ConfigStatus {
 	 * ログ表示のオン・オフを設定する
 	 * @param viewLog
 	 */
-	public void setViewLog(boolean viewLog){ this.viewLog = viewLog; }
+	public static void setViewLog(boolean b){ viewLog = b; }
 	/**
 	 * ミノの出現個数を設定する
 	 * @param mino
 	 */
-	public void setMino(byte mino){ this.mino = mino; }
+	public static void setMino(byte b){ mino = b; }
 	/**
 	 * 音楽の音量を設定する
 	 * @param volMusic
 	 */
-	public void setVolMusic(byte volMusic){ this.volMusic = volMusic; }
+	public static void setVolMusic(byte b){ volMusic = b; }
 	/**
 	 * 効果音の音量を設定する
 	 * @param volSound
 	 */
-	public void setVolSound(byte volSound){ this.volSound = volSound; }
+	public static void setVolSound(byte b){ volSound = b; }
 	/**
 	 * 難易度を設定する
 	 * @param difficulty
 	 */
-	public void setDifficulty(byte difficulty){ this.difficulty = difficulty; }
+	public static void setDifficulty(byte b){ difficulty = b; }
 	/**
 	 * 上キーを設定する
 	 * @param up
 	 */
-	public void setUp(char up){ this.up = this.key[0] = up;}
+	public static void setKeyUp(char c){ up = key[0] = c;}
 	/**
 	 * 下キーを設定する
 	 * @param down
 	 */
-	public void setDown(char down){ this.down = this.key[1] = down; }
+	public static void setKeyDown(char c){ down = key[1] = c; }
 	/**
 	 * 左キーを設定する
 	 * @param left
 	 */
-	public void setLeft(char left){ this.left = this.key[2] = left; }
+	public static void setKeyLeft(char c){ left = key[2] = c; }
 	/**
 	 * 右キーを設定する
 	 * @param right
 	 */
-	public void setRight(char right){ this.right = this.key[3] = right; }
+	public static void setKeyRight(char c){ right = key[3] = c; }
 	/**
 	 * 左回転キーを設定する
 	 * @param leftSpin
 	 */
-	public void setLeftSpin(char leftSpin){	this.leftSpin = this.key[4] = leftSpin; }
+	public static void setKeyLeftSpin(char c){ leftSpin = key[4] = c; }
 	/**
 	 * 右回転キーを設定する
 	 * @param rightSpin
 	 */
-	public void setRightSpin(char rightSpin){ this.rightSpin = this.key[5] = rightSpin; }
-	/**
-	 * 各キーの設定をキー配列にセットする
-	 */
-	public void setKey(){
-		this.key[0] = this.up;
-		this.key[1] = this.down;
-		this.key[2] = this.left;
-		this.key[3] = this.right;
-		this.key[4] = this.leftSpin;
-		this.key[5] = this.rightSpin;
-	}
+	public static void setKeyRightSpin(char c){ rightSpin = key[5] = c; }
 	
 	/**
 	 * ログの表示設定を取得する
 	 * @return ログの表示のオン・オフ（true, false）
 	 */
-	public boolean isViewLog(){ return viewLog; }
+	public static boolean isViewLog(){ return viewLog; }
 	/**
 	 * ミノの出現個数設定を取得する
-	 * @return ミノの個数（0_4つ, 1_5つ, 2_両方）
+	 * @return ミノの個数（4つ, 5つ, 両方）
 	 */
-	public byte getMino(){ return mino; }
+	public static byte getMino(){ return mino; }
 	/**
 	 * 音楽の音量設定を取得する
-	 * @return 音楽の音量（0_Mute, 1_Low, 2_Medium, 3_High）
+	 * @return 音楽の音量（Mute, Low, Medium, High）
 	 */
-	public byte getVolMusic(){ return volMusic; }
+	public static byte getVolMusic(){ return volMusic; }
 	/**
 	 * 効果音の音量設定を取得する
-	 * @return 効果音の音量（0_Mute, 1_Low, 2_Medium, 3_High）
+	 * @return 効果音の音量（Mute, Low, Medium, High）
 	 */
-	public byte getVolSound(){ return volSound; }
+	public static byte getVolSound(){ return volSound; }
 	/**
 	 * 難易度の設定を取得する
-	 * @return 難易度（0_Static, 1_Dynamic, 2_Auto）
+	 * @return 難易度（Static, Dynamic, Auto）
 	 */
-	public byte getDifficulty(){ return difficulty; }
+	public static byte getDifficulty(){ return difficulty; }
 	/**
 	 * 上キーの設定を取得する
-	 * @return 上キー（char）
+	 * @return 上キー
 	 */
-	public char getUp(){ return up; }
+	public static char getKeyUp(){ return up; }
 	/**
 	 * 下キーの設定を取得する
-	 * @return 下キー（char）
+	 * @return 下キー
 	 */
-	public char getDown(){ return down; }
+	public static char getKeyDown(){ return down; }
 	/**
 	 * 左キーの設定を取得する
-	 * @return 左キー（char）
+	 * @return 左キー
 	 */
-	public char getLeft(){ return left; }
+	public static char getKeyLeft(){ return left; }
 	/**
 	 * 右キーの設定を取得する
-	 * @return 右キー（char）
+	 * @return 右キー
 	 */
-	public char getRight(){ return right; }
-	/**
-	 * 右回転キーの設定を取得する
-	 * @return 右回転キー（char）
-	 */
-	public char getRightSpin(){ return rightSpin; }
+	public static char getKeyRight(){ return right; }
 	/**
 	 * 左回転キーの設定を取得する
-	 * @return 左回転キー（char）
+	 * @return 左回転キー
 	 */
-	public char getLeftSpin(){ return leftSpin; }
+	public static char getKeyLeftSpin(){ return leftSpin; }
+	/**
+	 * 右回転キーの設定を取得する
+	 * @return 右回転キー
+	 */
+	public static char getKeyRightSpin(){ return rightSpin; }
 	/**
 	 * 各キーの配列を取得する
-	 * @return 各キーのの配列（char []）
+	 * @return 各キーの配列
 	 */
-	public char[] getKey(){ return key; }
+	public static char[] getKey(){ return key; }
 	
+//	最終的には消すけど，今は変数確認用に使う
 	/**
-	 * 各項目の設定状況を標準出力する
+	 * 各項目の設定を標準出力する
 	 */
-	public void printStatus(){
+	public static void printStatus(){
 		System.out.println(viewLog);
 		System.out.println(mino);
 		System.out.println(volMusic);

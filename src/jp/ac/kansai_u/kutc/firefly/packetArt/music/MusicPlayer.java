@@ -6,6 +6,8 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 
+import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager; 
+
 /**
  * MusicPlayerクラス <br>
  * このクラスは音楽を生成，再生するシステムを司るクラスです。<br>
@@ -34,25 +36,23 @@ public class MusicPlayer{
 	}
 
 	public static void main(String[] args) throws InvalidMidiDataException, MidiUnavailableException{
-		final MusicPlayer musicPlayer = new MusicPlayer();
-		new Thread(new Runnable(){
-			public void run(){
-				try{
-					Thread.sleep(10000);//10秒後、stopMusic()を呼ぶ
-					musicPlayer.stopMusic();
-				} catch(Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}).start();
+		PcapManager pm = PcapManager.getInstance();
+		pm.start();
+		pm.openFile("../test/10000.cap");
+		MusicPlayer musicPlayer = new MusicPlayer();
 		musicPlayer.playMusic(50);
+		while (musicPlayer.isPlaying()){
+			//音楽が止まるまでまつ
+		}
+		pm.kill();
+		pm.close();
 	}
 
 	public void playMusic(int velo) throws InvalidMidiDataException, MidiUnavailableException{
 		//TODO: Config系統からの音量情報の受け取り
 //		int velo = XXXX.getVolMusic();
 		VelocityModulator.setVelocity(velo);
-		Sequence sequence = DrumMaker.setDrumLine(velo);
+		Sequence sequence = AccompanimentMaker.setAccompaniment(velo);
 		try{
 			sequencer.open();
 			

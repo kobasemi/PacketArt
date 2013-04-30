@@ -34,7 +34,13 @@ public class PacketHolder {
     private PcapPacket pkt;
 
     /**
-     * 唯一のコンストラクタです。
+     * コンストラクタです。何もしません。後からsetPacketをしてください。
+    */
+    public PacketHolder() {
+    }
+
+    /**
+     * 初期化と同時にsetPacketで引数のパケットを搭載します。
      *
      * @param packet プロトコルを抽出したいパケット
     */

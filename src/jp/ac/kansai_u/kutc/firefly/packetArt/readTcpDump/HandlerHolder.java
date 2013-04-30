@@ -25,7 +25,6 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.*;
 */
 public class HandlerHolder extends ProtocolHandlerBase {
 
-    //private ArrayList<TcpHandler> tcpHandlers;
     private List<TcpHandler> tcpHandlers;
     private List<UdpHandler> udpHandlers;
     private List<Ip6Handler> ip6Handlers;

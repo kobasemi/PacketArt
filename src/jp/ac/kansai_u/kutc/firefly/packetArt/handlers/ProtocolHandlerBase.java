@@ -21,13 +21,13 @@ import org.jnetpcap.protocol.tcpip.Udp;
  * そのため、このクラスは一つのパケットしか保持できません。<br>
  * 新たにパケットをこのクラスに保持させるにはinspectメソッドを使います。<br>
  * inspectメソッドではパケットアートとjnetpcapで扱える、<br>
- * 最もレイヤーの高いプロトコルを識別し、対応するハンドラを自動で呼び出します。<br>
+ * 対応するレイヤのそれぞれのハンドラを自動で呼び出します。<br>
  * 例：<br>
- *     もしTCPパケットがinspectメソッドで読み込まれたらhandleTcpが呼ばれます。<br>
- *     次に「inspectが呼び出された」ということを認識させる用に、<br>
- *     handlePacketが呼ばれます。最後に保持用にパケットがpktに代入されます。<br>
- *     pktを保持するので、inspect後もgetTcp()を使う事でTCPのデータを取得することができます。<br>
- * 使い方：
+ *     もしTCP on IP on Etherというありがちなパケットが送られてきた場合、<br>
+ *     パケットがinspectメソッドで読み込まれたらまずhandleTcpが呼ばれます。<br>
+ *     次にhandleIp4が呼ばれます。次にhandleEthernetが呼ばれます。<br>
+ *     次にhandlePacketが呼ばれます。パケットがnullだった場合は<br>
+ *     willHandlePackets == true の時のみ一個前のパケットについてもう一度以上のことを行います。<br>
  *
  * @author syake
  *
@@ -78,11 +78,9 @@ public class ProtocolHandlerBase {
     }
 
     /**
-     * この関数は、プロトコル毎に呼び出す関数を変えます。
-     * 最後に、一度関数を呼び出す猶予を与えています。
+     * この関数は、プロトコル毎に関数を呼び出します。
      * 
      * @param packet PcapManager.nextPacket()で読みだしたパケットです。
-     * 
      * @see org.jnetpcap.packet.PcapPacket
     */
     public synchronized void inspect(PcapPacket packet) {
@@ -105,37 +103,36 @@ public class ProtocolHandlerBase {
         try {
             handled = false;
             if (packet.hasHeader(tcp) ) {  
-                handleTcp(tcp);//40％ここに来る
+                handleTcp(tcp);//40％
             }
             if (packet.hasHeader(udp) ) {  
-                handleUdp(udp);//30％ここに来る
+                handleUdp(udp);//30％
             }
             if ( packet.hasHeader(ip6) ) {  
-                handleIp6(ip6);//IPv4より上にしてIPv6 over IPv4に対応させる
+                handleIp6(ip6);//20%
             }
             if ( packet.hasHeader(ip4) ) {  
-                handleIp4(ip4);//20％ここニ来る
+                handleIp4(ip4);//80％
             }
             if ( packet.hasHeader(ppp) ) {  
-                handlePPP(ppp);//実際PPPが来ることは殆ど無い
+                handlePPP(ppp);//0.1%?
             }
             if ( packet.hasHeader(l2tp) ) {  
-                handleL2TP(l2tp);//実際くることはないだろう。
+                handleL2TP(l2tp);//0%?
             }
             if ( packet.hasHeader(icmp) ) {  
-                handleIcmp(icmp);//ちょっとしか来ない。
+                handleIcmp(icmp);//15%
             }
             if ( packet.hasHeader(arp) ) {  
-                handleArp(arp);//実際来ることは無いだろう。
+                handleArp(arp);//2%?
             }
             if ( packet.hasHeader(ethernet) ) {  
-                handleEthernet(ethernet);
+                handleEthernet(ethernet);//100%
             }
-            handlePacket(packet);
-            //レイヤーが高い順にすることで、最上階のレイヤーを扱う。
+            handlePacket(packet);//100%
 
             //pktを上書き。次のパケットが来れば参照は切断される。
-            //new PcapPacketすることで、厄介な参照問題を防ぐ。
+            //new PcapPacketすることで、厄介な参照問題を防いでいる。
             pkt = new PcapPacket(packet);
             handled = true;
         } catch (Exception e) {

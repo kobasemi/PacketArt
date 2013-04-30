@@ -80,6 +80,7 @@ public class Form extends JFrame{
 	 	} catch(Exception e){
 	 		e.printStackTrace();
 	 	}
+ 		
  	}
 
 	// インスタンスを追加

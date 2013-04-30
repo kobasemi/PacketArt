@@ -100,7 +100,6 @@ public class MelodyMaker {
 			}
 			a = a + 48;
 		}
-		//次はベースライン(BassMaker)生成へ．
 		return sequence;
 	}
 }

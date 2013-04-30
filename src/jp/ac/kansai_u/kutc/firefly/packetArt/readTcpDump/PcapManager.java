@@ -7,7 +7,7 @@ import org.jnetpcap.Pcap;//こいつが心臓
 import org.jnetpcap.PcapIf;
 import org.jnetpcap.nio.JMemory;
 import org.jnetpcap.packet.PcapPacket;
-import org.jnetpcap.PcapDLT;//イーサネット２。
+import org.jnetpcap.PcapDLT;
 import org.jnetpcap.PcapBpfProgram;
 
 import org.jnetpcap.PcapClosedException;
@@ -68,8 +68,8 @@ public final class PcapManager extends Thread{
     private PacketQueue packetQueue;
 
     public final int TIMEOUT_OPENDEV = 10;//デバイスからの読み込みで、0.01秒のパケット待ちを許す。
-    public final int QUEUE_SIZE = 30000;//30000パケットの保持をする。
-    public final int PUSH_SIZE = 2;//1パケットのロードにつき2パケットの確保をする。0.01秒ごとにパケットを間引く意味もある。
+    public final int QUEUE_SIZE = 30000;//30000パケットの保持をする。MAXでだいたい3MBくらいメモリを食う。
+    public final int PUSH_SIZE = 1;//1パケットのロードにつき2パケットの確保をする。0.01秒ごとにパケットを間引く意味もある。
 
     private Object openPcapLock = new Object();
     private Object filterLock = new Object();
@@ -114,6 +114,7 @@ public final class PcapManager extends Thread{
      * PcapManagerはパケットをプロトコルの種類別に譲ります。<br>
     */
     public void run() {
+        debugMe("pm.run");
         //debugMe("PcapManager.run() start");
         killThis = false;
         while (killThis == false) {
@@ -124,22 +125,22 @@ public final class PcapManager extends Thread{
                 }
             }
             pkt = null;
-            savePackets(PUSH_SIZE);
-            //savePacketsの保存先のキューは、満タンになった時点で
-            //古いパケットを捨てていくので、この関数を空撃ちしてパケットを間引けます。
             pkt = nextPacket();//0.01秒間パケットが来なかったらタイムアウトします。
             //パケットが来なかった場合、pktにはnullが入ります。
-            if (pkt == null) {
-                //パケットが来なくても、キューから非常食のパケットを取り出せます。
-                pkt = nextPacketFromQueue();
-            }
+            savePacket(pkt);
+            //キューは古いパケットを捨てていくので、この関数を空撃ちしてパケットを間引けます。
             if (pkt != null ) {
                 handlerHolder.inspect(pkt);//そのパケットをプロトコルハンドラへ渡し、ハンドラを実行します。
             } else {
-                //パケットが無くなった場合、OnNoPacketsLeftハンドラを呼び出します。
-                //その場合、おそらく0.01秒ごとに呼び出されます。
-                if (fromFile)
-                    handlerHolder.onNoPacketsLeft();
+      //          pkt = nextPacketFromQueue();
+        //        if (pkt !=null) {
+          //          handlerHolder.inspect(pkt);
+            //    } else {
+                    //パケットが無くなった場合、OnNoPacketsLeftハンドラを呼び出します。
+                    //その場合、おそらく0.01秒ごとに呼び出されます。
+                    if (fromFile)
+                        handlerHolder.onNoPacketsLeft();
+            //    }
             }
         }
     }
@@ -155,9 +156,7 @@ public final class PcapManager extends Thread{
     */
     public synchronized boolean addHandler(Object o) {
         boolean wasOK = false;
-        synchronized(handlerHolder) {
-             wasOK = handlerHolder.classify(o);
-        }
+         wasOK = handlerHolder.classify(o);
         return wasOK;
     }
 
@@ -170,9 +169,7 @@ public final class PcapManager extends Thread{
      * @return oというハンドラが登録されていなかった場合、falseを返します。
     */
     public synchronized boolean removeHandler(Object o) {
-        synchronized(handlerHolder) {
-            return handlerHolder.removeHandler(o);
-        }
+        return handlerHolder.removeHandler(o);
     }
 
     /**
@@ -221,7 +218,6 @@ public final class PcapManager extends Thread{
      * @return 成功ならtrueを返します。失敗ならerrBufにエラーが入ってます。
     */
     public synchronized boolean openDev() {
-        //synchronized(errBuf) {
         String devName = Pcap.lookupDev(errBuf);
         //}
         return openDev(devName);
@@ -264,6 +260,7 @@ public final class PcapManager extends Thread{
 
     /**
      * 現在開いているtcpdumpのファイルオブジェクトを返します。
+     * ファイル名はフルパスです。
      *
      * @return Fileオブジェクトです。ファイルからパケットを読んでいない場合はnullが返ります。
     */
@@ -349,7 +346,7 @@ public final class PcapManager extends Thread{
     }
 
     /**
-     * 未テストです。フィルターが有効か否かを返します。
+     * フィルターが有効か否かを返します。
      *
      * @return BPFフィルターが適用されているならtrueを返します。
     */
@@ -420,16 +417,25 @@ public final class PcapManager extends Thread{
             return false;
         }
 
-        DLT = pcap.datalink();
-        synchronized(packetQueue) {
-            synchronized(pcap) {
-                howManyEnqeued = pcap.dispatch(howManyPackets, DLT, packetQueue, dummy);
-            }
+        synchronized(pcap) {
+            DLT = pcap.datalink();
+            howManyEnqeued = pcap.dispatch(howManyPackets, DLT, packetQueue, dummy);
         }
         if (howManyEnqeued < 0) {
             return false;//ループ中にブレークループシグナルを受け取った。
         }
         return true;
+    }
+
+    /**
+     * Javaのメモリ上にある、「非常食」へパケットを蓄えます。<br>
+     * nullなら捨てられます。
+     *
+     * @param pkt 突っ込むパケットです。
+     * @return 成功ならtrueを返します。
+    */
+    public void savePacket(PcapPacket pkt) {
+        packetQueue.add(pkt);
     }
 
     /**
@@ -441,13 +447,11 @@ public final class PcapManager extends Thread{
      * @return 実際のリストが返ってきます。非常食が無かった場合は空のリストが返ります。
     */
     public List<PcapPacket> restorePackets(int howManyPackets) {
-        synchronized(packetQueue) {
-            return packetQueue.poll(howManyPackets);
-        }
+        return packetQueue.poll(howManyPackets);
     }
 
     /**
-     * 「非常食」の残りパケットを返します。
+     * 「非常食」の残りパケット数を返します。
      *
      * @return キューに保持している残りパケット数を返します。
     */
@@ -461,9 +465,7 @@ public final class PcapManager extends Thread{
      * @return PcapPacketを返します。非常食が空の場合はnullが返ります。
     */
     public PcapPacket nextPacketFromQueue() {
-        synchronized(packetQueue) {
-            return packetQueue.poll();
-        }
+        return packetQueue.poll();
     }
 
     /*TODO:
@@ -533,7 +535,6 @@ public final class PcapManager extends Thread{
     /**
      * アロケートしたメモリや開いたファイルをガベコレの前に閉じます。<br>
      * この関数では自分（シングルトンinstance）を解放しません。<br>
-     * 別のクラスから開放してください。
     */
     public synchronized void close() {
         if ( pcap != null && fromFile == true) {
