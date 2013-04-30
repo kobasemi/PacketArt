@@ -32,18 +32,19 @@ public class DifficultyPanel extends JPanel{
 		add(btnDifficultyDynamic);
 		add(btnDifficultyAuto);
 		
-		if(b ==0)       btnDifficultyStatic.setSelected(true);
-		else if(b == 1) btnDifficultyDynamic.setSelected(true);
-		else            btnDifficultyAuto.setSelected(true);
+		if     (b == ConfigStatus.STATIC)  btnDifficultyStatic.setSelected(true);
+		else if(b == ConfigStatus.DYNAMIC) btnDifficultyDynamic.setSelected(true);
+		else if(b == ConfigStatus.AUTO)    btnDifficultyAuto.setSelected(true);
 	}
 	
 	/**
 	 * 難易度の設定を取得する
-	 * @return 難易度（0_静的, 1_動的, 2_自動）
+	 * @return 難易度（静的, 動的, 自動）
 	 */
 	public byte getStatus(){
-		if(btnDifficultyStatic.isSelected()) return (byte)0;
-		else if(btnDifficultyDynamic.isSelected()) return (byte)1;
-		else return (byte)2;
+		if     (btnDifficultyStatic.isSelected())  return ConfigStatus.STATIC;
+		else if(btnDifficultyDynamic.isSelected()) return ConfigStatus.DYNAMIC;
+		else if(btnDifficultyAuto.isSelected())    return ConfigStatus.AUTO;
+		return -1;
 	}
 }

@@ -26,7 +26,6 @@ public class SettingForm extends FormBase implements ActionListener {
 	private KeyConfigPanel qbee;
 	
 	public void initialize() {
-		new ConfigStatus();
 		Container homura = getContentPane();
 		
 		JLabel sayaka = new JLabel("設定画面");
@@ -57,8 +56,8 @@ public class SettingForm extends FormBase implements ActionListener {
 	    homura.add(sayaka, 0);
 	    homura.add(madoka, 0);
 	    homura.add(kusojo, 0);
-	    homura.add(qbee, 0);
-	    homura.add(kyoko, 0);
+	    homura.add(qbee  , 0);
+	    homura.add(kyoko , 0);
 	}
 	
 	

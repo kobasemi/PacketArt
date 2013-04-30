@@ -31,18 +31,19 @@ public class MinoPanel extends JPanel{
 		add(btnMino5);
 		add(btnMinoBoth);
 		
-		if(b == 0) btnMino4.setSelected(true);
-		else if(b == 1) btnMino5.setSelected(true);
-		else btnMinoBoth.setSelected(true);
+		if     (b == ConfigStatus.MINO4)    btnMino4.setSelected(true);
+		else if(b == ConfigStatus.MINO5)    btnMino5.setSelected(true);
+		else if(b == ConfigStatus.MINOBOTH) btnMinoBoth.setSelected(true);
 	}
 	
 	/**
 	 * ミノの出現個数の設定を取得する
-	 * @return ミノの出現個数（0_4つ, 1_5つ, 2_両方）
+	 * @return ミノの出現個数（4つ, 5つ, 両方）
 	 */
 	public byte getStatus(){
-		if(btnMino4.isSelected()) return (byte)0;
-		else if(btnMino5.isSelected()) return (byte)1;
-		else return (byte)2;
+		if     (btnMino4.isSelected())    return ConfigStatus.MINO4;
+		else if(btnMino5.isSelected())    return ConfigStatus.MINO5;
+		else if(btnMinoBoth.isSelected()) return ConfigStatus.MINOBOTH;
+		return -1;
 	}
 }

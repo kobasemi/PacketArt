@@ -24,15 +24,11 @@ public class ConfigStatus {
 	public ConfigStatus(){
 		viewLog = false;
 		mino = MINO4;
-		volMusic = BGMMEDIUM;
+		volMusic = MUTE; //TODO :実装時，MEDIUMに．
 		volSound = SEMEDIUM;
 		difficulty = AUTO;
-		up = 'i';
-		down = 'k';
-		left = 'j';
-		right = 'l';
-		leftSpin = 'z';
-		rightSpin = 'x';
+		up = 'i'; down = 'k'; left = 'j'; right = 'l';
+		leftSpin = 'z'; rightSpin = 'x';
 		key = new char[]{up, down, left, right, leftSpin, rightSpin};
 	}
 	

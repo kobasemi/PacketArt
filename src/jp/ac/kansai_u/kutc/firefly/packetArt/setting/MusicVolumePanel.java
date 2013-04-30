@@ -14,7 +14,6 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.music.BGMExperimenter;
  * @author akasaka
  */
 public class MusicVolumePanel extends JPanel implements ActionListener{
-	final byte MUTE = 0, LOW = 50, MED = 75, HIGH = 100;
 	final String IMGPATH = new String("./Resources/image/");
 	
 	private JRadioButton btnVolumeMute, btnVolumeLow, btnVolumeMed, btnVolumeHigh;
@@ -46,14 +45,14 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 	    btnVolumeMed.addActionListener(this);
 	    btnVolumeHigh.addActionListener(this);
 	    
-	    if     (b == 0) btnVolumeMute.setSelected(true);
-	    else if(b == 1) btnVolumeLow .setSelected(true);
-	    else if(b == 2) btnVolumeMed .setSelected(true);
-	    else            btnVolumeHigh.setSelected(true);
+	    if     (b == ConfigStatus.MUTE)      btnVolumeMute.setSelected(true);
+	    else if(b == ConfigStatus.BGMLOW)    btnVolumeLow .setSelected(true);
+	    else if(b == ConfigStatus.BGMMEDIUM) btnVolumeMed .setSelected(true);
+	    else if(b == ConfigStatus.BGMHIGH)   btnVolumeHigh.setSelected(true);
 	    
 	    //スレッドに何もしない処理を一応登録する．
 	    //じゃないとstop()でエラーが出るのだもの
-	    thread = new BGMExperimenter(MUTE);
+	    thread = new BGMExperimenter(ConfigStatus.MUTE);
 	}
 	
 	/**
@@ -61,28 +60,22 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 	 * @return ボリューム設定（Mute, Low, Medium, High）
 	 */
 	public byte getStatus(){
-		/*
-		 * ********************************************
-		 *  定数を後で変える
-		 *  だって，値が変わったら，このクラス内の値も
-		 *  かえんとあかんこうなる．
-		 * ********************************************
-		 */
-		if     (btnVolumeMute.isSelected()) return MUTE;
-	    else if(btnVolumeLow .isSelected()) return LOW; 
-	    else if(btnVolumeMed .isSelected()) return MED;
-	    else                                return HIGH;
+		if     (btnVolumeMute.isSelected()) return ConfigStatus.MUTE;
+	    else if(btnVolumeLow .isSelected()) return ConfigStatus.BGMLOW; 
+	    else if(btnVolumeMed .isSelected()) return ConfigStatus.BGMMEDIUM;
+	    else if(btnVolumeHigh.isSelected()) return ConfigStatus.BGMHIGH;
+		return -1;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		thread.stop();
 		if(e.getSource() == btnVolumeLow)
-			thread = new BGMExperimenter(LOW);
+			thread = new BGMExperimenter(ConfigStatus.BGMLOW);
 		else if(e.getSource() == btnVolumeMed)
-			thread = new BGMExperimenter(MED);
+			thread = new BGMExperimenter(ConfigStatus.BGMMEDIUM);
 		else if(e.getSource() == btnVolumeHigh)
-			thread = new BGMExperimenter(HIGH);
+			thread = new BGMExperimenter(ConfigStatus.BGMHIGH);
 		thread.start();
 	}
 }

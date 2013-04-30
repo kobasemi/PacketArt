@@ -42,21 +42,22 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
 	    btnVolumeMed.addActionListener(this);
 	    btnVolumeHigh.addActionListener(this);
 	    
-	    if     (b == 0) btnVolumeMute.setSelected(true);
-	    else if(b == 1) btnVolumeLow .setSelected(true);
-	    else if(b == 2) btnVolumeMed .setSelected(true);
-	    else            btnVolumeHigh.setSelected(true);
+	    if     (b == ConfigStatus.MUTE)     btnVolumeMute.setSelected(true);
+	    else if(b == ConfigStatus.SELOW)    btnVolumeLow .setSelected(true);
+	    else if(b == ConfigStatus.SEMEDIUM) btnVolumeMed .setSelected(true);
+	    else if(b == ConfigStatus.SEHIGH)   btnVolumeHigh.setSelected(true);
 	}
 	
 	/**
 	 * ボリューム設定を取得する
-	 * @return ボリューム設定（0_Mute, 1_Low, 2_Medium, 3_High）
+	 * @return ボリューム設定（Mute, Low, Medium, High）
 	 */
 	public byte getStatus(){
-		if     (btnVolumeMute.isSelected()) return (byte)0;
-	    else if(btnVolumeLow.isSelected())  return (byte)1;
-	    else if(btnVolumeMed.isSelected())  return (byte)2;
-	    else                                return (byte)3;
+		if     (btnVolumeMute.isSelected()) return ConfigStatus.MUTE;
+	    else if(btnVolumeLow.isSelected())  return ConfigStatus.SELOW;
+	    else if(btnVolumeMed.isSelected())  return ConfigStatus.SEMEDIUM;
+	    else if(btnVolumeHigh.isSelected()) return ConfigStatus.SEHIGH;
+		return -1;
 	}
 
 	@Override
