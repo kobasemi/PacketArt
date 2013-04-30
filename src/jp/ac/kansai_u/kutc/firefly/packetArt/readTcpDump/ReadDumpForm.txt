@@ -1,20 +1,33 @@
-JPanel("ユーザ入出力用") ( -> setPreferredSize(new Dimension(int 600, int 800) );
-    GridLayout(1,3)(
-            0: FlowLayout(
-                0: JLabel("ファイルからロード")
-                1: JTextField("開いたファイル名")
-                2: JButton("開く/閉じる") -> ファイルダイアログ+JavaxのなんとかExtensionフィルター
-                3: オープン、非オープン状態の画像
-            )
-            1: FlowLayout(
-                0: JLabel("デバイスからロード")
-                1: JComboBox("開いたデバイス名")
-                2: JButton("開く/閉じる") 
-                3: オープン、非オープン状態の画像
-            )
-            2: FlowLayout(
-                0: JProgressBar("packetQueue.size()")
-                1: JLabel(packetQueue.size(), "/ 30000")
+JPanel("パケットマネージャ関連パネル") ( -> setPreferredSize(new Dimension(int 600, int 800) );
+    GridLayout(1,5)(
+        0: JLabel("パケットマネージャーの設定")
+        1: FlowLayout(
+            0: JLabel("ファイルからロード")
+            1: JTextField("開いたファイル名")
+            2: JButton("開く/閉じる") -> ファイルダイアログ+JavaxのなんとかExtensionフィルター
+            3: オープン、非オープン状態の画像
         )
+        2: FlowLayout(
+            0: JLabel("デバイスからロード")
+            1: JComboBox("開いたデバイス名")
+            2: JButton("開く/閉じる") 
+            3: オープン、非オープン状態の画像
+        )
+        3: FlowLayout(
+            0: JTextField("BPF フィルタ")
+            1: JButton("適用/解除")
+            2: 適用、非適用状態の画像
+        )
+        4: FlowLayout(
+            0: JLabel("残りパケット保持数")
+            1: JProgressBar("packetQueue.size()")
+            2: JLabel(packetQueue.size(), "/ 30000")
+        )
+    )
+)
+JPanel("フォーム移動関連パネル") ( //正直、場所もカタチも統一して、同じクラスにしといた方が良いと思うよ
+    FlowLayout(
+        0: JButton("タイトルに戻る")
+        1: JButton("ゲーム画面に戻る")
     )
 )
