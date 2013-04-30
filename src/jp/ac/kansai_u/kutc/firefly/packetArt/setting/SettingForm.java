@@ -64,6 +64,7 @@ public class SettingForm extends FormBase implements ActionListener {
 	
 	
 	public void actionPerformed(ActionEvent e){
+		madoka.panelMusic.thread.stop();
 		if(e.getSource() == mami1){
 			stat.setViewLog(madoka.panelViewLog.getStatus());
 			stat.setMino(madoka.panelMino.getStatus());
@@ -78,9 +79,9 @@ public class SettingForm extends FormBase implements ActionListener {
 			stat.setRightSpin(qbee.labelRightSpin.getText().charAt(0));
 			stat.setKey();
 			stat.printStatus();
+			FormUtil.getInstance().changeForm("Title");
 		}else if(e.getSource() == mami2){
 			System.out.println("CANCEL pushed");
-			madoka.panelMusic.thread.stop();
 			FormUtil.getInstance().changeForm("Title");
 		}
 	}
