@@ -10,6 +10,8 @@ import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigStatus;
+
 /**
  * 利用者に表示される画面です。
  * @author midolin
@@ -21,6 +23,7 @@ public class Form extends JFrame{
 	Map<String, Tuple<FormBase, JComponent>> instances = new HashMap<String, Tuple<FormBase, JComponent>>();
 
 	CardLayout card;
+	ConfigStatus config;
 
 	// 時間管理用スレッド 使いまわす
 	TimerThread timer;
@@ -31,6 +34,7 @@ public class Form extends JFrame{
 	 * @param startupForm スタートアップするときに表示されるフォームのクラス
 	 */
 	public Form(String startupFormName, Class<? extends FormBase> startupForm){
+		config = new ConfigStatus();
 		timer  = new TimerThread("TimerThread");
 		FormUtil.setForm(this);
 
