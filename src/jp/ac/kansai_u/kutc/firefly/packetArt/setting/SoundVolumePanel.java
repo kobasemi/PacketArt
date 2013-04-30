@@ -38,7 +38,6 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
 	    add(btnVolumeLow);
 	    add(btnVolumeMed);
 	    add(btnVolumeHigh);
-	    
 	    btnVolumeLow.addActionListener(this);
 	    btnVolumeMed.addActionListener(this);
 	    btnVolumeHigh.addActionListener(this);

@@ -61,6 +61,13 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 	 * @return ボリューム設定（Mute, Low, Medium, High）
 	 */
 	public byte getStatus(){
+		/*
+		 * ********************************************
+		 *  定数を後で変える
+		 *  だって，値が変わったら，このクラス内の値も
+		 *  かえんとあかんこうなる．
+		 * ********************************************
+		 */
 		if     (btnVolumeMute.isSelected()) return MUTE;
 	    else if(btnVolumeLow .isSelected()) return LOW; 
 	    else if(btnVolumeMed .isSelected()) return MED;

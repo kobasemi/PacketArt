@@ -21,13 +21,12 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
  * @author akasaka
  */
 public class SettingForm extends FormBase implements ActionListener {
-	ConfigStatus stat;
-	ConfigStatusMainPanel madoka;
-	JButton mami1, mami2;
-	KeyConfigPanel qbee;
+	private ConfigStatusMainPanel madoka;
+	private JButton mami1, mami2;
+	private KeyConfigPanel qbee;
 	
 	public void initialize() {
-		stat = new ConfigStatus();
+		new ConfigStatus();
 		Container homura = getContentPane();
 		
 		JLabel sayaka = new JLabel("設定画面");
@@ -37,12 +36,12 @@ public class SettingForm extends FormBase implements ActionListener {
 		sayaka.setOpaque(true);
 		sayaka.setHorizontalAlignment(JLabel.CENTER);
 		
-		madoka= new ConfigStatusMainPanel(stat);
+		madoka= new ConfigStatusMainPanel();
 	    madoka.setBounds(30, 130, 540, 250);
 	    
 	    JLabel kusojo = new JLabel("キーコンフィグ");
 	    kusojo.setBounds(30, 380, 540, 50);
-	    qbee = new KeyConfigPanel(stat.getKey());
+	    qbee = new KeyConfigPanel(ConfigStatus.getKey());
 	    qbee.setBounds(30, 430, 540, 250);
 	    
 	    JPanel kyoko = new JPanel();
@@ -66,19 +65,18 @@ public class SettingForm extends FormBase implements ActionListener {
 	public void actionPerformed(ActionEvent e){
 		madoka.panelMusic.thread.stop();
 		if(e.getSource() == mami1){
-			stat.setViewLog(madoka.panelViewLog.getStatus());
-			stat.setMino(madoka.panelMino.getStatus());
-			stat.setVolMusic(madoka.panelMusic.getStatus());
-			stat.setVolSound(madoka.panelSound.getStatus());
-			stat.setDifficulty(madoka.panelDifficulty.getStatus());
-			stat.setUp(qbee.labelUp.getText().charAt(0));
-			stat.setDown(qbee.labelDown.getText().charAt(0));
-			stat.setLeft(qbee.labelLeft.getText().charAt(0));
-			stat.setRight(qbee.labelRight.getText().charAt(0));
-			stat.setLeftSpin(qbee.labelLeftSpin.getText().charAt(0));
-			stat.setRightSpin(qbee.labelRightSpin.getText().charAt(0));
-			stat.setKey();
-			stat.printStatus();
+			ConfigStatus.setViewLog(madoka.panelViewLog.getStatus());
+			ConfigStatus.setMino(madoka.panelMino.getStatus());
+			ConfigStatus.setVolMusic(madoka.panelMusic.getStatus());
+			ConfigStatus.setVolSound(madoka.panelSound.getStatus());
+			ConfigStatus.setDifficulty(madoka.panelDifficulty.getStatus());
+			ConfigStatus.setKeyUp(qbee.labelUp.getText().charAt(0));
+			ConfigStatus.setKeyDown(qbee.labelDown.getText().charAt(0));
+			ConfigStatus.setKeyLeft(qbee.labelLeft.getText().charAt(0));
+			ConfigStatus.setKeyRight(qbee.labelRight.getText().charAt(0));
+			ConfigStatus.setKeyLeftSpin(qbee.labelLeftSpin.getText().charAt(0));
+			ConfigStatus.setKeyRightSpin(qbee.labelRightSpin.getText().charAt(0));
+			ConfigStatus.printStatus();
 			FormUtil.getInstance().changeForm("Title");
 		}else if(e.getSource() == mami2){
 			System.out.println("CANCEL pushed");

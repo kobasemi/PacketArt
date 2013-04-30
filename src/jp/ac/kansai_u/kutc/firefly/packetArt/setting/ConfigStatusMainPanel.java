@@ -20,21 +20,20 @@ public class ConfigStatusMainPanel extends JPanel{
 	
 	/**
 	 * コンストラクタ
-	 * @param stat（ConfigStatusデータ構造）
 	 */
-	ConfigStatusMainPanel(ConfigStatus stat){
+	ConfigStatusMainPanel(){
 		this.setBackground(Color.blue);
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-			
-		panelViewLog = new ViewLogPanel(stat.isViewLog());
+		
+		panelViewLog = new ViewLogPanel(ConfigStatus.isViewLog());
 		panelViewLog.setBackground(Color.yellow);
-		panelMino = new MinoPanel(stat.getMino());
+		panelMino = new MinoPanel(ConfigStatus.getMino());
 		panelMino.setBackground(Color.cyan);
-		panelMusic = new MusicVolumePanel(stat.getVolMusic());
+		panelMusic = new MusicVolumePanel(ConfigStatus.getVolMusic());
 		panelMusic.setBackground(Color.magenta);
-		panelSound = new SoundVolumePanel(stat.getVolSound());
+		panelSound = new SoundVolumePanel(ConfigStatus.getVolSound());
 		panelSound.setBackground(Color.gray);
-		panelDifficulty = new DifficultyPanel(stat.getDifficulty());
+		panelDifficulty = new DifficultyPanel(ConfigStatus.getDifficulty());
 		panelDifficulty.setBackground(Color.white);
 		
 		add(panelViewLog);

@@ -32,7 +32,7 @@ public class ViewLogPanel extends JPanel{
 		add(btnOff);
 		
 		if(f) btnOn.setSelected(true);
-		else btnOff.setSelected(true);
+		else  btnOff.setSelected(true);
 	}
 	
 	/**
