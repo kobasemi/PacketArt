@@ -12,17 +12,12 @@ import org.jnetpcap.PcapBpfProgram;
 
 import org.jnetpcap.PcapClosedException;
 
-/*
-    TODO: 残りパケットの（概算値）の保持{
-        ファイルサイズ(Byte)を標準MTU,1500byteで割る。WIDEプロジェクトの
-        パケットはMTU=1500が最頻値なので、逐次ロードでもおおよそは出せるはずだ
-    }
-*/
-
 /**
  * 完全にパケットアート用。<br>
  * シングルトンになったので、<br>
  * close時にnullを代入してください。<br>
+ * jnetpcapの仕様に沿って、このクラスは一切例外を投げません。<br>
+ *
  * 使い方:<br>
  * <br>
  * //他のクラスで<br>
@@ -69,7 +64,7 @@ public final class PcapManager extends Thread{
 
     public final int TIMEOUT_OPENDEV = 10;//デバイスからの読み込みで、0.01秒のパケット待ちを許す。
     public final int QUEUE_SIZE = 30000;//30000パケットの保持をする。MAXでだいたい3MBくらいメモリを食う。
-    public final int PUSH_SIZE = 1;//1パケットのロードにつき2パケットの確保をする。0.01秒ごとにパケットを間引く意味もある。
+    public final int PUSH_SIZE = 1;//1パケットのロードにつき1パケットの確保をする。0.01秒ごとにパケットを間引く意味もある。
 
     private Object openPcapLock = new Object();
     private Object filterLock = new Object();
@@ -112,6 +107,7 @@ public final class PcapManager extends Thread{
      * PcapManagerは常にパケットを拾い続けつつ一部を捨て、libpcapが浪費する待ちパケットのメモリを開放します。<br>
      * PcapManagerはパケットが欲しいというオブジェクトに惜しみなくパケットを譲ります。<br>
      * PcapManagerはパケットをプロトコルの種類別に譲ります。<br>
+     * このスレッドを止めるにはkill関数を呼び出してください。
     */
     public void run() {
         debugMe("pm.run");
@@ -132,15 +128,11 @@ public final class PcapManager extends Thread{
             if (pkt != null ) {
                 handlerHolder.inspect(pkt);//そのパケットをプロトコルハンドラへ渡し、ハンドラを実行します。
             } else {
-      //          pkt = nextPacketFromQueue();
-        //        if (pkt !=null) {
-          //          handlerHolder.inspect(pkt);
-            //    } else {
+                if (fromFile) {
+                    handlerHolder.onNoPacketsLeft();
                     //パケットが無くなった場合、OnNoPacketsLeftハンドラを呼び出します。
-                    //その場合、おそらく0.01秒ごとに呼び出されます。
-                    if (fromFile)
-                        handlerHolder.onNoPacketsLeft();
-            //    }
+                    //おそらく0.01秒ごとに呼び出されます。
+                }
             }
         }
     }
@@ -219,7 +211,6 @@ public final class PcapManager extends Thread{
     */
     public synchronized boolean openDev() {
         String devName = Pcap.lookupDev(errBuf);
-        //}
         return openDev(devName);
     }
     //呼び出し先がスレッドセーフなので、スレッドセーフ。
@@ -234,7 +225,6 @@ public final class PcapManager extends Thread{
     public synchronized boolean openDev(String devName) {
         synchronized(openPcapLock) {
             System.out.println("PcapManager.openDev(" + devName +")");
-            //pcap = Pcap.openLive(devName, Pcap.DEFAULT_SNAPLEN, Pcap.MODE_PROMISCUOUS, Pcap.DEFAULT_TIMEOUT, errBuf);
             if (pcap != null) {
                 System.out.println("You've already opened pcap! closing previous one..");
                 close();
@@ -256,11 +246,10 @@ public final class PcapManager extends Thread{
             return true;
         }
     }
-    //まるごとスレッドセーフ
 
     /**
-     * 現在開いているtcpdumpのファイルオブジェクトを返します。
-     * ファイル名はフルパスです。
+     * 現在開いているtcpdumpのファイルオブジェクトを返します。<br>
+     * ファイル名はフルパスです。ファイル名を取得したい場合に使ってください。
      *
      * @return Fileオブジェクトです。ファイルからパケットを読んでいない場合はnullが返ります。
     */
@@ -269,7 +258,8 @@ public final class PcapManager extends Thread{
     }
 
     /**
-     * 現在開いているデバイス(PcapIF)オブジェクトを返します。
+     * 現在開いているデバイス(PcapIF)オブジェクトを返します。<br>
+     * 開いているデバイス名を取得したい場合、DevUtilと組み合わせて使ってください。
      *
      * @return PcapIFオブジェクトです。デバイスを開いてなければnullを返します。
     */
@@ -468,7 +458,12 @@ public final class PcapManager extends Thread{
         return packetQueue.poll();
     }
 
-    /*TODO:
+    /*
+    TODO: 動的にパケットの中央値平均を算術し、ファイルサイズから
+          残りパケット数を予測するのもありかもしれない。
+          キャプチャ方法が未定でMTU値も当てにならない以上、
+          この関数の実装は断念する。
+
     public float nokoriPacket() {
         int MTU = 1500;
         int FILESIZE = File.getSize();
@@ -535,6 +530,7 @@ public final class PcapManager extends Thread{
     /**
      * アロケートしたメモリや開いたファイルをガベコレの前に閉じます。<br>
      * この関数では自分（シングルトンinstance）を解放しません。<br>
+     * ここで注意してほしいことは、BPFフィルタ構造体も開放しているところです。
     */
     public synchronized void close() {
         if ( pcap != null && fromFile == true) {
@@ -553,6 +549,8 @@ public final class PcapManager extends Thread{
 
     /**
      * デバッグ用。<br>
+     *
+     * @param header デバッグのヘッダ
     */
     public void debugMe(String header) {
         System.out.println("----------------------------------" + header);

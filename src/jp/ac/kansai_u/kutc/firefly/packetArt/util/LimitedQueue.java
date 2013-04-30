@@ -32,11 +32,10 @@ public class LimitedQueue<E> extends ConcurrentLinkedQueue<E> {
      * 動的にキューの長さを変更できます。
      *
      * @param lim 
-     * @return 向こうなキューの長さが与えられた場合はfalseが返ります。
+     * @return 無効なキューの長さが与えられた場合はfalseが返ります。
     */
     public boolean setLimit(int lim) {
         if (lim <= 0) {
-            lim = 1;
             return false;
         }
         synchronized(limitLock) {
@@ -48,7 +47,7 @@ public class LimitedQueue<E> extends ConcurrentLinkedQueue<E> {
     /**
      * LinkedListの関数をオーバーライドしたものです。
      *
-     * @return 基本的にtrueですが、nullが渡された場合はnullを要素に追加した後falseを返します。
+     * @return 基本的にtrueですが、nullが渡された場合はキューに入れず、falseを返します。
     */
     @Override
     public synchronized boolean add(E o) {
