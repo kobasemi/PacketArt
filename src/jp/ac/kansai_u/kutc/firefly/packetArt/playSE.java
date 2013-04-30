@@ -11,16 +11,16 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 /*
  * 予め読み込んだ効果音を再生するクラスです。
  * @author Nakata
-*/
-//ファイルの読み込み
+ * 
+*/	
 public enum playSE {
-	MOVE("resource/se/move.wav"),			//ゲーム：ミノ左右下移動
+	//MOVE("resource/se/move.wav"),			//ゲーム：ミノ左右下移動
 	HADRDROP("resource/se/harddrop.wav"),		//ゲーム：ミノハードドロップ
-	TURN("resource/se/turn.wav"),			//ゲーム：ミノ回転
-	DEMISE("resource/se/demise.wav"),		//ゲーム：ミノ消滅
+	//TURN("resource/se/turn.wav"),			//ゲーム：ミノ回転
+	//DEMISE("resource/se/demise.wav"),		//ゲーム：ミノ消滅
 	SELECT("resource/se/select.wav"),	//メニュー：セレクト用効果音
-	CANCEL("resource/se/cancel.wav"),	//メニュー：キャンセル音
-	OPEN("resource/se/open.wav");		//アプリケーション起動音（仮)
+	CANCEL("resource/se/cancel.wav");	//メニュー：キャンセル音
+	//OPEN("resource/se/open.wav");		//アプリケーション起動音（仮)
 	
 	//音量調節
 	public static enum Volume {
@@ -47,7 +47,11 @@ public enum playSE {
 				e.printStackTrace();
 			}
 	}
-	//予め読み込んだ効果音の再生,mute設定ならばclipの再生を停止
+	/*
+	 * 
+	 * 予め読み込んだ効果音の再生、mute設定ならばclipの再生を停止するメソッドです。
+	 * 
+	 */
 	public void play() {
 		if (volume != Volume.MUTE) {
 			if (clip.isRunning())
@@ -56,7 +60,7 @@ public enum playSE {
 			clip.start();     // 音を出力
 			}
 		}
-	//初期化
+	
 	static void init() {
 		values(); // 全ての要素のコンストラクタを呼ぶ
    }
