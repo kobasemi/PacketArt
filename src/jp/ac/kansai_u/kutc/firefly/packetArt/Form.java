@@ -10,8 +10,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import jp.ac.kansai_u.kutc.firefly.packetArt.playing.PlayForm;
-import jp.ac.kansai_u.kutc.firefly.packetArt.setting.SettingForm;
+import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigStatus;
 
 /**
  * 利用者に表示される画面です。
@@ -24,6 +23,7 @@ public class Form extends JFrame{
 	Map<String, Tuple<FormBase, JComponent>> instances = new HashMap<String, Tuple<FormBase, JComponent>>();
 
 	CardLayout card;
+	ConfigStatus config;
 
 	// 時間管理用スレッド 使いまわす
 	TimerThread timer;
@@ -34,6 +34,7 @@ public class Form extends JFrame{
 	 * @param startupForm スタートアップするときに表示されるフォームのクラス
 	 */
 	public Form(String startupFormName, Class<? extends FormBase> startupForm){
+		config = new ConfigStatus();
 		timer  = new TimerThread("TimerThread");
 		FormUtil.setForm(this);
 
@@ -80,10 +81,6 @@ public class Form extends JFrame{
 	 		e.printStackTrace();
 	 	}
  		
-		// タイトルから遷移する先のフォームを生成する
-		FormUtil.getInstance().createForm("Playing", PlayForm.class);
-		FormUtil.getInstance().createForm("Option", SettingForm.class);
-		//FormUtil.getInstance().createForm("", ); // TODO: SoundTestの実装を検討する
  	}
 
 	// インスタンスを追加

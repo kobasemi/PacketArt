@@ -68,12 +68,21 @@ public class PlayForm extends FormBase {
 		// TODO: backgrownd
 		
 		// TODO: painting PacketBlocks using packet data.
+		for(PacketBlock item : model.currentMinos) {
+			g.setColor(Color.getHSBColor(item.location.getX() % 360.0f, 0.7f, 0.7f));
+			g.drawRect(
+					100 + (model.parentLocation.getX() + item.location.getX()) * 32, 
+					100 + (model.parentLocation.getY() + item.location.getY()) * 32, 30, 30);
+			
+		}
 		for (PacketBlock[] column : model.getBoard()) {
 			for(PacketBlock item : column){
-				//g.setColor(Color.getHSBColor(item.packet.getFrameNumber() % 360.0f, 0.7f, 0.7f));
 				g.setColor(Color.getHSBColor(item.location.getX() % 360.0f, 0.7f, 0.7f));
 				g.drawRect(item.location.getX() * 32, item.location.getY() * 32, 30, 30);
+				
+				System.out.print(item.mino);
 			}
+			System.out.println();
 		}
 
 	}
@@ -148,7 +157,7 @@ public class PlayForm extends FormBase {
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
 		long time = tick;
-		;
+		
 		// TODO:1回だけ押せるようにする(長押し(何ms?)で連続反応するようにする)
 		if (!keyPressedTime.containsKey(key)) {
 			keyPressedTime.put(key, time);
