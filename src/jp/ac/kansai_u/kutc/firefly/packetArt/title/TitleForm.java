@@ -16,6 +16,8 @@ import javax.swing.KeyStroke;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
+import jp.ac.kansai_u.kutc.firefly.packetArt.playing.PlayForm;
+import jp.ac.kansai_u.kutc.firefly.packetArt.setting.SettingForm;
 
 /* このファイルがクラスの基本的な構造と使い方 
  * テンプレートをコピー→メソッドを編集
@@ -29,6 +31,14 @@ public class TitleForm extends FormBase implements FocusListener {
 
 	// TODO:実装時にコメントアウトをはずす。
 	// Thread thread;
+	
+	// コンストラクタ
+	public TitleForm() {
+		// 遷移先のフォームを生成する
+		FormUtil.getInstance().createForm("Playing", PlayForm.class);
+		FormUtil.getInstance().createForm("Option", SettingForm.class);
+		//FormUtil.getInstance().createForm("", ); // TODO: SoundTestの実装を検討する
+	}
 	
 	// あらゆるオブジェクトの初期化はここから(jnetpcap関連クラスなど)
 	// あくまでフォームなのでフォームを使ってなんでもやらないこと推奨
@@ -59,11 +69,6 @@ public class TitleForm extends FormBase implements FocusListener {
 		backwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_DOWN, InputEvent.SHIFT_MASK));
 		backwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_SPACE, InputEvent.SHIFT_MASK));
 		focusManager.setDefaultFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, backwardKeys);
-		
-		// 遷移先のフォームを生成する
-		//FormUtil.getInstance().createForm("Playing", PlayForm.class);
-		//FormUtil.getInstance().createForm("Option", SettingForm.class);
-		//FormUtil.getInstance().createForm("", ); // TODO: SoundTestの実装を検討する
 		
 		// TODO:実装時にコメントアウトをはずす。
 		// はずしたらタイトルで音楽が流れるようになります。
