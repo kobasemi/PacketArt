@@ -268,6 +268,15 @@ public final class PcapManager extends Thread{
     }
 
     /**
+     * 現在設定されているBPFフィルタを返します。
+     *
+     * @return BPFフィルタの構文
+    */
+    public String getBpfText() {
+        return bpfText;
+    }
+
+    /**
      * 現在「ファイルから」パケットを読み込んでいるか、否かを返します。<br>
      * 性質上、isFromDevとは裏表の関係になりがちです。
      *
@@ -445,8 +454,27 @@ public final class PcapManager extends Thread{
      *
      * @return キューに保持している残りパケット数を返します。
     */
-    public int packetsLeftIs() {
+    public int getQueueLeft() {
         return packetQueue.size();
+    }
+
+    /**
+     * 「非常食」の最大パケット数を返します。
+     *
+     * @return キューに保持できる最大パケット数を返します。
+    */
+    public int getQueueLimit() {
+        return packetQueue.getMaxSize();
+    }
+
+    /**
+     * 「非常食」の最大パケット数を設定します。
+     *
+     * @param size キューに保持させる最大パケット数です。
+     * @return size負の数等無効な数値。場合、false。
+    */
+    public boolean setQueueLimit(int size) {
+        return packetQueue.setLimit(size);
     }
 
     /**
