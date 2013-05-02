@@ -8,6 +8,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Dimension;
 
 import javax.swing.JPanel;
 import javax.swing.JButton;
@@ -15,9 +16,9 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JFileChooser;
 import javax.swing.JProgressBar;
+import javax.swing.JComboBox;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.JComboBox;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.OnPcapClosedHandler;
 import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.OnNoPacketsLeftHandler;
@@ -28,13 +29,30 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.OnNoPacketsLeftHandler;
  * @author sya-ke
  */
 public class PcapPanel extends JPanel{
+
+    FileFlow fileFlow;
+    DeviceFlow deviceFlow;
+    BpfFlow bpfFlow;
+    QueueFlow queueFlow;
+
     public PcapPanel() {
         super();
-        setLayout(new GridLayout(4,1));
-        add(new FileFlow());
-        add(new DeviceFlow());
-        add(new BpfFlow());
-        add(new QueueFlow());
+        setLayout(new GridLayout(5,1));
+
+        fileFlow = new FileFlow();
+        deviceFlow = new DeviceFlow();
+        bpfFlow = new BpfFlow();
+        queueFlow = new QueueFlow();
+        FormChanger formChangerButton = new FormChanger("タイトルへ戻る", "Title");
+        
+        add(fileFlow);
+        add(deviceFlow);
+        add(bpfFlow);
+        add(queueFlow);
+        add(formChangerButton);
+    }
+    public void update() {
+        queueFlow.update();
     }
 }
 
@@ -164,6 +182,7 @@ class BpfFlow extends JPanel {
         final PcapManager pm = PcapManager.getInstance();
         JLabel label = new JLabel("BPFフィルタ");
         final JTextField textField = new JTextField();
+        textField.setPreferredSize(new Dimension(200,24));
         textField.setEditable(true);
         textField.setText("");
         String bpf = pm.getBpfText();
@@ -211,19 +230,31 @@ class BpfFlow extends JPanel {
 }
 
 class QueueFlow extends JPanel {
+    
+    private PcapManager pm = PcapManager.getInstance();
+    private JProgressBar progressBar;
+    private JLabel label2;
+
     public QueueFlow() {
         super();
         setLayout(new FlowLayout());
-        PcapManager pm = PcapManager.getInstance();
+        pm = PcapManager.getInstance();
         JLabel label1 = new JLabel("残りパケット保持数");
         int Qsize = pm.getQueueLimit();
-        JProgressBar progressBar = new JProgressBar(1,Qsize);
+        progressBar = new JProgressBar(1,Qsize);
         int Qleft = pm.getQueueLeft();
         progressBar.setValue(Qleft);
-        JLabel label2 = new JLabel(Qleft + " / " + Qsize);
+        label2 = new JLabel(Qleft + " / " + Qsize);
         add(label1);
         add(progressBar);
         add(label2);
         //TODO: pm.setQueueLimit()ボタン
+    }
+    public void update() {
+        int Qsize = pm.getQueueLimit();
+        int Qleft = pm.getQueueLeft();
+        //if update Limit == true Qsiz;;;;
+        progressBar.setValue(Qleft);
+        label2.setText(Qleft + " / " + Qsize);
     }
 }

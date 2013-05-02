@@ -20,23 +20,22 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
  */
 public class ReadDumpForm extends FormBase{
 
+    PcapPanel pcapPanel;
+
     public void initialize() {
         int X = getSize().width;
         int Y = getSize().height;
         Container contentPane = getContentPane();
-        contentPane.setLayout(new GridLayout(2, 1));
+        //contentPane.setLayout(new GridLayout(2, 1));
 
         //コンポーネント配置ここから
-        PcapPanel pcapPanel = new PcapPanel();
-        pcapPanel.setPreferredSize(new Dimension(X,Y*(2/3)));
-        pcapPanel.setBounds(0,0,X,Y*(2/3));
+        pcapPanel = new PcapPanel();
+        //pcapPanel.setPreferredSize(new Dimension(X,Y*(2/3)));
+        pcapPanel.setPreferredSize(new Dimension(X,Y));
+        //pcapPanel.setBounds(0,0,X,Y*(2/3));
+        pcapPanel.setBounds(0,0,X,Y);
         contentPane.add(pcapPanel, 0);
         //コンポーネント配置ここまで
-    /*    changerPanel = new ChangerPanel("Title");
-        changerPanel.setPreferredSize(new Dimension(X*(1/3),Y*(1/3)));
-        changerPanel.setBounds(0,Y*(2/3),X,Y*(1/3));
-        contentPane.add(changerPanel, 0);
-      */  
 
         //描画用初期化ここから
         setBackground(Color.white);
@@ -44,6 +43,7 @@ public class ReadDumpForm extends FormBase{
     }
 
     public void update() {
+        pcapPanel.update();
     }
 
     public void paint(Graphics g) {
