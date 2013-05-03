@@ -61,10 +61,8 @@ class MainPanel extends JPanel {
 		// カーソルを設定する
 		for (int i = 0; i < posCursor.length; i++) {
 			// カーソルの中央とボタンの中央を合わせる
-			posCursor[i] = new Point((int) (
-					buttonPanel.getX() - imgCursor.getWidth() * 1.5),
-					buttonPanel.getY() + buttonPanel.getButton(i).getY() + (buttonPanel.getButton(i).getHeight() / 2) - (imgCursor.getHeight() / 2)
-					);
+			posCursor[i] = new Point((int) (buttonPanel.getX() - imgCursor.getWidth() * 1.5),
+											buttonPanel.getY() + buttonPanel.getButton(i).getY() + (buttonPanel.getButton(i).getHeight() / 2) - (imgCursor.getHeight() / 2));
 		}
 		labelCursor = new JLabel(new ImageIcon(imgCursor));
 		labelCursor.setBounds((int) posCursor[0].getX(), (int) posCursor[0].getY(), imgCursor.getWidth(), imgCursor.getHeight());

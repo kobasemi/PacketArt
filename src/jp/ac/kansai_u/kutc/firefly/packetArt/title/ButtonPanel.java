@@ -17,17 +17,19 @@ class ButtonPanel extends JPanel {
 	
 	// コンストラクタ
 	ButtonPanel(final int panelWidth, final int panelHeight) {
-		final String imagePath = "resource/image/title/";
+		final int division = 3; // 1枚目のパネルに配置するボタンの数
 		button = new JButton[5];
 		cardLayout = new CardLayout();
 		
 		// 1枚目のパネル
 		firstCardPanel = new JPanel(null);
-		setFirstCardPanel(panelWidth, panelHeight, imagePath);
+		firstCardPanel.setSize(panelWidth, panelHeight);
+		setCardPanel(firstCardPanel, 0, division - 1);
 		
 		// 2枚目のパネル
 		secondCardPanel = new JPanel(null);
-		setSecondCardPanel(panelWidth, panelHeight, imagePath);
+		secondCardPanel.setSize(panelWidth, panelHeight);
+		setCardPanel(secondCardPanel, division, button.length - 1);
 		
 		// カード切り替え用のパネル
 		setLayout(cardLayout);
@@ -56,80 +58,48 @@ class ButtonPanel extends JPanel {
 		cardLayout.next(this);
 	}
 	
-	// 1枚目のパネルを設定する
-	private void setFirstCardPanel(final int width, final int height, final String path) {
-		final int center = width / 2;
-		final String[] buttonName = {"Start", "Option", "Exit"};
-		final String[] fileName = {"start.png", "option.png", "exit.png"};
-		BufferedImage image[] = new BufferedImage[fileName.length];
+	// カードパネルを設定する
+	private void setCardPanel(JPanel panel, final int firstIndex, final int lastIndex) {
+		int totalImageHeight = 0;
+		final int buttonNumber = lastIndex - firstIndex + 1;
+		final int center = panel.getWidth() / 2;
+		final String imagePath = "resource/image/title/";
+		final String[] buttonName = {"Start", "Option", "Exit", "Yes", "No"};
+		final String[] fileName = {"start.png", "option.png", "exit.png", "yes.png", "no.png"};
+		BufferedImage image[] = new BufferedImage[buttonNumber];
 		
 		// 画像ファイルを読み込む
 		try {
-			for (int i = 0; i < fileName.length; i++) {
-				image[i] = ImageIO.read(new File(path + fileName[i]));
+			for (int i = 0; i < buttonNumber; i++) {
+				image[i] = ImageIO.read(new File(imagePath + fileName[i + firstIndex]));
+				
+				// ボタンの間隔を求めるために記憶しておく
+				totalImageHeight += image[i].getHeight();
 			}
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}
 		
 		// ボタンが等間隔になる間隔を求める
-		int interval = (height - image[0].getHeight() - image[1].getHeight() - image[2].getHeight()) / (fileName.length + 1);
+		int interval = (panel.getHeight() - totalImageHeight) / (buttonNumber + 1);
 		
 		// ボタンを設定する
-		for (int i = 0; i < fileName.length; i++) {
-			button[i] = new JButton(new ImageIcon(image[i]));
+		for (int i = firstIndex; i <= lastIndex; i++) {
+			int imageIndex = i - firstIndex;
+			button[i] = new JButton(new ImageIcon(image[imageIndex]));
 			setButton(i);
-			button[i].setName(buttonName[i]);
+			button[i].setName(buttonName[imageIndex]);
 			
-			if (i == 0) {
-				button[i].setBounds(center - image[i].getWidth() / 2, interval, image[i].getWidth(), image[i].getHeight());
+			if (i == firstIndex) {
+				button[i].setBounds(center - image[imageIndex].getWidth() / 2, interval, image[imageIndex].getWidth(), image[imageIndex].getHeight());
 			} else {
-				button[i].setBounds(center - image[i].getWidth() / 2, button[i - 1].getY() + button[i - 1].getHeight() + interval, image[i].getWidth(), image[i].getHeight());
+				button[i].setBounds(center - image[imageIndex].getWidth() / 2, button[i - 1].getY() + button[i - 1].getHeight() + interval, image[imageIndex].getWidth(), image[i - firstIndex].getHeight());
 			}
-		}
-		
-		firstCardPanel.setOpaque(false);
-		firstCardPanel.add(button[0]);
-		firstCardPanel.add(button[1]);
-		firstCardPanel.add(button[2]);
-	}
-	
-	// 2枚目のパネルを設定する
-	private void setSecondCardPanel(final int width, final int height, final String path) {
-		final int center = width / 2;
-		final String[] buttonName = {"Yes", "No"};
-		final String[] fileName = {"yes.png", "no.png"};
-		BufferedImage image[] = new BufferedImage[fileName.length];
-		
-		// 画像ファイルを読み込む
-		try {
-			for (int i = 0; i < fileName.length; i++) {
-				image[i] = ImageIO.read(new File(path + fileName[i]));
-			}
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-		}
-		
-		// ボタンが等間隔になる間隔を求める
-		int interval = (height - image[0].getHeight() - image[1].getHeight()) / (fileName.length + 1);
-		
-		// ボタンを設定する
-		for (int i = 0; i < fileName.length; i++) {
-			int iPlus3 = i + 3;
-			button[iPlus3] = new JButton(new ImageIcon(image[i]));;
-			setButton(iPlus3);
-			button[iPlus3].setName(buttonName[i]);
 			
-			if (i == 0) {
-				button[iPlus3].setBounds(center - image[i].getWidth() / 2, interval, image[i].getWidth(), image[i].getHeight());
-			} else {
-				button[iPlus3].setBounds(center - image[i].getWidth() / 2, button[iPlus3 - 1].getY() + button[iPlus3 - 1].getHeight() + interval, image[i].getWidth(), image[i].getHeight());
-			}
+			panel.add(button[i]);
 		}
 		
-		secondCardPanel.setOpaque(false);
-		secondCardPanel.add(button[3]);
-		secondCardPanel.add(button[4]);
+		panel.setOpaque(false);
 	}
 	
 	// ボタンの描画に関する設定をする
