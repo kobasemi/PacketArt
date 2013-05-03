@@ -17,41 +17,49 @@ import javax.swing.KeyStroke;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
 import jp.ac.kansai_u.kutc.firefly.packetArt.playing.PlayForm;
+import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
 import jp.ac.kansai_u.kutc.firefly.packetArt.setting.SettingForm;
 
-/* このファイルがクラスの基本的な構造と使い方 
- * テンプレートをコピー→メソッドを編集
- */
-
 /**
- * タイトルフォームです.
+ * タイトルフォーム
  */
 public class TitleForm extends FormBase implements FocusListener {
-	TitlePanel panel;
-
+	MainPanel panel;
 	// TODO:実装時にコメントアウトをはずす。
 	// Thread thread;
 	
-	// コンストラクタ
-	public TitleForm() {
-		// 遷移先のフォームを生成する
-		//FormUtil.getInstance().createForm("", ); // TODO: SoundTestの実装を検討する
-	}
-	
-	// あらゆるオブジェクトの初期化はここから(jnetpcap関連クラスなど)
-	// あくまでフォームなのでフォームを使ってなんでもやらないこと推奨
 	public void initialize() {
-		panel = new TitlePanel(getSize().width, getSize().height);
+		// パネルが存在しなければ生成する
+		if (panel == null ) {
+			panel = new MainPanel(getSize().width, getSize().height);
+		}
 		
-		// イベントリスナーを追加する
-		for (JButton b:panel.getButton()) {
+		// ボタンにイベントリスナーを追加する
+		for (JButton b:panel.getButtonArray()) {
 			b.addFocusListener(this);
 			b.addKeyListener(this);
 			b.addMouseListener(this);
 		}
 		
-		// パネルを配置する
+		// パネルを追加する
 		getContentPane().add(panel, 0);
+		
+		// TODO: オプションから戻ってきた時にボタンがフォーカスを失うのをなんとかする
+		// panel.getButton(0).requestFocusInWindow();
+		
+		// TODO:実装時にコメントアウトをはずす。
+		// はずしたらタイトルで音楽が流れるようになります。
+		// PostScript by Lisa
+		// thread = new TitleMusic(75);
+		// thread.start();
+		
+		// 遷移先のフォームが存在しなければ生成する
+		if(!FormUtil.getInstance().getForm().isExistForm("Playing")) {
+			FormUtil.getInstance().createForm("Playing", PlayForm.class);
+		}
+		if(!FormUtil.getInstance().getForm().isExistForm("Option")) {
+			FormUtil.getInstance().createForm("Option", SettingForm.class);
+		}
 		
 		// カーソルキーとスペースキーでフォーカスを変えられるようにする
 		KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
@@ -67,32 +75,12 @@ public class TitleForm extends FormBase implements FocusListener {
 		backwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_DOWN, InputEvent.SHIFT_MASK));
 		backwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_SPACE, InputEvent.SHIFT_MASK));
 		focusManager.setDefaultFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, backwardKeys);
-		
-		// TODO:実装時にコメントアウトをはずす。
-		// はずしたらタイトルで音楽が流れるようになります。
-		// PostScript by Lisa
-		// thread = new TitleMusic(75);
-		// thread.start();
-		if(!FormUtil.getInstance().getForm().isExistForm("Playing"))
-			FormUtil.getInstance().createForm("Playing", PlayForm.class);
-		if(!FormUtil.getInstance().getForm().isExistForm("Option"))
-			FormUtil.getInstance().createForm("Option", SettingForm.class);
 	}
 	
-	// 描画関連のコードはここに
-	public void paint(Graphics g) {
-		
-	}
-
-	// viewとlogicの分離を考えるときはcommandパターンのようなものでも使ってください
-	// パケット解析などはこのメソッドからどうぞ
-	public void update() {
-		// TODO: if select button is pressed then show forms[selected item]
-	}
-
-	// 使いたい入力イベントを実装、記述してください
-	// Eventを切り離すときれいに見えますがめんどくさくなります
-	// MouseListener
+	public void paint(Graphics g) {}
+	
+	public void update() {}
+	
 	public void mouseClicked(MouseEvent e) {
 		Object obj = e.getSource();
 		
@@ -101,16 +89,7 @@ public class TitleForm extends FormBase implements FocusListener {
 			JButton b = (JButton) obj;
 			
 			System.out.println("Mouse Clicked : [" + b.getName() + "] Button");
-
-			// TODO:実装時にthreadのコメントアウトをはずす。	
-			// thread.stop();
-			if (b == panel.getButton(0)) {
-				FormUtil.getInstance().changeForm("Playing");
-			} else if (b == panel.getButton(1)) {
-    			FormUtil.getInstance().changeForm("Option");
-			} else if (b == panel.getButton(2)) {
-				//FormUtil.getInstance().changeForm("");
-			}
+			buttonPressed(b);
 		}
 	}
     public void mouseEntered(MouseEvent e) {
@@ -126,9 +105,9 @@ public class TitleForm extends FormBase implements FocusListener {
     public void mouseMoved(MouseEvent e) {}
     public void mousePressed(MouseEvent e) {}
     public void mouseReleased(MouseEvent e) {}
-    // KeyListener
+    
     public void keyPressed(KeyEvent e) {
-		Object obj = e.getSource();
+    	Object obj = e.getSource();
 		
 		// エンターキーが押下されたボタンに従って画面を変化させる
 		if (obj instanceof JButton) {
@@ -136,44 +115,67 @@ public class TitleForm extends FormBase implements FocusListener {
 			
 			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 				System.out.println("[ENTER] Key Pressed : [" + b.getName() + "] Button");
-				if (b == panel.getButton(0)) {
-					FormUtil.getInstance().changeForm("Playing");
-				} else if (b == panel.getButton(1)) {
-	    			FormUtil.getInstance().changeForm("Option");
-				} else if (b == panel.getButton(2)) {
-					//FormUtil.getInstance().changeForm("");
-				}
+				buttonPressed(b);
 			}
 		}
     }
     public void keyReleased(KeyEvent e) {}
     public void keyTyped(KeyEvent e) {}
-    // FocusListener
+    
     public void focusGained(FocusEvent e) {
+    	panel.repaint();
     	Object obj = e.getSource();
     	
     	// フォーカスを得たボタンの横にカーソルを移動させる
 		if (obj instanceof JButton) {
 			JButton b = (JButton) e.getSource();
 			
-			if (b == panel.getButton(0)) {
-				panel.moveCursor(0);
-			} else if (b == panel.getButton(1)) {
-				panel.moveCursor(1);
-			} else if (b == panel.getButton(2)) {
-				panel.moveCursor(2);
+			for (int i = 0; i < panel.getButtonArray().length; i++) {
+				if (b == panel.getButton(i)) {
+					panel.moveCursor(i);
+					break;
+				}
 			}
 		}
     }
     public void focusLost(FocusEvent e) {}
     
     public void onFormChanged() {
-    	for(JButton b : panel.getButton()){
+    	for(JButton b : panel.getButtonArray()){
     		b.removeKeyListener(this);
     		b.removeMouseListener(this);
     		b.removeFocusListener(this);
     	}
+    	
+		// TODO:実装時にthreadのコメントアウトをはずす。	
+		// thread.stop();
     }
     
     public void onClose() {}
+    
+    // ボタンをクリックするか、ボタン上でエンターキーを押下した時の動作
+    private void buttonPressed(JButton button) {
+    	panel.repaint();
+    	
+		switch (panel.getButtonIndex(button)) {
+		case 0:
+			FormUtil.getInstance().changeForm("Playing");
+			break;
+		case 1:
+			FormUtil.getInstance().changeForm("Option");
+			break;
+		case 2:
+			panel.changeButton();
+			panel.getButton(3).requestFocusInWindow();
+			break;
+		case 3:
+			PcapManager.getInstance().kill();
+			System.exit(0);
+			break;
+		case 4:
+			panel.changeButton();
+			panel.getButton(0).requestFocusInWindow();
+			break;
+		}
+    }
 }
