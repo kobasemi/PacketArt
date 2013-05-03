@@ -17,8 +17,8 @@ class ButtonPanel extends JPanel {
 	
 	// コンストラクタ
 	ButtonPanel(final int panelWidth, final int panelHeight) {
-		final int division = 3; // 1枚目のパネルに配置するボタンの数
-		button = new JButton[5];
+		final int division = 4; // 1枚目のパネルに配置するボタンの数
+		button = new JButton[6];
 		cardLayout = new CardLayout();
 		
 		// 1枚目のパネル
@@ -64,8 +64,8 @@ class ButtonPanel extends JPanel {
 		final int buttonNumber = lastIndex - firstIndex + 1;
 		final int center = panel.getWidth() / 2;
 		final String imagePath = "resource/image/title/";
-		final String[] buttonName = {"Start", "Option", "Exit", "Yes", "No"};
-		final String[] fileName = {"start.png", "option.png", "exit.png", "yes.png", "no.png"};
+		final String[] buttonName = {"Start", "Load", "Option", "Exit", "Yes", "No"};
+		final String[] fileName = {"start.png", "load.png", "option.png", "exit.png", "yes.png", "no.png"};
 		BufferedImage image[] = new BufferedImage[buttonNumber];
 		
 		// 画像ファイルを読み込む

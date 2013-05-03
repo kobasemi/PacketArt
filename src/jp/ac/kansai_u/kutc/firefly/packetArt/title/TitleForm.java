@@ -18,6 +18,7 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
 import jp.ac.kansai_u.kutc.firefly.packetArt.playing.PlayForm;
 import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
+import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.ReadDumpForm;
 import jp.ac.kansai_u.kutc.firefly.packetArt.setting.SettingForm;
 
 /**
@@ -27,6 +28,11 @@ public class TitleForm extends FormBase implements FocusListener {
 	MainPanel panel;
 	// TODO:実装時にコメントアウトをはずす。
 	// Thread thread;
+	
+	// コンストラクタ
+	public TitleForm() {
+		PcapManager.getInstance().start();
+	}
 	
 	public void initialize() {
 		// パネルが存在しなければ生成する
@@ -56,6 +62,9 @@ public class TitleForm extends FormBase implements FocusListener {
 		// 遷移先のフォームが存在しなければ生成する
 		if(!FormUtil.getInstance().getForm().isExistForm("Playing")) {
 			FormUtil.getInstance().createForm("Playing", PlayForm.class);
+		}
+		if(!FormUtil.getInstance().getForm().isExistForm("ReadDump")) {
+			FormUtil.getInstance().createForm("ReadDump", ReadDumpForm.class);
 		}
 		if(!FormUtil.getInstance().getForm().isExistForm("Option")) {
 			FormUtil.getInstance().createForm("Option", SettingForm.class);
@@ -158,21 +167,24 @@ public class TitleForm extends FormBase implements FocusListener {
     	panel.repaint();
     	
 		switch (panel.getButtonIndex(button)) {
-		case 0:
+		case 0: // Start
 			FormUtil.getInstance().changeForm("Playing");
 			break;
-		case 1:
+		case 1: // Load
+			FormUtil.getInstance().changeForm("ReadDump");
+			break;
+		case 2: // Option
 			FormUtil.getInstance().changeForm("Option");
 			break;
-		case 2:
+		case 3: // Exit
 			panel.changeButton();
-			panel.getButton(3).requestFocusInWindow();
+			panel.getButton(4).requestFocusInWindow();
 			break;
-		case 3:
+		case 4: // Exit - Yes
 			PcapManager.getInstance().kill();
 			System.exit(0);
 			break;
-		case 4:
+		case 5: // Exit - No
 			panel.changeButton();
 			panel.getButton(0).requestFocusInWindow();
 			break;
