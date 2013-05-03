@@ -32,7 +32,6 @@ public class Form extends JFrame{
 	 * @param startupForm スタートアップするときに表示されるフォームのクラス
 	 */
 	public Form(String startupFormName, Class<? extends FormBase> startupForm){
-		//config = new ConfigStatus();
 		timer  = new TimerThread("TimerThread");
 		FormUtil.setForm(this);
 
