@@ -178,16 +178,13 @@ public final class PcapManager extends Thread{
                 System.out.println("You've already opened pcap! closing previous one..");
                 close();
             }
-            pcapFile = new File(fname);
-            //if (pcapFile.exists() == false) {
-            //    readyRun = false;
-            //}
             pcap = Pcap.openOffline(fname,errBuf);
             if (pcap == null) {
                 System.err.println("Error while opening a file for capture: "
                     + errBuf.toString());
                 return false;
             }
+            pcapFile = new File(fname);
             fromDev = false;
             fromFile = true;
             filtered = false;
