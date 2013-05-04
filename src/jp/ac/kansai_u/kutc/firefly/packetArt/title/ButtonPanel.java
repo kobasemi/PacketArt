@@ -21,17 +21,14 @@ class ButtonPanel extends JPanel {
 		button = new JButton[6];
 		cardLayout = new CardLayout();
 		
-		// 1枚目のパネル
 		firstCardPanel = new JPanel(null);
 		firstCardPanel.setSize(panelWidth, panelHeight);
 		setCardPanel(firstCardPanel, 0, division - 1);
 		
-		// 2枚目のパネル
 		secondCardPanel = new JPanel(null);
 		secondCardPanel.setSize(panelWidth, panelHeight);
 		setCardPanel(secondCardPanel, division, button.length - 1);
 		
-		// カード切り替え用のパネル
 		setLayout(cardLayout);
 		setBackground(new java.awt.Color(255, 255, 255, 128));
 		setSize(panelWidth, panelHeight);
@@ -68,7 +65,6 @@ class ButtonPanel extends JPanel {
 		final String[] fileName = {"start.png", "load.png", "option.png", "exit.png", "yes.png", "no.png"};
 		BufferedImage image[] = new BufferedImage[buttonNumber];
 		
-		// 画像ファイルを読み込む
 		try {
 			for (int i = 0; i < buttonNumber; i++) {
 				image[i] = ImageIO.read(new File(imagePath + fileName[i + firstIndex]));
@@ -83,7 +79,6 @@ class ButtonPanel extends JPanel {
 		// ボタンが等間隔になる間隔を求める
 		int interval = (panel.getHeight() - totalImageHeight) / (buttonNumber + 1);
 		
-		// ボタンを設定する
 		for (int i = firstIndex; i <= lastIndex; i++) {
 			int imageIndex = i - firstIndex;
 			button[i] = new JButton(new ImageIcon(image[imageIndex]));
