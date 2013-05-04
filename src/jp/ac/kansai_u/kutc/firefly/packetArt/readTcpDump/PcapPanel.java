@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 import javax.swing.JFileChooser;
 import javax.swing.JProgressBar;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -30,14 +31,17 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.OnNoPacketsLeftHandler;
  */
 public class PcapPanel extends JPanel{
 
-    FileFlow fileFlow;
-    DeviceFlow deviceFlow;
-    BpfFlow bpfFlow;
-    QueueFlow queueFlow;
+    private FileFlow fileFlow;
+    private DeviceFlow deviceFlow;
+    private BpfFlow bpfFlow;
+    private QueueFlow queueFlow;
+    public final static int X = 600;
+    public final static int Y = 200;
 
     public PcapPanel() {
         super();
         setLayout(new GridLayout(5,1));
+        setPreferredSize(new Dimension(X,Y));
 
         fileFlow = new FileFlow();
         deviceFlow = new DeviceFlow();
@@ -60,13 +64,13 @@ class FileFlow extends JPanel {
     public FileFlow() {
         super();
         final FileFlow parent = this;
-        setLayout(new FlowLayout());
+        setLayout(new FlowLayout(FlowLayout.LEFT));
 
         final PcapManager pm = PcapManager.getInstance();
         JLabel label = new JLabel("ファイルからロード");
-        final JTextField textField = new JTextField();
+        final JTextField textField = new JTextField("選択ボタンを押してファイル名を入力してください", 30);
+        textField.setPreferredSize(new Dimension(200, 24));
         textField.setEditable(false);
-        textField.setText("選択ボタンを押してファイル名を入力");
         File f = pm.getPcapFile();
         if (f != null) {
             textField.setText(f.getAbsolutePath());
@@ -90,14 +94,32 @@ class FileFlow extends JPanel {
                 }
             }
         );
-        JButton button2 = new JButton("開く");
+        final JButton button2 = new JButton("開く");
         button2.addActionListener(
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     if ( pm.openFile(textField.getText()) ) {
-                        textField.setText("正常にロードされました");
+                        button2.setText("OK");
+                        (new Thread(new Runnable(){
+                            public void run() {
+                                try {
+                                    Thread.sleep(2000);
+                                } catch(InterruptedException e) {
+                                }
+                                button2.setText("開く");
+                            }
+                        })).start();
                     } else {
-                        textField.setText("エラー：" + pm.getErr());
+                        textField.setText("ERROR!: " + pm.getErr());
+                        (new Thread(new Runnable(){
+                            public void run() {
+                                try {
+                                    Thread.sleep(2000);
+                                } catch(InterruptedException e) {
+                                }
+                                button2.setText("開く");
+                            }
+                        })).start();
                     }
                 }
             }
@@ -113,7 +135,7 @@ class FileFlow extends JPanel {
 class DeviceFlow extends JPanel {
     public DeviceFlow() {
         super();
-        setLayout(new FlowLayout());
+        setLayout(new FlowLayout(FlowLayout.LEFT));
 
         final PcapManager pm = PcapManager.getInstance();
         JLabel label = new JLabel("デバイスからロード");
@@ -122,9 +144,22 @@ class DeviceFlow extends JPanel {
         button1.addActionListener(
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
+                    String buf = (String)comboBox1.getSelectedItem();
                     if ( pm.openDev(comboBox1.getSelectedDevName()) ) {
-                        button1.setText("正常にロードされました");
+                        button1.setText("OK");
+                        (new Thread(new Runnable(){
+                            public void run() {
+                                try {
+                                    Thread.sleep(2000);
+                                } catch(InterruptedException e) {
+                                }
+                                button1.setText("開く");
+                            }
+                        })).start();
                     } else {
+                        JOptionPane.showMessageDialog(
+                            null, "ERROR: " + pm.getErr(), 
+                            "ERROR!",JOptionPane.ERROR_MESSAGE);
                         button1.setText("エラー：" + pm.getErr());
                     }
                 }
@@ -148,8 +183,8 @@ class DeviceSelector extends JComboBox implements ItemListener{
     }
 
     public DeviceSelector() {
+        setPreferredSize(new Dimension(350, 24));
         setEnabled(true);
-        selectedDevName = "";
         devUtil = new DevUtil();
         String[] informations = devUtil.getGoodInformations();
         if (informations == null || informations.length < 1) {
@@ -159,6 +194,8 @@ class DeviceSelector extends JComboBox implements ItemListener{
         }
         for (String information : informations) {
             addItem(information);
+            selectedDevName = devUtil.getNameByGoodInformation(information);
+            setSelectedItem(information);//大体最後のデバイスが正解だった。
         }
         addItemListener(this);
     }
@@ -177,12 +214,12 @@ class DeviceSelector extends JComboBox implements ItemListener{
 class BpfFlow extends JPanel {
     public BpfFlow() {
         super();
-        setLayout(new FlowLayout());
+        setLayout(new FlowLayout(FlowLayout.LEFT));
 
         final PcapManager pm = PcapManager.getInstance();
         JLabel label = new JLabel("BPFフィルタ");
         final JTextField textField = new JTextField();
-        textField.setPreferredSize(new Dimension(200,24));
+        textField.setPreferredSize(new Dimension(350,24));
         textField.setEditable(true);
         textField.setText("");
         String bpf = pm.getBpfText();
@@ -237,13 +274,14 @@ class QueueFlow extends JPanel {
 
     public QueueFlow() {
         super();
-        setLayout(new FlowLayout());
+        setLayout(new FlowLayout(FlowLayout.LEFT));
         pm = PcapManager.getInstance();
-        JLabel label1 = new JLabel("残りパケット保持数");
+        JLabel label1 = new JLabel("残りパケット/MAX");
         int Qsize = pm.getQueueLimit();
         progressBar = new JProgressBar(1,Qsize);
         int Qleft = pm.getQueueLeft();
         progressBar.setValue(Qleft);
+        progressBar.setPreferredSize(new Dimension(380,24));
         label2 = new JLabel(Qleft + " / " + Qsize);
         add(label1);
         add(progressBar);
