@@ -22,7 +22,6 @@ public class ReadDumpForm extends FormBase{
 
     private ReadDumpPanel readDumpPanel;
     private boolean inited;
-    private PcapManager pm = PcapManager.getInstance();
 
     public ReadDumpForm() {
         super();
@@ -32,12 +31,12 @@ public class ReadDumpForm extends FormBase{
 
     @Override
     public void initialize() {
+        (PcapManager.getInstance()).addHandler(readDumpPanel.linerPanel);
         if (inited != true) {
             Container contentPane = getContentPane();
             //縦にコンポーネントを配置する
 
             //コンポーネント配置ここから
-            pm.addHandler(readDumpPanel.linerPanel);
             readDumpPanel.setBounds(0, 0, ReadDumpPanel.X, ReadDumpPanel.Y);
             contentPane.add(readDumpPanel, 0);
             //コンポーネント配置ここまで
@@ -77,7 +76,7 @@ public class ReadDumpForm extends FormBase{
     public void keyTyped(KeyEvent e) {
     }
     public void onFormChanged(){
-        pm.removeHandler(readDumpPanel.linerPanel);
+        (PcapManager.getInstance()).removeHandler(readDumpPanel.linerPanel);
     }
     public void onClose(){
     }

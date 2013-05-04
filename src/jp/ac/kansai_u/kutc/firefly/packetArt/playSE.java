@@ -41,6 +41,15 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
     public final String OPEN_FILE = "resource/se/open.wav";//アプリケーション起動音（仮)
     public static final byte OPEN = 6;
 
+    public final String RDFSE1_FILE = "resource/se/readdump1se.wav";
+    public static final byte RDFSE1 = 20;
+    public final String RDFSE2_FILE = "resource/se/readdump2se.wav";
+    public static final byte RDFSE2 = 21;
+    public final String RDFSE3_FILE = "resource/se/readdump3se.wav";
+    public static final byte RDFSE3 = 22;
+    public final String RDFSE4_FILE = "resource/se/readdump4se.wav";
+    public static final byte RDFSE4 = 23;
+
     public static final int RING_SIZE= 30;//30個の同時重複再生を許す
 
     public PlaySE() {
@@ -52,6 +61,10 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         openFile(SELECT_FILE);
         openFile(CANCEL_FILE);
         //openFile(OPEN_FILE);
+        openFile(RDFSE1_FILE);
+        openFile(RDFSE2_FILE);
+        openFile(RDFSE3_FILE);
+        openFile(RDFSE4_FILE);
     }
 
     /**
@@ -97,6 +110,10 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
             //case DEMISE: play(DEMISE_FILE);break;
             case SELECT: play(SELECT_FILE);break;
             case CANCEL: play(CANCEL_FILE);break;
+            case RDFSE1: play(RDFSE1_FILE);break;
+            case RDFSE2: play(RDFSE2_FILE);break;
+            case RDFSE3: play(RDFSE3_FILE);break;
+            case RDFSE4: play(RDFSE4_FILE);break;
             //case OPEN: play(OPEN_FILE);break;
             default : System.out.println("NO SUCH FILE ID");break;
         }

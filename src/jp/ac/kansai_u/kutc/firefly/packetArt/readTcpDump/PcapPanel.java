@@ -66,12 +66,11 @@ class FileFlow extends JPanel {
         final FileFlow parent = this;
         setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        final PcapManager pm = PcapManager.getInstance();
         JLabel label = new JLabel("ファイルからロード");
         final JTextField textField = new JTextField("選択ボタンを押してファイル名を入力してください", 30);
         textField.setPreferredSize(new Dimension(200, 24));
         textField.setEditable(false);
-        File f = pm.getPcapFile();
+        File f = PcapManager.getInstance().getPcapFile();
         if (f != null) {
             textField.setText(f.getAbsolutePath());
         }
@@ -98,7 +97,7 @@ class FileFlow extends JPanel {
         button2.addActionListener(
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    if ( pm.openFile(textField.getText()) ) {
+                    if ( PcapManager.getInstance().openFile(textField.getText()) ) {
                         button2.setText("OK");
                         (new Thread(new Runnable(){
                             public void run() {
@@ -110,7 +109,8 @@ class FileFlow extends JPanel {
                             }
                         })).start();
                     } else {
-                        textField.setText("ERROR!: " + pm.getErr());
+                        textField.setText("ERROR!: " + 
+                                PcapManager.getInstance().getErr());
                         (new Thread(new Runnable(){
                             public void run() {
                                 try {
@@ -137,7 +137,6 @@ class DeviceFlow extends JPanel {
         super();
         setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        final PcapManager pm = PcapManager.getInstance();
         JLabel label = new JLabel("デバイスからロード");
         final DeviceSelector comboBox1 = new DeviceSelector();
         final JButton button1 = new JButton("開く");
@@ -145,7 +144,8 @@ class DeviceFlow extends JPanel {
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     String buf = (String)comboBox1.getSelectedItem();
-                    if ( pm.openDev(comboBox1.getSelectedDevName()) ) {
+                    if ( PcapManager.getInstance().openDev(
+                                comboBox1.getSelectedDevName()) ) {
                         button1.setText("OK");
                         (new Thread(new Runnable(){
                             public void run() {
@@ -158,9 +158,9 @@ class DeviceFlow extends JPanel {
                         })).start();
                     } else {
                         JOptionPane.showMessageDialog(
-                            null, "ERROR: " + pm.getErr(), 
+                            null, "ERROR: " + PcapManager.getInstance().getErr(), 
                             "ERROR!",JOptionPane.ERROR_MESSAGE);
-                        button1.setText("エラー：" + pm.getErr());
+                        button1.setText("エラー：" + PcapManager.getInstance().getErr());
                     }
                 }
             }
@@ -216,13 +216,12 @@ class BpfFlow extends JPanel {
         super();
         setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        final PcapManager pm = PcapManager.getInstance();
         JLabel label = new JLabel("BPFフィルタ");
         final JTextField textField = new JTextField();
         textField.setPreferredSize(new Dimension(350,24));
         textField.setEditable(true);
         textField.setText("");
-        String bpf = pm.getBpfText();
+        String bpf = PcapManager.getInstance().getBpfText();
         if (bpf != null) {
             textField.setText(bpf);
         }
@@ -231,7 +230,8 @@ class BpfFlow extends JPanel {
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     textField.setEditable(false);
-                    if ( pm.setBPFfilter(textField.getText()) ) {
+                    if ( PcapManager.getInstance().setBPFfilter(
+                                textField.getText()) ) {
                         button1.setText("OK");
                         (new Thread(new Runnable(){
                             public void run() {
@@ -268,18 +268,18 @@ class BpfFlow extends JPanel {
 
 class QueueFlow extends JPanel {
     
-    private PcapManager pm = PcapManager.getInstance();
     private JProgressBar progressBar;
     private JLabel label2;
+    private PcapManager pm;
 
     public QueueFlow() {
         super();
-        setLayout(new FlowLayout(FlowLayout.LEFT));
         pm = PcapManager.getInstance();
+        setLayout(new FlowLayout(FlowLayout.LEFT));
         JLabel label1 = new JLabel("残りパケット/MAX");
-        int Qsize = pm.getQueueLimit();
+        int Qsize = PcapManager.getInstance().getQueueLimit();
         progressBar = new JProgressBar(1,Qsize);
-        int Qleft = pm.getQueueLeft();
+        int Qleft = PcapManager.getInstance().getQueueLeft();
         progressBar.setValue(Qleft);
         progressBar.setPreferredSize(new Dimension(380,24));
         label2 = new JLabel(Qleft + " / " + Qsize);
