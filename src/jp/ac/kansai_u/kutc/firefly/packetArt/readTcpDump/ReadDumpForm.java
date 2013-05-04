@@ -27,6 +27,7 @@ public class ReadDumpForm extends FormBase{
     public ReadDumpForm() {
         super();
         inited = false;
+        readDumpPanel = new ReadDumpPanel();
     }
 
     @Override
@@ -36,10 +37,9 @@ public class ReadDumpForm extends FormBase{
             //縦にコンポーネントを配置する
 
             //コンポーネント配置ここから
-            readDumpPanel = new ReadDumpPanel();
             pm.addHandler(readDumpPanel.linerPanel);
             readDumpPanel.setBounds(0, 0, ReadDumpPanel.X, ReadDumpPanel.Y);
-            contentPane.add(readDumpPanel);
+            contentPane.add(readDumpPanel, 0);
             //コンポーネント配置ここまで
 
             //描画用初期化ここから
