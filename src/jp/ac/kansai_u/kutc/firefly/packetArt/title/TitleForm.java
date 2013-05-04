@@ -22,14 +22,17 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.ReadDumpForm;
 import jp.ac.kansai_u.kutc.firefly.packetArt.setting.SettingForm;
 
 /**
- * タイトルフォーム
+ * タイトル画面を管理するクラスです。
+ * @author hiyoko
  */
 public class TitleForm extends FormBase implements FocusListener {
 	MainPanel panel;
 	// TODO:実装時にコメントアウトをはずす。
 	// Thread thread;
 	
-	// コンストラクタ
+	/**
+	 * タイトル画面のコンストラクタです。
+	 */
 	public TitleForm() {
 		PcapManager.getInstance().start();
 	}
@@ -40,14 +43,12 @@ public class TitleForm extends FormBase implements FocusListener {
 			panel = new MainPanel(getSize().width, getSize().height);
 		}
 		
-		// ボタンにイベントリスナーを追加する
 		for (JButton b:panel.getButtonArray()) {
 			b.addFocusListener(this);
 			b.addKeyListener(this);
 			b.addMouseListener(this);
 		}
 		
-		// パネルを追加する
 		getContentPane().add(panel, 0);
 		
 		// TODO: オプションから戻ってきた時にボタンがフォーカスを失うのをなんとかする
