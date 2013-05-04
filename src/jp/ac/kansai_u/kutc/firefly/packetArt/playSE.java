@@ -41,7 +41,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
     public final String OPEN_FILE = "resource/se/open.wav";//アプリケーション起動音（仮)
     public static final byte OPEN = 6;
 
-    public static final int RING_SIZE= 5;//５個の同時重複再生を許す
+    public static final int RING_SIZE= 30;//30個の同時重複再生を許す
 
     public PlaySE() {
         super();

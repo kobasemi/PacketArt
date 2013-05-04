@@ -13,6 +13,8 @@ import org.jnetpcap.protocol.JProtocol;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.PacketHandler;
 
+import jp.ac.kansai_u.kutc.firefly.packetArt.PlaySE;//TEST
+
 /**
  * このパネルはPcapManagerのパネルです。
  *
@@ -29,6 +31,7 @@ public class LinerPanel extends JPanel implements PacketHandler{
     private final int GRID_Y = Y / FONT_Y;//常に100
     private JLabel[][] labels;
     public int counter;
+    public PlaySE playSE;//TEST
 
     //MONOSPACEDは等幅フォント。文字通り、文字の幅が統一され、
     //描画しやすくなる。BOLDは太字。これも文字をできるだけベタ塗りにして
@@ -38,6 +41,7 @@ public class LinerPanel extends JPanel implements PacketHandler{
 
     public LinerPanel() {
         super();
+        playSE = new PlaySE();//TEST
         counter = 0;
         setPreferredSize(new Dimension(X,Y));
         setLayout(new GridLayout(GRID_X,GRID_Y, 0, 0));
@@ -55,6 +59,7 @@ public class LinerPanel extends JPanel implements PacketHandler{
         try {
             //WIDEの集めるパケッｔのOSI参照モデルの最上階はTCP/UDP
             if (pkt.hasHeader(JProtocol.TCP_ID)) {
+                playSE.play(PlaySE.SELECT);//TEST
                 label.setText("T");//TCPならT
                 if (pkt.hasHeader(JProtocol.IP4_ID)) {
                     label.setForeground(Color.YELLOW);//IPv4が下の時の文字色
@@ -64,6 +69,7 @@ public class LinerPanel extends JPanel implements PacketHandler{
                     label.setForeground(Color.RED);//それ以外が下の時の文字色
                 }
             } else if (pkt.hasHeader(JProtocol.UDP_ID)) {
+                playSE.play(PlaySE.CANCEL);//TEST
                 label.setText("U");//UDPならU
                 if (pkt.hasHeader(JProtocol.IP4_ID)) {
                     label.setForeground(Color.GREEN);//IPv4が下の時の文字色
@@ -75,6 +81,7 @@ public class LinerPanel extends JPanel implements PacketHandler{
             //OSI参照モデルにおいて。ICMPはL3だが、
             //一般に、ICMPの上にTCPやUDPが来ることは少ないのでここで処理。
             } else if (pkt.hasHeader(JProtocol.ICMP_ID)) {
+                playSE.play(PlaySE.TURN);//TEST
                 label.setText("I");//ICMPならI
                 if (pkt.hasHeader(JProtocol.ETHERNET_ID)) {
                     label.setForeground(Color.CYAN);//IPv4が下の時の文字色
@@ -84,23 +91,24 @@ public class LinerPanel extends JPanel implements PacketHandler{
                     label.setForeground(Color.WHITE);//それ以外が下の時の文字色
                 }
             } else {//TCP,UDP,ICMPを含まないパケットはこちらへ。
+                playSE.play(PlaySE.HARDDROP);//TEST
                 if (pkt.hasHeader(JProtocol.IP6_ID)) {
                     label.setText("6");//IPv6なら6
                     if (pkt.hasHeader(JProtocol.ETHERNET_ID)) {
                         label.setForeground(Color.RED);//Ethernetが下の時の文字色
                     } else if (pkt.hasHeader(JProtocol.PPP_ID)) {
-                        label.setBackground(Color.BLUE);//PPPが下の時の文字色
+                        label.setForeground(Color.BLUE);//PPPが下の時の文字色
                     } else {
-                        label.setBackground(Color.WHITE);//それ以外が下の時の背景色
+                        label.setForeground(Color.WHITE);//それ以外が下の時の文字色
                     }
                 } else if (pkt.hasHeader(JProtocol.IP4_ID)) {
                     label.setText("4");
                     if (pkt.hasHeader(JProtocol.ETHERNET_ID)) {
-                        label.setBackground(Color.BLUE);//Ethernetが下の時の文字色
+                        label.setForeground(Color.PINK);//Ethernetが下の時の文字色
                     } else if (pkt.hasHeader(JProtocol.PPP_ID)) {
-                        label.setBackground(Color.ORANGE);//PPPが下の時の文字色
+                        label.setForeground(Color.BLUE);//PPPが下の時の文字色
                     } else {
-                        label.setBackground(Color.GRAY);//それ以外が下の時の背景色
+                        label.setForeground(Color.WHITE);//それ以外が下の時の文字色
                     }
                 } else {
                     //ここ、L3調査がメインなWIDEでほとんど来ること無いと思う。
