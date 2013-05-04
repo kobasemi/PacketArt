@@ -104,7 +104,7 @@ public class LinerPanel extends JPanel implements PacketHandler{
                 } else if (pkt.hasHeader(JProtocol.IP4_ID)) {
                     label.setText("4");
                     if (pkt.hasHeader(JProtocol.ETHERNET_ID)) {
-                        label.setForeground(Color.PINK);//Ethernetが下の時の文字色
+                        label.setForeground(Color.MAGENTA);//Ethernetが下の時の文字色
                     } else if (pkt.hasHeader(JProtocol.PPP_ID)) {
                         label.setForeground(Color.BLUE);//PPPが下の時の文字色
                     } else {
