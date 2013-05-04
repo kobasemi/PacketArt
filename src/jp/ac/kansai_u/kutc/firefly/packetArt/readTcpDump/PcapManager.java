@@ -563,7 +563,7 @@ public final class PcapManager extends Thread{
         }
         if ( bpfFilter != null ) {
             Pcap.freecode(bpfFilter);
-            bpfText = null;
+            //bpfText = null;
         }
         pcap = null;
         readyRun = false;
