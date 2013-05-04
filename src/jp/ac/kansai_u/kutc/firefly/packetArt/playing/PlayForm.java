@@ -1,7 +1,10 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.playing;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -55,12 +58,23 @@ public class PlayForm extends FormBase {
 
 	public PlayForm() {
 		keyQueue = new LinkedList<Integer>();
+		keyPressedTime = new HashMap<Integer, Long>();
 		model = new PacketrisModel();
+		falldownLimit = 60;
+		addComponentListener(new ComponentListener() {
+			public void componentShown(ComponentEvent e) {
+				requestFocusInWindow();
+			}
+			public void componentResized(ComponentEvent e) { }
+			public void componentMoved(ComponentEvent e) { }
+			public void componentHidden(ComponentEvent e) { }
+		});
 	}
 
 	@Override
 	public void initialize() {
 		model.initialize();
+		addKeyListener(this);
 	}
 
 	@Override
@@ -69,20 +83,23 @@ public class PlayForm extends FormBase {
 		
 		// TODO: painting PacketBlocks using packet data.
 		for(PacketBlock item : model.currentMinos) {
-			g.setColor(Color.getHSBColor(item.location.getX() % 360.0f, 0.7f, 0.7f));
+			g.setColor(Color.getHSBColor(model.parentLocation.getX() % 360.0f, 0.7f, 0.7f));
 			g.drawRect(
-					100 + (model.parentLocation.getX() + item.location.getX()) * 32, 
-					100 + (model.parentLocation.getY() + item.location.getY()) * 32, 30, 30);
+					((model.parentLocation.getX() + item.location.getX()) * 16), 
+					((model.parentLocation.getY() + item.location.getY()) * 16), 14, 14);
 			
 		}
 		for (PacketBlock[] column : model.getBoard()) {
 			for(PacketBlock item : column){
-				g.setColor(Color.getHSBColor(item.location.getX() % 360.0f, 0.7f, 0.7f));
-				g.drawRect(item.location.getX() * 32, item.location.getY() * 32, 30, 30);
-				
-				System.out.print(item.mino);
+				g.setColor(Color.blue);
+				g.drawRect(item.location.getX() * 16, item.location.getY() * 16, 14, 14);
 			}
-			System.out.println();
+		}
+		if(model.isGameOverd()){
+			g.setColor(Color.getHSBColor(0.0f, 0.75f, 0.5f));
+			g.setFont(new Font(null, Font.PLAIN, 30));
+			g.drawString("Game Over", 100, 100);
+			
 		}
 
 	}
@@ -95,16 +112,20 @@ public class PlayForm extends FormBase {
 			// 未来の話なら抜ける(そんなことあり得るのか)
 			if (keyPressedTime.get(keyQueue.get(0)) > tick)
 				break;
-			if (keyPressedTime.get(keyQueue.get(0)) < tick)
-				;
+			//if (keyPressedTime.get(keyQueue.get(0)) < tick)
 			keys.add(keyQueue.pop());
 		}
+		
+		// ゲームオーバー判定
+		if(model.isGameOverd())
+			return;
+		
 		// if pressedkey is configured key then try to operation
 		if (false/* */)
 			model.rotate(Direction.Left);
 		if (false/* */)
 			falldownTimer = falldownLimit + 1;
-		if (false/* */) {
+		if (keys.contains(KeyEvent.VK_ENTER)) {
 			while (model.fallDown()) {
 			}
 			falldownTimer = falldownLimit + 1;
@@ -112,9 +133,12 @@ public class PlayForm extends FormBase {
 
 		// もし指定のタイミングになったらfalldown
 		if (falldownTimer > falldownLimit) {
+			System.out.println("falling - " + model.parentLocation.toString());
 			falldownTimer = 0;
 			// 落下に失敗したら、Next生成
 			if (!model.fallDown()) {
+				System.out.println("generate");
+				model.fixMino();
 				generateNextBlockFromPacket();
 			}
 		} else {
@@ -125,7 +149,8 @@ public class PlayForm extends FormBase {
 	}
 
 	private void generateNextBlockFromPacket() {
-		// TODO Auto-generated method stub
+		// TODO ミノの生成方法を決定する
+		model.generateMino(TetroMino.T, false, model.column / 2);
 
 	}
 
@@ -157,6 +182,8 @@ public class PlayForm extends FormBase {
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
 		long time = tick;
+		
+		System.out.println("input key:" + key);
 		
 		// TODO:1回だけ押せるようにする(長押し(何ms?)で連続反応するようにする)
 		if (!keyPressedTime.containsKey(key)) {

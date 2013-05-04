@@ -13,10 +13,12 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.Location;
  *
  */
 public class PacketrisModel {
-	boolean canReverse;
+	PacketBlock[][] board;
 	final int row = 30;
 	final int column = 15;
-	PacketBlock[][] board;
+	boolean canReverse;
+	boolean isAsphyxia = false;
+	
 	/**
 	 * ミノ
 	 */
@@ -28,15 +30,15 @@ public class PacketrisModel {
 	Location parentLocation;
 
 	public PacketrisModel(){
-		board = new PacketBlock[30][15];
-		generateMino(TetroMino.T, false, 7);
+		board = new PacketBlock[row][column];
+		generateMino(TetroMino.T, false, column / 2);
 	}
 
 	/**
 	 * 初期化を行います。
 	 */
 	public void initialize(){
-		for (int i = 0; i < board.length; i++) {
+		for (int i = 0; i < board.length; i++){
 			for (int j = 0; j < board[i].length; j++) {
 				board[i][j] = new PacketBlock();
 			}
@@ -48,6 +50,8 @@ public class PacketrisModel {
 		for (int i = 0; i < board[row - 1].length; i++) {
 			board[row - 1][i].setBlockType(BlockType.Wall);
 		}
+		
+		isAsphyxia = false;
 	}
 
 	/**
@@ -57,7 +61,22 @@ public class PacketrisModel {
 	 * @return その座標に設定されているブロック
 	 */
 	public PacketBlock getBlock(int x, int y) {
-		return board[x][y];
+		if(x < 0 || y < 0 || x >= column || y >= row)
+			throw new InvalidParameterException();
+		else
+			return board[y][x];
+	}
+	
+	/**
+	 * 指定座標のブロックを返します。
+	 * @param location 座標
+	 * @return その座標に設定されているブロック
+	 */
+	public PacketBlock getBlock(Location location){
+		if(location == null)
+			throw new NullPointerException();
+		else
+			return getBlock(location.getX(), location.getY());
 	}
 
 	/**
@@ -86,15 +105,14 @@ public class PacketrisModel {
 		if(location == null)
 			throw new NullPointerException();
 		
-		if(location.getX() > row || location.getY() > column 
-				|| location.getX() < 0 || location.getY() < 0)
+		if(location.getX() >= column || location.getY() >= row || location.getX() < 0 || location.getY() < 0)
 			return false;
 		
 		for(Block item : currentMinos){
-			if(item.location.getX() + location.getX() > row || item.location.getY() + location.getY() > column
-					|| item.location.getX() + location.getX() < 0 || item.location.getY() + location.getY() < 0)
+			Location lo = new Location(item.location.getX() + location.getX(), item.location.getY()+ location.getY());
+			if(lo.getX() >= column || lo.getY() >= row || lo.getX() < 0 || lo.getY() < 0)
 				return false;
-			if(getBlock(item.location.getX() + location.getX(), item.location.getY() + location.getY()).blockType !=  BlockType.Void)
+			if(getBlock(lo) != null&& getBlock(lo).blockType != BlockType.Void)
 				return false;
 		}
 		return true;
@@ -143,13 +161,39 @@ public class PacketrisModel {
 	 * @return もしミノがこれ以上落下できない場合、falseを返し、落下が成功した場合、trueを返します。
 	 */
 	public boolean fallDown(){
-		if(canAllocate(parentLocation.add(0,1))){
+		if(canAllocate(parentLocation.add(0, 1))){
 			parentLocation.setY(parentLocation.getY() + 1);
 			return true;
 		} else {
 			return false;
 		}
 		
+	}
+	
+	/**
+	 * 移動可能状態にあるミノを移動不可能状態にして、盤面に固定します。
+	 */
+	public void fixMino(){
+		for(PacketBlock item: currentMinos){
+			board[parentLocation.getY() + item.location.getY()][parentLocation.getX() + item.location.getX()] = item;
+			item.location = new Location(parentLocation.getX() + item.location.getX(), parentLocation.getY()+ item.location.getY());
+		}
+		
+		/* stdoutで見えるミノ
+		for(PacketBlock[] column : board){
+			for(Block item : column)
+				System.out.print(item.blockType == BlockType.Wall ? "W" : item.blockType == BlockType.Void ? "_": "o");
+			System.out.println();
+		}
+		*/
+	}
+	
+	/**
+	 * ゲームが継続不可能かどうかを返します。
+	 * @return ゲームの継続不可能性
+	 */
+	public boolean isGameOverd(){
+		return isAsphyxia;
 	}
 
 	/**
@@ -207,9 +251,9 @@ public class PacketrisModel {
 		if(mino == null)
 			throw new NullPointerException();
 		
-		setCanReverse(isReversed);
+		//setCanReverse(isReversed);
 		currentMinos = new ArrayList<PacketBlock>();
-		parentLocation = new Location(x, board.length);
+		parentLocation = new Location(x, 1);
 
 		// TODO: ミノを作る(相対座標)
 		if(mino instanceof TetroMino){
@@ -287,11 +331,11 @@ public class PacketrisModel {
 				break;
 			case I:
 				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
-					 new PacketBlock( 0,4,mino),
-					 new PacketBlock( 0,3,mino),
-					 new PacketBlock( 0,2,mino),
-					 new PacketBlock( 0,1,mino),
-					 new PacketBlock( 0,0,mino)
+					 new PacketBlock( 2,0,mino),
+					 new PacketBlock( 1,0,mino),
+					 new PacketBlock( 0,0,mino),
+					 new PacketBlock(-1,0,mino),
+					 new PacketBlock(-2,0,mino)
 				 }));
 				break;
 			case L:
@@ -390,5 +434,13 @@ public class PacketrisModel {
 
 			}
 		}
+		
+		// 窒息死
+		if(!canAllocate(parentLocation))
+			isAsphyxia = true;
+		
+		// 反転 
+		if(isReversed)
+			reverse();
 	}
 }

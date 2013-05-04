@@ -32,8 +32,8 @@ class ButtonPanel extends JPanel {
 		setLayout(cardLayout);
 		setBackground(new java.awt.Color(255, 255, 255, 128));
 		setSize(panelWidth, panelHeight);
-		add(firstCardPanel);
-		add(secondCardPanel);
+		add(firstCardPanel,"a");
+		add(secondCardPanel,"b");
 	}
 	
 	// ボタンの配列を返す
