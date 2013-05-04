@@ -15,8 +15,8 @@ public class ReadDumpPanel extends JPanel{
     public final static int X = 600;
     public final static int Y = 800;
 
-    private LinerPanel linerPanel;
-    private PcapPanel pcapPanel;
+    public LinerPanel linerPanel;
+    public PcapPanel pcapPanel;
 
     public ReadDumpPanel() {
         super();
@@ -28,9 +28,5 @@ public class ReadDumpPanel extends JPanel{
         pcapPanel.setBounds(0, LinerPanel.Y, PcapPanel.X, PcapPanel.Y);
         add(linerPanel);
         add(pcapPanel);
-    }
-
-    public void update() {
-        pcapPanel.update();
     }
 }

@@ -5,18 +5,20 @@ import java.awt.Dimension;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
-
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 
-import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.TcpHandler;
+import org.jnetpcap.packet.PcapPacket;
+import org.jnetpcap.protocol.JProtocol;
+
+import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.PacketHandler;
 
 /**
  * このパネルはPcapManagerのパネルです。
  *
  * @author sya-ke
  */
-public class LinerPanel extends JPanel{
+public class LinerPanel extends JPanel implements PacketHandler{
 
     public static final int X = 600;
     public static final int Y = 600;
@@ -26,6 +28,7 @@ public class LinerPanel extends JPanel{
     private final int GRID_X = X / FONT_X;//この値は環境のフォント幅による。
     private final int GRID_Y = Y / FONT_Y;//常に100
     private JLabel[][] labels;
+    public int counter;
 
     //MONOSPACEDは等幅フォント。文字通り、文字の幅が統一され、
     //描画しやすくなる。BOLDは太字。これも文字をできるだけベタ塗りにして
@@ -35,24 +38,130 @@ public class LinerPanel extends JPanel{
 
     public LinerPanel() {
         super();
+        counter = 0;
         setPreferredSize(new Dimension(X,Y));
         setLayout(new GridLayout(GRID_X,GRID_Y, 0, 0));
         labels = new JLabel[GRID_X][GRID_Y];
-        initLabels();
+        initLabels("@", Color.RED, Color.BLACK);
     }
 
-    private void initLabels() {
+    public void handlePacket(PcapPacket pkt) {
+        if (counter >= GRID_X*GRID_Y) {
+            counter = 0;
+            refreshLabels("$", Color.PINK, Color.BLACK);
+            return;
+        }
+        JLabel label = labels[counter%GRID_X][counter/GRID_X];
+        try {
+            //WIDEの集めるパケッｔのOSI参照モデルの最上階はTCP/UDP
+            if (pkt.hasHeader(JProtocol.TCP_ID)) {
+                label.setText("T");//TCPならT
+                if (pkt.hasHeader(JProtocol.IP4_ID)) {
+                    label.setForeground(Color.YELLOW);//IPv4が下の時の文字色
+                } else if (pkt.hasHeader(JProtocol.IP6_ID)) {
+                    label.setForeground(Color.BLUE);//IPv6が下の時の文字色
+                } else {
+                    label.setForeground(Color.RED);//それ以外が下の時の文字色
+                }
+            } else if (pkt.hasHeader(JProtocol.UDP_ID)) {
+                label.setText("U");//UDPならU
+                if (pkt.hasHeader(JProtocol.IP4_ID)) {
+                    label.setForeground(Color.GREEN);//IPv4が下の時の文字色
+                } else if (pkt.hasHeader(JProtocol.IP6_ID)) {
+                    label.setForeground(Color.BLUE);//IPv6が下の時の文字色
+                } else {
+                    label.setForeground(Color.RED);//それ以外が下の時の文字色
+                }
+            //OSI参照モデルにおいて。ICMPはL3だが、
+            //一般に、ICMPの上にTCPやUDPが来ることは少ないのでここで処理。
+            } else if (pkt.hasHeader(JProtocol.ICMP_ID)) {
+                label.setText("I");//ICMPならI
+                if (pkt.hasHeader(JProtocol.ETHERNET_ID)) {
+                    label.setForeground(Color.CYAN);//IPv4が下の時の文字色
+                } else if (pkt.hasHeader(JProtocol.PPP_ID)) {
+                    label.setForeground(Color.BLUE);//PPPが下の時の文字色
+                } else {
+                    label.setForeground(Color.WHITE);//それ以外が下の時の文字色
+                }
+            } else {//TCP,UDP,ICMPを含まないパケットはこちらへ。
+                if (pkt.hasHeader(JProtocol.IP6_ID)) {
+                    label.setText("6");//IPv6なら6
+                    if (pkt.hasHeader(JProtocol.ETHERNET_ID)) {
+                        label.setForeground(Color.RED);//Ethernetが下の時の文字色
+                    } else if (pkt.hasHeader(JProtocol.PPP_ID)) {
+                        label.setBackground(Color.BLUE);//PPPが下の時の文字色
+                    } else {
+                        label.setBackground(Color.WHITE);//それ以外が下の時の背景色
+                    }
+                } else if (pkt.hasHeader(JProtocol.IP4_ID)) {
+                    label.setText("4");
+                    if (pkt.hasHeader(JProtocol.ETHERNET_ID)) {
+                        label.setBackground(Color.BLUE);//Ethernetが下の時の文字色
+                    } else if (pkt.hasHeader(JProtocol.PPP_ID)) {
+                        label.setBackground(Color.ORANGE);//PPPが下の時の文字色
+                    } else {
+                        label.setBackground(Color.GRAY);//それ以外が下の時の背景色
+                    }
+                } else {
+                    //ここ、L3調査がメインなWIDEでほとんど来ること無いと思う。
+                    //珍しいし、背景赤いろにしよう。。
+                    if (pkt.hasHeader(JProtocol.L2TP_ID)) {
+                        label.setForeground(Color.BLACK);
+                        label.setText("L");
+                        label.setBackground(Color.RED);
+                    } else if (pkt.hasHeader(JProtocol.PPP_ID)) {
+                        label.setForeground(Color.BLACK);
+                        label.setText("P");
+                        label.setBackground(Color.RED);
+                    } else if (pkt.hasHeader(JProtocol.ARP_ID)) {
+                        label.setForeground(Color.BLACK);
+                        label.setText("A");
+                        label.setBackground(Color.RED);
+                    } else if (pkt.hasHeader(JProtocol.ETHERNET_ID)) {
+                        label.setForeground(Color.BLACK);
+                        label.setText("E");
+                        label.setBackground(Color.RED);
+                    } else {//jnetpcap
+                        System.out.println("WHAT THE PACKET!???");
+                        label.setForeground(Color.BLACK);
+                        label.setText("!");
+                        label.setBackground(Color.WHITE);
+                    }
+                }
+            }
+        } catch(Exception e) {
+            //TCPの断片がえぐられたあるパケットに由来するjnetpcapバグ。スルー。
+        } finally {
+            //バグパケットは"@"のままにする。
+            counter++;
+        }
+    }
+
+    private void initLabels(String id, Color fgColor,Color bgColor) {
+        String idChar = id.substring(0,1);
         for (int y=0;y<GRID_Y;y++) {
             for (int x=0;x<GRID_X;x++) {
-                JLabel label = labels[x][y];
-                if (label == null) {
-                    label = new JLabel("@");
-                    label.setFont(font);
-                    label.setForeground(Color.GREEN);
-                    label.setBackground(Color.BLACK);
-                    label.setOpaque(true);
-                    add(label);
-                }
+                labels[x][y] = new JLabel(idChar);
+                labels[x][y].setFont(font);
+                labels[x][y].setForeground(fgColor);
+                labels[x][y].setBackground(bgColor);
+                labels[x][y].setOpaque(true);
+            }
+        }
+        for (JLabel[] labelz: labels) {
+            for (JLabel label: labelz) {
+                add(label);
+            }
+        }
+    }
+
+    private void refreshLabels(String id, Color fgColor,Color bgColor) {
+        String idChar = id.substring(0,1);
+        for (int y=0;y<GRID_Y;y++) {
+            for (int x=0;x<GRID_X;x++) {
+                labels[x][y].setText(idChar);
+                labels[x][y].setForeground(fgColor);
+                labels[x][y].setBackground(bgColor);
             }
         }
     }

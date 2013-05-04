@@ -9,7 +9,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 
-import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;//TEST
+import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
 import jp.ac.kansai_u.kutc.firefly.packetArt.Form;//TEST
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 
@@ -22,6 +22,7 @@ public class ReadDumpForm extends FormBase{
 
     private ReadDumpPanel readDumpPanel;
     private boolean inited;
+    private PcapManager pm = PcapManager.getInstance();
 
     public ReadDumpForm() {
         super();
@@ -36,6 +37,7 @@ public class ReadDumpForm extends FormBase{
 
             //コンポーネント配置ここから
             readDumpPanel = new ReadDumpPanel();
+            pm.addHandler(readDumpPanel.linerPanel);
             readDumpPanel.setBounds(0, 0, ReadDumpPanel.X, ReadDumpPanel.Y);
             contentPane.add(readDumpPanel);
             //コンポーネント配置ここまで
@@ -48,7 +50,7 @@ public class ReadDumpForm extends FormBase{
     }
 
     public void update() {
-        readDumpPanel.update();
+        readDumpPanel.pcapPanel.update();
     }
 
     public void paint(Graphics g) {
@@ -75,6 +77,7 @@ public class ReadDumpForm extends FormBase{
     public void keyTyped(KeyEvent e) {
     }
     public void onFormChanged(){
+        pm.removeHandler(readDumpPanel.linerPanel);
     }
     public void onClose(){
     }
