@@ -41,18 +41,20 @@ public class LinerPanel extends JPanel implements PacketHandler{
 
     public LinerPanel() {
         super();
-        playSE = new PlaySE();//TEST
+        playSE = PlaySE.getInstance();//TEST
         counter = 0;
         setPreferredSize(new Dimension(X,Y));
         setLayout(new GridLayout(GRID_X,GRID_Y, 0, 0));
         labels = new JLabel[GRID_X][GRID_Y];
-        initLabels("@", Color.RED, Color.BLACK);
+        //initLabels("*", Color.RED, Color.BLACK);
+        initRainbowLabels("*");
     }
 
     public void handlePacket(PcapPacket pkt) {
         if (counter >= GRID_X*GRID_Y) {
             counter = 0;
-            refreshLabels("$", Color.PINK, Color.BLACK);
+            //refreshLabels("*", Color.PINK, Color.BLACK);
+            refreshRainbowLabels("*");
             return;
         }
         JLabel label = labels[counter%GRID_X][counter/GRID_X];
@@ -163,6 +165,24 @@ public class LinerPanel extends JPanel implements PacketHandler{
         }
     }
 
+    private void initRainbowLabels(String id) {
+        String idChar = id.substring(0,1);
+        for (int y=0;y<GRID_Y;y++) {
+            for (int x=0;x<GRID_X;x++) {
+                labels[x][y] = new JLabel(idChar);
+                labels[x][y].setFont(font);
+                labels[x][y].setForeground(Color.getHSBColor( y / (float)GRID_Y+0.01f, 1, x/(float)GRID_X+0.01f));
+                labels[x][y].setBackground(Color.BLACK);
+                labels[x][y].setOpaque(true);
+            }
+        }
+        for (JLabel[] labelz: labels) {
+            for (JLabel label: labelz) {
+                add(label);
+            }
+        }
+    }
+
     private void refreshLabels(String id, Color fgColor,Color bgColor) {
         String idChar = id.substring(0,1);
         for (int y=0;y<GRID_Y;y++) {
@@ -170,6 +190,18 @@ public class LinerPanel extends JPanel implements PacketHandler{
                 labels[x][y].setText(idChar);
                 labels[x][y].setForeground(fgColor);
                 labels[x][y].setBackground(bgColor);
+            }
+        }
+    }
+
+    private void refreshRainbowLabels(String id) {
+        String idChar = id.substring(0,1);
+        for (int y=0;y<GRID_Y;y++) {
+            for (int x=0;x<GRID_X;x++) {
+                labels[x][y].setText(idChar);
+                labels[x][y].setForeground(Color.getHSBColor( y / (float)GRID_Y+0.01f, 1, x/(float)GRID_X+0.01f));
+                labels[x][y].setBackground(Color.BLACK);
+                labels[x][y].setOpaque(true);
             }
         }
     }
