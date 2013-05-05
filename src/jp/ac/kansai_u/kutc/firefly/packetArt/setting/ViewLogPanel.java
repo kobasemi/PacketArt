@@ -25,7 +25,9 @@ public class ViewLogPanel extends JPanel{
 		setLayout(new FlowLayout(FlowLayout.LEFT, 30, 0));
 		JLabel labelViewLog = new JLabel(new ImageIcon(IMGPATH + "labelLog.png"));
 		btnOn = new JRadioButton(new ImageIcon(BTNPATH + "btnOn.png"));
+		btnOn.setSelectedIcon(new ImageIcon(BTNPATH + "btnOnSelected.png"));
 		btnOff = new JRadioButton(new ImageIcon(BTNPATH + "btnOff.png"));
+		btnOff.setSelectedIcon(new ImageIcon(BTNPATH + "btnOffSelected.png"));
 		ButtonGroup logViewGroup = new ButtonGroup();
 		logViewGroup.add(btnOn); logViewGroup.add(btnOff);
 		add(labelViewLog);

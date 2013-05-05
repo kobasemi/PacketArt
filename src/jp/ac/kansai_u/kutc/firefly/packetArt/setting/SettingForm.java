@@ -2,6 +2,7 @@ package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
 
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -35,7 +36,6 @@ public class SettingForm extends FormBase implements ActionListener {
 	private BufferedImage image;
 	
 	public void initialize() {
-		
 		try{
 			image = ImageIO.read(new File(IMGPATH + "background3.png"));
 		}catch(IOException e){
@@ -47,7 +47,6 @@ public class SettingForm extends FormBase implements ActionListener {
 		homura.setBackground(Color.black);
 		JLabel walpurgisNight = new JLabel(new ImageIcon(image));
 		walpurgisNight.setBounds(0, 0, image.getWidth(), image.getHeight());
-		//walpurgisNight.setOpaque(false);
 		
 		JLabel sayaka = new JLabel("設定画面");
 		sayaka.setFont(new Font("Self", Font.PLAIN, 48));
@@ -60,16 +59,18 @@ public class SettingForm extends FormBase implements ActionListener {
 	    madoka.setBounds(30, 130, 540, 250);
 	    
 	    JLabel kusojo = new JLabel(new ImageIcon(IMGPATH + "labelKeyConf.png"));
-	    
 	    kusojo.setBounds(30, 380, 540, 50);
 	    qbee = new KeyConfigPanel(ConfigStatus.getKey());
 	    qbee.setBounds(30, 430, 540, 250);
+	    qbee.setOpaque(false);
 	    
 	    JPanel kyoko = new JPanel();
-	    kyoko.setBounds(30, 680, 540, 70);
-	    kyoko.setBackground(Color.green);
-	    mami1 = new JButton("設定");
-	    mami2 = new JButton("キャンセル");
+	    kyoko.setBounds(30, 680, 540, 100);
+	    kyoko.setOpaque(false);
+	    mami1 = new JButton(new ImageIcon(IMGPATH + "btnSetting.png"));
+	    mami2 = new JButton(new ImageIcon(IMGPATH + "btnCancel.png"));
+	    mami1.setContentAreaFilled(false);
+	    mami2.setContentAreaFilled(false);
 	    mami1.addActionListener(this);
 	    mami2.addActionListener(this);
 	    kyoko.add(mami1);

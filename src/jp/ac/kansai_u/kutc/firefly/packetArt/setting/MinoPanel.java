@@ -13,6 +13,7 @@ import javax.swing.JRadioButton;
  */
 public class MinoPanel extends JPanel{
 	final String IMGPATH = new String("./resource/image/config/");
+	final String BTNPATH = new String(IMGPATH + "button/");
 	private JRadioButton btnMino4, btnMino5, btnMinoBoth;	// 各コンポーネント
 	
 	/**
@@ -22,11 +23,16 @@ public class MinoPanel extends JPanel{
 	MinoPanel(byte b){
 		setLayout(new FlowLayout(FlowLayout.LEFT, 30, 0));
 		JLabel labelMino = new JLabel(new ImageIcon(IMGPATH + "labelMino.png"));
-		btnMino4 = new JRadioButton("4");//icon3);
-		btnMino5 = new JRadioButton("5");//icon3);
-		btnMinoBoth = new JRadioButton("Both");//icon3);
+		btnMino4 = new JRadioButton(new ImageIcon(BTNPATH + "btnMino4.png"));
+		btnMino5 = new JRadioButton(new ImageIcon(BTNPATH + "btnMino5.png"));
+		btnMinoBoth = new JRadioButton(new ImageIcon(BTNPATH + "btnMinoBoth.png"));
 		ButtonGroup minoGroup = new ButtonGroup();
 		minoGroup.add(btnMino4); minoGroup.add(btnMino5); minoGroup.add(btnMinoBoth);
+		
+		btnMino4.setSelectedIcon(new ImageIcon(BTNPATH + "btnMino4Selected.png"));
+		btnMino5.setSelectedIcon(new ImageIcon(BTNPATH + "btnMino5Selected.png"));
+		btnMinoBoth.setSelectedIcon(new ImageIcon(BTNPATH + "btnMinoBothSelected.png"));
+		
 		add(labelMino);
 		add(btnMino4);
 		add(btnMino5);

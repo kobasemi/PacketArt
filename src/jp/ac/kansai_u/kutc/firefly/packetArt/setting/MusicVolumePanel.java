@@ -33,6 +33,10 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 	    btnVolumeLow  = new JRadioButton(new ImageIcon(VOLPATH + "volLow.png"));
 	    btnVolumeMed  = new JRadioButton(new ImageIcon(VOLPATH + "volMedium.png"));
 	    btnVolumeHigh = new JRadioButton(new ImageIcon(VOLPATH + "volHigh.png"));
+	    btnVolumeMute.setSelectedIcon(new ImageIcon(VOLPATH + "volMuteSelected.png"));
+		btnVolumeLow.setSelectedIcon(new ImageIcon(VOLPATH + "volLowSelected.png"));
+		btnVolumeMed.setSelectedIcon(new ImageIcon(VOLPATH + "volMediumSelected.png"));
+		btnVolumeHigh.setSelectedIcon(new ImageIcon(VOLPATH + "volHighSelected.png"));
 	    ButtonGroup volumeGroup = new ButtonGroup();
 	    volumeGroup.add(btnVolumeMute); volumeGroup.add(btnVolumeLow);
 	    volumeGroup.add(btnVolumeMed); volumeGroup.add(btnVolumeHigh);

@@ -13,6 +13,7 @@ import javax.swing.JRadioButton;
  */
 public class DifficultyPanel extends JPanel{
 	final public String IMGPATH = new String("./resource/image/config/");
+	final public String BTNPATH = new String(IMGPATH + "button/");
 	private JRadioButton btnDifficultyStatic, btnDifficultyDynamic, btnDifficultyAuto;
 	
 	/**
@@ -22,13 +23,18 @@ public class DifficultyPanel extends JPanel{
 	DifficultyPanel(byte b){
 		setLayout(new FlowLayout(FlowLayout.LEFT, 30, 0));
 		JLabel labelDifficulty = new JLabel(new ImageIcon(IMGPATH + "labelDifficulty.png"));
-		btnDifficultyStatic = new JRadioButton("静的");
-	    btnDifficultyDynamic = new JRadioButton("動的");
-	    btnDifficultyAuto = new JRadioButton("自動");
+		btnDifficultyStatic = new JRadioButton(new ImageIcon(BTNPATH + "btnStatic.png"));
+	    btnDifficultyDynamic = new JRadioButton(new ImageIcon(BTNPATH + "btnDynamic.png"));
+	    btnDifficultyAuto = new JRadioButton(new ImageIcon(BTNPATH + "btnAuto.png"));
 	    ButtonGroup difficultyGroup = new ButtonGroup();
 	    difficultyGroup.add(btnDifficultyStatic); difficultyGroup.add(btnDifficultyDynamic);
 	    difficultyGroup.add(btnDifficultyAuto);
-		add(labelDifficulty);
+	    
+	    btnDifficultyStatic.setSelectedIcon(new ImageIcon(BTNPATH + "btnStaticSelected.png"));
+	    btnDifficultyDynamic.setSelectedIcon(new ImageIcon(BTNPATH + "btnDynamicSelected.png"));
+	    btnDifficultyAuto.setSelectedIcon(new ImageIcon(BTNPATH + "btnAutoSelected.png"));
+		
+	    add(labelDifficulty);
 		add(btnDifficultyStatic);
 		add(btnDifficultyDynamic);
 		add(btnDifficultyAuto);

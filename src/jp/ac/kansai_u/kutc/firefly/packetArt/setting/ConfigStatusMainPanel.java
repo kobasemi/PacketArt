@@ -27,16 +27,15 @@ public class ConfigStatusMainPanel extends JPanel{
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
 		panelViewLog = new ViewLogPanel(ConfigStatus.isViewLog());
-		panelViewLog.setBackground(Color.yellow);
 		panelViewLog.setOpaque(false);
 		panelMino = new MinoPanel(ConfigStatus.getMino());
-		panelMino.setBackground(Color.cyan);
+		panelMino.setOpaque(false);
 		panelMusic = new MusicVolumePanel(ConfigStatus.getVolMusic());
-		panelMusic.setBackground(Color.magenta);
+		panelMusic.setOpaque(false);
 		panelSound = new SoundVolumePanel(ConfigStatus.getVolSound());
-		panelSound.setBackground(Color.gray);
+		panelSound.setOpaque(false);
 		panelDifficulty = new DifficultyPanel(ConfigStatus.getDifficulty());
-		panelDifficulty.setBackground(Color.blue);
+		panelDifficulty.setOpaque(false);
 		
 		add(panelViewLog);
 		add(panelMino);
