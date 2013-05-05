@@ -2,240 +2,414 @@ package jp.ac.kansai_u.kutc.firefly.packetArt.music;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiEvent;
-import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
-/**
- * 
- * ゲーム中のBGMの固定部分（ベースとドラム）を生成するクラスです。
- * @author Lisa
- * 
- */
 
 public class AccompanimentMaker {
+	public static void makeCheerfulAccompaniment(Sequence sequence, int length, int velocity) throws InvalidMidiDataException{
+		setCheerfulBass(sequence, length, velocity);
+		setCheerfulGuitar(sequence, length, velocity);
+		setDrums(sequence, length, velocity);
+	}
 	
-	/**
-	 * 
-	 * ゲーム中のBGMの固定部分（ベースとドラム）をsequenceに書き込み、そのsequenceを返すメソッドです。
-	 * MusicMakerからのみ呼び出されます。
-	 *  
-	 * @param velo
-	 * @return sequence
-	 * @throws InvalidMidiDataException
-	 * @throws MidiUnavailableException
-	 */
-	public static Sequence setAccompaniment(int velo) throws InvalidMidiDataException, MidiUnavailableException{
-		
-		//***まずはベースラインの作成***//
-		int[] bassscale = ScaleMaker.setBassScale();
-		
-		Sequence sequence = MelodyMaker.setMelodyLine(velo);
+	public static void makeGloomyAccompaniment(Sequence sequence, int length, int velocity) throws InvalidMidiDataException{
+		setGloomyBass(sequence, length, velocity);
+		setGloomyGuitar(sequence, length, velocity);
+		setDrums(sequence, length, velocity);
+	}
+	
+	private static void setCheerfulBass(Sequence sequence, int length, int velocity) throws InvalidMidiDataException {
 		Track track1 = sequence.createTrack();
-
-		int basechannel = 1; //トラックチャンネル
-		int velocity = VelocityModulator.setVelocity(velo); //音の強さ
-		int baseinstrument = 33; //音色の種類
-
+		int channel = 1;
+		int instrument = 33;
+		int[] scale = ScaleMaker.setCheerfulBassScale();
+		String[] code = CodeMaker.setCheerfulCode(length);
+		int komari = code.length;
+		int haruka = 0;
+		int kanata = 0;
+		int yuiko = 0;
 		int i = 0;
-		ShortMessage[] basemessage = new ShortMessage[96];
-		basemessage[i] = new ShortMessage();
-		basemessage[i].setMessage(ShortMessage.PROGRAM_CHANGE, basechannel, baseinstrument, 0);
-		track1.add(new MidiEvent(basemessage[i], 0));
-
-		//メロディの設定
-		//String[] Codeの長さは24
-		String[] Code = CodeMaker.codeMaker();
 		
-		int pitch = 0;
-		int a = 0;
-		int b = 0;
+		ShortMessage[] message = new ShortMessage[(komari * 4) + 1];
+		message[0] = new ShortMessage();
+		message[0].setMessage(ShortMessage.PROGRAM_CHANGE, channel, instrument, 0);
+		track1.add(new MidiEvent(message[0], 0));
 		
-		//コードの判定
-		for (int c = 0; c < 24; a++) {
-			if("Em".equals(Code[c])){
-				pitch = 0;
-				a = 2;
-			}else if("Am".equals(Code[c])){
-				pitch = 3;
-				a = 2;
-			}else if("B7".equals(Code[c])){
-				pitch = 4;
-				a = 4;
+		for(i = 0; i < komari; i++){
+			if("C".equals(code[i])){
+				haruka = 0;
+				kanata = 2;
+			}else if("F".equals(code[i])){
+				haruka = 3;
+				kanata = 2;
+			}else if("G7".equals(code[i])){
+				haruka = 4;
+				kanata = 4;
 			}
 			
-			//ベースラインの生成
-			basemessage[i] = new ShortMessage();
-			basemessage[i].setMessage(ShortMessage.NOTE_ON, basechannel, bassscale[pitch], velocity);
-			track1.add(new MidiEvent(basemessage[i], b));
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_ON, channel, scale[haruka], velocity);
+			track1.add(new MidiEvent(message[i], yuiko));
 
-			basemessage[i] = new ShortMessage();
-			basemessage[i].setMessage(ShortMessage.NOTE_OFF, basechannel, bassscale[pitch], velocity);
-			track1.add(new MidiEvent(basemessage[i], b + 12));
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_OFF, channel, scale[haruka], velocity);
+			track1.add(new MidiEvent(message[i], yuiko + 12));
 
-			basemessage[i] = new ShortMessage();
-			basemessage[i].setMessage(ShortMessage.NOTE_ON, basechannel, bassscale[pitch + a], velocity);
-			track1.add(new MidiEvent(basemessage[i], b + 12));
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_ON, channel, scale[haruka + kanata], velocity);
+			track1.add(new MidiEvent(message[i], yuiko + 12));
 
-			basemessage[i] = new ShortMessage();
-			basemessage[i].setMessage(ShortMessage.NOTE_OFF, basechannel, bassscale[pitch + a], velocity);
-			track1.add(new MidiEvent(basemessage[i], b + 24));
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_OFF, channel, scale[haruka + kanata], velocity);
+			track1.add(new MidiEvent(message[i], yuiko + 24));
 			
-			basemessage[i] = new ShortMessage();
-			basemessage[i].setMessage(ShortMessage.NOTE_ON, basechannel, bassscale[pitch], velocity);
-			track1.add(new MidiEvent(basemessage[i], b + 24));
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_ON, channel, scale[haruka], velocity);
+			track1.add(new MidiEvent(message[i], yuiko + 24));
 
-			basemessage[i] = new ShortMessage();
-			basemessage[i].setMessage(ShortMessage.NOTE_OFF, basechannel, bassscale[pitch], velocity);
-			track1.add(new MidiEvent(basemessage[i], b + 36));
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_OFF, channel, scale[haruka], velocity);
+			track1.add(new MidiEvent(message[i], yuiko + 36));
 
-			basemessage[i] = new ShortMessage();
-			basemessage[i].setMessage(ShortMessage.NOTE_ON, basechannel, bassscale[pitch + a], velocity);
-			track1.add(new MidiEvent(basemessage[i], b + 36));
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_ON, channel, scale[haruka + kanata], velocity);
+			track1.add(new MidiEvent(message[i], yuiko + 36));
 
-			basemessage[i] = new ShortMessage();
-			basemessage[i].setMessage(ShortMessage.NOTE_OFF, basechannel, bassscale[pitch + a], velocity);
-			track1.add(new MidiEvent(basemessage[i], b + 48));
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_OFF, channel, scale[haruka + kanata], velocity);
+			track1.add(new MidiEvent(message[i], yuiko + 48));
 			
-			b = b + 48;
-			c++;
+			yuiko = yuiko + 48;
 		}
-		
-		
-		//***ドラムラインの作成***//
-		Track track9 = sequence.createTrack();
-
-		int drumchannel = 9; //トラックチャンネル
-		int druminstrument = 0; //音色の種類
-
-		int j = 0;
-		ShortMessage[] drummessage = new ShortMessage[96];
-		drummessage[j] = new ShortMessage();
-		drummessage[j].setMessage(ShortMessage.PROGRAM_CHANGE, drumchannel, druminstrument, 0);
-		track9.add(new MidiEvent(drummessage[i], 0));
-		
-		//クラッシュシンバルとハイハット
-		a = 0;
-		for (int c = 0; c < 6; c++) {
-			drummessage[j] = new ShortMessage();
-			drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 49, velocity);
-			track9.add(new MidiEvent(drummessage[j], a));
-			
-			a = a + 12;
-
-			drummessage[j] = new ShortMessage();
-			drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 49, velocity);
-			track9.add(new MidiEvent(drummessage[j], a));
-			
-			for (int e = 0; e < 15; e++){
-				drummessage[j] = new ShortMessage();
-				drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 42, velocity);
-				track9.add(new MidiEvent(drummessage[j], a));
-				
-				a = a + 12;
+	}
 	
-				drummessage[j] = new ShortMessage();
-				drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 42, velocity);
-				track9.add(new MidiEvent(drummessage[j], a));
+	private static void setCheerfulGuitar(Sequence sequence, int length, int velocity) throws InvalidMidiDataException{
+		Track track2 = sequence.createTrack();
+		int channel = 2;
+		int instrument = 24;
+		int[] scale = ScaleMaker.setCheerfulGuitarScale();
+		String[] code = CodeMaker.setCheerfulCode(length);
+		int komari = code.length;
+		int haruka = 0;
+		int kanata = 2;
+		int yuiko = 0;
+		int i = 0;
+		
+		ShortMessage[] message = new ShortMessage[(komari * 4) + 1];
+		message[0] = new ShortMessage();
+		message[0].setMessage(ShortMessage.PROGRAM_CHANGE, channel, instrument, 0);
+		track2.add(new MidiEvent(message[0], 0));
+		
+		for(i = 0; i < komari; i++){
+			if("C".equals(code[i])){
+				haruka = 0;
+			}else if("F".equals(code[i])){
+				haruka = 3;
+			}else if("G7".equals(code[i])){
+				haruka = 4;
+			}
+			
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_ON, channel, scale[haruka], velocity);
+			track2.add(new MidiEvent(message[i], yuiko));
+
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_OFF, channel, scale[haruka], velocity);
+			track2.add(new MidiEvent(message[i], yuiko + 12));
+
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_ON, channel, scale[haruka + kanata], velocity);
+			track2.add(new MidiEvent(message[i], yuiko + 12));
+
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_OFF, channel, scale[haruka + kanata], velocity);
+			track2.add(new MidiEvent(message[i], yuiko + 24));
+			
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_ON, channel, scale[haruka + kanata + kanata], velocity);
+			track2.add(new MidiEvent(message[i], yuiko + 24));
+
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_OFF, channel, scale[haruka + kanata + kanata], velocity);
+			track2.add(new MidiEvent(message[i], yuiko + 36));
+
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_ON, channel, scale[haruka + kanata], velocity);
+			track2.add(new MidiEvent(message[i], yuiko + 36));
+
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_OFF, channel, scale[haruka + kanata], velocity);
+			track2.add(new MidiEvent(message[i], yuiko + 48));
+			
+			yuiko = yuiko + 48;
+		}
+	}
+	
+	private static void setGloomyBass(Sequence sequence, int length, int velocity) throws InvalidMidiDataException {
+		Track track1 = sequence.createTrack();
+		int channel = 1;
+		int instrument = 33;
+		int[] scale = ScaleMaker.setGloomyBassScale();
+		String[] code = CodeMaker.setGloomyCode(length);
+		int komari = code.length;
+		int haruka = 0;
+		int kanata = 0;
+		int yuiko = 0;
+		int i = 0;
+		
+		ShortMessage[] message = new ShortMessage[(komari * 4) + 1];
+		message[0] = new ShortMessage();
+		message[0].setMessage(ShortMessage.PROGRAM_CHANGE, channel, instrument, 0);
+		track1.add(new MidiEvent(message[0], 0));
+		
+		for(i = 0; i < komari; i++){
+			if("Em".equals(code[i])){
+				haruka = 0;
+				kanata = 2;
+			}else if("Am".equals(code[i])){
+				haruka = 3;
+				kanata = 2;
+			}else if("B7".equals(code[i])){
+				haruka = 4;
+				kanata = 4;
+			}
+			
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_ON, channel, scale[haruka], velocity);
+			track1.add(new MidiEvent(message[i], yuiko));
+
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_OFF, channel, scale[haruka], velocity);
+			track1.add(new MidiEvent(message[i], yuiko + 12));
+
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_ON, channel, scale[haruka + kanata], velocity);
+			track1.add(new MidiEvent(message[i], yuiko + 12));
+
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_OFF, channel, scale[haruka + kanata], velocity);
+			track1.add(new MidiEvent(message[i], yuiko + 24));
+			
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_ON, channel, scale[haruka], velocity);
+			track1.add(new MidiEvent(message[i], yuiko + 24));
+
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_OFF, channel, scale[haruka], velocity);
+			track1.add(new MidiEvent(message[i], yuiko + 36));
+
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_ON, channel, scale[haruka + kanata], velocity);
+			track1.add(new MidiEvent(message[i], yuiko + 36));
+
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_OFF, channel, scale[haruka + kanata], velocity);
+			track1.add(new MidiEvent(message[i], yuiko + 48));
+			
+			yuiko = yuiko + 48;
+		}
+	}
+	
+	private static void setGloomyGuitar(Sequence sequence, int length ,int velocity) throws InvalidMidiDataException{
+		Track track2 = sequence.createTrack();
+		int channel = 2;
+		int instrument = 24;
+		int[] scale = ScaleMaker.setGloomyGuitarScale();
+		String[] code = CodeMaker.setGloomyCode(length);
+		int komari = code.length;
+		int haruka = 0;
+		int kanata = 2;
+		int yuiko = 0;
+		int i = 0;
+		
+		ShortMessage[] message = new ShortMessage[(komari * 4) + 1];
+		message[0] = new ShortMessage();
+		message[0].setMessage(ShortMessage.PROGRAM_CHANGE, channel, instrument, 0);
+		track2.add(new MidiEvent(message[0], 0));
+		
+		for(i = 0; i < komari; i++){
+			if("Em".equals(code[i])){
+				haruka = 0;
+			}else if("Am".equals(code[i])){
+				haruka = 3;
+			}else if("B7".equals(code[i])){
+				haruka = 4;
+			}
+			
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_ON, channel, scale[haruka], velocity);
+			track2.add(new MidiEvent(message[i], yuiko));
+
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_OFF, channel, scale[haruka], velocity);
+			track2.add(new MidiEvent(message[i], yuiko + 12));
+
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_ON, channel, scale[haruka + kanata], velocity);
+			track2.add(new MidiEvent(message[i], yuiko + 12));
+
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_OFF, channel, scale[haruka + kanata], velocity);
+			track2.add(new MidiEvent(message[i], yuiko + 24));
+			
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_ON, channel, scale[haruka + kanata + kanata], velocity);
+			track2.add(new MidiEvent(message[i], yuiko + 24));
+
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_OFF, channel, scale[haruka + kanata + kanata], velocity);
+			track2.add(new MidiEvent(message[i], yuiko + 36));
+
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_ON, channel, scale[haruka + kanata], velocity);
+			track2.add(new MidiEvent(message[i], yuiko + 36));
+
+			message[i] = new ShortMessage();
+			message[i].setMessage(ShortMessage.NOTE_OFF, channel, scale[haruka + kanata], velocity);
+			track2.add(new MidiEvent(message[i], yuiko + 48));
+			
+			yuiko = yuiko + 48;
+		}
+	}	
+	
+	
+	private static void setDrums(Sequence sequence, int length, int velocity) throws InvalidMidiDataException{
+		Track track9 = sequence.createTrack();
+		int channel = 9;
+		int instrument = 0;
+		String[] code = CodeMaker.setCheerfulCode(length);
+		int komari = code.length;
+		int riki = 0;
+		int kyosuke = 0;
+		
+		ShortMessage[] message = new ShortMessage[(komari * 4) + 1];
+		message[0] = new ShortMessage();
+		message[0].setMessage(ShortMessage.PROGRAM_CHANGE, channel, instrument, 0);
+		track9.add(new MidiEvent(message[0], 0));
+		
+		//Crush Symbal and Hi-hat Symbal
+		for(int i = 0; i < (komari / 24); i++){
+			for(int j = 0; j < 6; j++){
+				message[j] = new ShortMessage();
+				message[j].setMessage(ShortMessage.NOTE_ON, channel, 49, velocity);
+				track9.add(new MidiEvent(message[j], riki));
+				
+				riki = riki + 12;
+				
+				message[j] = new ShortMessage();
+				message[j].setMessage(ShortMessage.NOTE_OFF, channel, 49, velocity);
+				track9.add(new MidiEvent(message[j], riki));
+				
+				for (int k = 0; k < 15; k++){
+					message[k] = new ShortMessage();
+					message[k].setMessage(ShortMessage.NOTE_ON, channel, 42, velocity);
+					track9.add(new MidiEvent(message[k], riki));
+					
+					riki = riki + 12;
+		
+					message[k] = new ShortMessage();
+					message[k].setMessage(ShortMessage.NOTE_OFF, channel, 42, velocity);
+					track9.add(new MidiEvent(message[k], riki));
+				}			
+				
+			}
+			
+			//Snare and Bassdrum
+			for(int j = 0; j < 3; j++){
+				for(int k = 0; k < 3; k++){
+					message[k] = new ShortMessage();
+					message[k].setMessage(ShortMessage.NOTE_ON, channel, 35, velocity);
+					track9.add(new MidiEvent(message[k], kyosuke));
+					
+					message[k] = new ShortMessage();
+					message[k].setMessage(ShortMessage.NOTE_OFF, channel, 35, velocity);
+					track9.add(new MidiEvent(message[k], kyosuke + 24));
+					
+					message[k] = new ShortMessage();
+					message[k].setMessage(ShortMessage.NOTE_ON, channel, 38, velocity);
+					track9.add(new MidiEvent(message[k], kyosuke + 24));
+					
+					message[k] = new ShortMessage();
+					message[k].setMessage(ShortMessage.NOTE_OFF, channel, 38, velocity);
+					track9.add(new MidiEvent(message[k], kyosuke + 48));
+					
+					message[k] = new ShortMessage();
+					message[k].setMessage(ShortMessage.NOTE_ON, channel, 35, velocity);
+					track9.add(new MidiEvent(message[k], kyosuke + 48));
+					
+					message[k] = new ShortMessage();
+					message[k].setMessage(ShortMessage.NOTE_OFF, channel, 35, velocity);
+					track9.add(new MidiEvent(message[k], kyosuke + 60));
+					
+					message[k] = new ShortMessage();
+					message[k].setMessage(ShortMessage.NOTE_ON, channel, 35, velocity);
+					track9.add(new MidiEvent(message[k], kyosuke + 60));
+					
+					message[k] = new ShortMessage();
+					message[k].setMessage(ShortMessage.NOTE_OFF, channel, 35, velocity);
+					track9.add(new MidiEvent(message[k], kyosuke + 72));
+					
+					message[k] = new ShortMessage();
+					message[k].setMessage(ShortMessage.NOTE_ON, channel, 38, velocity);
+					track9.add(new MidiEvent(message[k], kyosuke + 72));
+					
+					message[k] = new ShortMessage();
+					message[k].setMessage(ShortMessage.NOTE_OFF, channel, 38, velocity);
+					track9.add(new MidiEvent(message[k], kyosuke + 96));
+					kyosuke = kyosuke + 96;
+				}
+				
+				message[j] = new ShortMessage();
+				message[j].setMessage(ShortMessage.NOTE_ON, channel, 35, velocity);
+				track9.add(new MidiEvent(message[j], kyosuke));
+				
+				message[j] = new ShortMessage();
+				message[j].setMessage(ShortMessage.NOTE_OFF, channel, 35, velocity);
+				track9.add(new MidiEvent(message[j], kyosuke + 24));
+				
+				message[j] = new ShortMessage();
+				message[j].setMessage(ShortMessage.NOTE_ON, channel, 38, velocity);
+				track9.add(new MidiEvent(message[j], kyosuke + 24));
+				
+				message[j] = new ShortMessage();
+				message[j].setMessage(ShortMessage.NOTE_OFF, channel, 38, velocity);
+				track9.add(new MidiEvent(message[j], kyosuke + 48));
+				
+				message[j] = new ShortMessage();
+				message[j].setMessage(ShortMessage.NOTE_ON, channel, 35, velocity);
+				track9.add(new MidiEvent(message[j], kyosuke + 48));
+				
+				message[j] = new ShortMessage();
+				message[j].setMessage(ShortMessage.NOTE_OFF, channel, 35, velocity);
+				track9.add(new MidiEvent(message[j], kyosuke + 60));
+				
+				message[j] = new ShortMessage();
+				message[j].setMessage(ShortMessage.NOTE_ON, channel, 35, velocity);
+				track9.add(new MidiEvent(message[j], kyosuke + 60));
+				
+				message[j] = new ShortMessage();
+				message[j].setMessage(ShortMessage.NOTE_OFF, channel, 35, velocity);
+				track9.add(new MidiEvent(message[j], kyosuke + 72));
+				
+				message[j] = new ShortMessage();
+				message[j].setMessage(ShortMessage.NOTE_ON, channel, 38, velocity);
+				track9.add(new MidiEvent(message[j], kyosuke + 72));
+				
+				message[j] = new ShortMessage();
+				message[j].setMessage(ShortMessage.NOTE_OFF, channel, 38, velocity);
+				track9.add(new MidiEvent(message[j], kyosuke + 84));
+				
+				message[j] = new ShortMessage();
+				message[j].setMessage(ShortMessage.NOTE_ON, channel, 35, velocity);
+				track9.add(new MidiEvent(message[j], kyosuke + 84));
+				
+				message[j] = new ShortMessage();
+				message[j].setMessage(ShortMessage.NOTE_OFF, channel, 35, velocity);
+				track9.add(new MidiEvent(message[j], kyosuke + 96));
+				kyosuke = kyosuke + 96;
 			}
 		}
-		
-		//スネアとドラム
-		int e = 0;
-		for(int h = 0; h < 3; h++){
-			for(int f = 0; f < 3; f++){
-				drummessage[j] = new ShortMessage();
-				drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
-				track9.add(new MidiEvent(drummessage[j], e));
-				
-				drummessage[j] = new ShortMessage();
-				drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
-				track9.add(new MidiEvent(drummessage[j], e + 24));
-				
-				drummessage[j] = new ShortMessage();
-				drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 38, velocity);
-				track9.add(new MidiEvent(drummessage[j], e + 24));
-				
-				drummessage[j] = new ShortMessage();
-				drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 38, velocity);
-				track9.add(new MidiEvent(drummessage[j], e + 48));
-				
-				drummessage[j] = new ShortMessage();
-				drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
-				track9.add(new MidiEvent(drummessage[j], e + 48));
-				
-				drummessage[j] = new ShortMessage();
-				drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
-				track9.add(new MidiEvent(drummessage[j], e + 60));
-				
-				drummessage[j] = new ShortMessage();
-				drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
-				track9.add(new MidiEvent(drummessage[j], e + 60));
-				
-				drummessage[j] = new ShortMessage();
-				drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
-				track9.add(new MidiEvent(drummessage[j], e + 72));
-				
-				drummessage[j] = new ShortMessage();
-				drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 38, velocity);
-				track9.add(new MidiEvent(drummessage[j], e + 72));
-				
-				drummessage[j] = new ShortMessage();
-				drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 38, velocity);
-				track9.add(new MidiEvent(drummessage[j], e + 96));
-				e = e + 96;
-			}
-		
-		drummessage[j] = new ShortMessage();
-		drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
-		track9.add(new MidiEvent(drummessage[j], e));
-		
-		drummessage[j] = new ShortMessage();
-		drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
-		track9.add(new MidiEvent(drummessage[j], e + 24));
-		
-		drummessage[j] = new ShortMessage();
-		drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 38, velocity);
-		track9.add(new MidiEvent(drummessage[j], e + 24));
-		
-		drummessage[j] = new ShortMessage();
-		drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 38, velocity);
-		track9.add(new MidiEvent(drummessage[j], e + 48));
-		
-		drummessage[j] = new ShortMessage();
-		drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
-		track9.add(new MidiEvent(drummessage[j], e + 48));
-		
-		drummessage[j] = new ShortMessage();
-		drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
-		track9.add(new MidiEvent(drummessage[j], e + 60));
-		
-		drummessage[j] = new ShortMessage();
-		drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
-		track9.add(new MidiEvent(drummessage[j], e + 60));
-		
-		drummessage[j] = new ShortMessage();
-		drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
-		track9.add(new MidiEvent(drummessage[j], e + 72));
-		
-		drummessage[j] = new ShortMessage();
-		drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 38, velocity);
-		track9.add(new MidiEvent(drummessage[j], e + 72));
-		
-		drummessage[j] = new ShortMessage();
-		drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 38, velocity);
-		track9.add(new MidiEvent(drummessage[j], e + 84));
-		
-		drummessage[j] = new ShortMessage();
-		drummessage[j].setMessage(ShortMessage.NOTE_ON, drumchannel, 35, velocity);
-		track9.add(new MidiEvent(drummessage[j], e + 84));
-		
-		drummessage[j] = new ShortMessage();
-		drummessage[j].setMessage(ShortMessage.NOTE_OFF, drumchannel, 35, velocity);
-		track9.add(new MidiEvent(drummessage[j], e + 96));
-		e = e + 96;
-		}
-		
-		return sequence;
 	}
 }
+

@@ -6,70 +6,58 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 
-import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager; 
-
-/**
- * MusicPlayerクラス <br>
- * このクラスは音楽を生成，再生するシステムを司るクラスです。<br>
- * 引数に0~127の数値を入れて以下のように記述することで，音楽が生成，再生されます．<br>
- * <code>
- * MusicPlayer.playMusic(100);
- * </code>
- * 
- * @author Lisa-Kudryavka
- *
- */
-public class MusicPlayer{
-
-	private Sequencer sequencer;
-	public boolean isPlaying() {
-		return sequencer.isRunning();
+public class MusicPlayer {
+	public static boolean judgetone;
+	public static int velocity;
+	public static int length;
+	public static Sequencer sequencer;
+	public static Sequence sequence;
+	
+	public static void main(String[] args) throws InvalidMidiDataException{
+		playMusic(70, 300, false);
 	}
-
-	MusicPlayer() {
-		try {
-			sequencer  = MidiSystem.getSequencer();
-		} catch (MidiUnavailableException e) {
-			e.printStackTrace();
-			System.err.println("残念ながら、あなたのPCはMIDIを再生できない");
-		}
-	}
-
-	public static void main(String[] args) throws InvalidMidiDataException, MidiUnavailableException{
-		PcapManager pm = PcapManager.getInstance();
-		pm.start();
-		pm.openFile("../test/10000.cap");
-		MusicPlayer musicPlayer = new MusicPlayer();
-		musicPlayer.playMusic(50);
-		while (musicPlayer.isPlaying()){
-			//音楽が止まるまでまつ
-		}
-		pm.kill();
-		pm.close();
-	}
-
-	public void playMusic(int velo) throws InvalidMidiDataException, MidiUnavailableException{
-		//TODO: Config系統からの音量情報の受け取り
-//		int velo = XXXX.getVolMusic();
-		VelocityModulator.setVelocity(velo);
-		Sequence sequence = AccompanimentMaker.setAccompaniment(velo);
-		try{
-			sequencer.open();
-			
-			sequencer.setSequence(sequence);
-			sequencer.start();
-			while(sequencer.isRunning()) Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}finally{
-			if (sequencer != null && sequencer.isOpen()) sequencer.close();
-		}
-	}
-
-	public void stopMusic() {
-		if (sequencer != null && isPlaying()) {
-			sequencer.stop();
-			//sequencer.setMicrosecondPosition(0);
+	
+	public static void playMusic(int velocity, int length, boolean judgetone) throws InvalidMidiDataException{
+		Sequence sequence = new Sequence(Sequence.PPQ, 24, 3);
+		if(judgetone == true){
+			System.out.print("Make Cheerful Song.\r\n");
+			try{
+				MelodyMaker.setCheerfulMelody(sequence, length, velocity);
+				AccompanimentMaker.makeCheerfulAccompaniment(sequence, length, velocity);
+				sequencer = MidiSystem.getSequencer();
+				sequencer.open();
+				sequencer.setSequence(sequence);
+				sequencer.start();
+				while(sequencer.isRunning()) Thread.sleep(100);
+			}catch(InterruptedException e){
+				e.printStackTrace();
+			}catch(MidiUnavailableException e){
+				e.printStackTrace();
+			}catch(InvalidMidiDataException e){
+				e.printStackTrace();
+			}finally{
+				if(sequencer != null && sequencer.isOpen()) sequencer.close();
+			}
+		}else if(judgetone == false){
+			System.out.print("Make Gloomy Song.\r\n");
+			try{
+				MelodyMaker.setGloomyMelody(sequence, length, velocity);
+				AccompanimentMaker.makeGloomyAccompaniment(sequence, length, velocity);
+				sequencer = MidiSystem.getSequencer();
+				sequencer.open();
+				sequencer.setSequence(sequence);
+				sequencer.start();
+				while(sequencer.isRunning()) Thread.sleep(100);
+			}catch(InterruptedException e){
+				e.printStackTrace();
+			}catch(MidiUnavailableException e){
+				e.printStackTrace();
+			}catch(InvalidMidiDataException e){
+				e.printStackTrace();
+			}finally{
+				if(sequencer != null && sequencer.isOpen()) sequencer.close();
+			}
 		}
 	}
 }
+
