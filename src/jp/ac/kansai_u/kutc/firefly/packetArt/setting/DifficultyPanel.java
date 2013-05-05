@@ -1,4 +1,6 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
+import java.awt.FlowLayout;
+
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -10,7 +12,7 @@ import javax.swing.JRadioButton;
  * @author akasaka
  */
 public class DifficultyPanel extends JPanel{
-	final public String IMGPATH = new String("./Resources/image/");
+	final public String IMGPATH = new String("./resource/image/config/");
 	private JRadioButton btnDifficultyStatic, btnDifficultyDynamic, btnDifficultyAuto;
 	
 	/**
@@ -18,9 +20,8 @@ public class DifficultyPanel extends JPanel{
 	 * @param 初期化前の難易度の設定
 	 */
 	DifficultyPanel(byte b){
-		ImageIcon icon = new ImageIcon(IMGPATH + "temp.png");
-		
-		JLabel labelDifficulty = new JLabel("難易度");//icon);
+		setLayout(new FlowLayout(FlowLayout.LEFT, 30, 0));
+		JLabel labelDifficulty = new JLabel(new ImageIcon(IMGPATH + "labelDifficulty.png"));
 		btnDifficultyStatic = new JRadioButton("静的");
 	    btnDifficultyDynamic = new JRadioButton("動的");
 	    btnDifficultyAuto = new JRadioButton("自動");

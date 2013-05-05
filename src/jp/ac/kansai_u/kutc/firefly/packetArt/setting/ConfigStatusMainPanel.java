@@ -1,7 +1,9 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
 import java.awt.Color;
+import java.io.File;
 
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 /**
@@ -9,9 +11,8 @@ import javax.swing.JPanel;
  * @author akasaka
  */
 public class ConfigStatusMainPanel extends JPanel{
-	//final public String IMGPATH = new String("./Resources/image/");
-	//ImageIcon icon = new ImageIcon(IMGPATH + "temp.png");
-	
+	final public String IMGPATH = new String("./resource/image/config/");
+	ImageIcon icon;
 	ViewLogPanel panelViewLog;
 	MinoPanel panelMino;
 	MusicVolumePanel panelMusic;
@@ -22,11 +23,12 @@ public class ConfigStatusMainPanel extends JPanel{
 	 * コンストラクタ
 	 */
 	ConfigStatusMainPanel(){
-		this.setBackground(Color.blue);
+		this.setOpaque(false);
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
 		panelViewLog = new ViewLogPanel(ConfigStatus.isViewLog());
 		panelViewLog.setBackground(Color.yellow);
+		panelViewLog.setOpaque(false);
 		panelMino = new MinoPanel(ConfigStatus.getMino());
 		panelMino.setBackground(Color.cyan);
 		panelMusic = new MusicVolumePanel(ConfigStatus.getVolMusic());
@@ -34,7 +36,7 @@ public class ConfigStatusMainPanel extends JPanel{
 		panelSound = new SoundVolumePanel(ConfigStatus.getVolSound());
 		panelSound.setBackground(Color.gray);
 		panelDifficulty = new DifficultyPanel(ConfigStatus.getDifficulty());
-		panelDifficulty.setBackground(Color.white);
+		panelDifficulty.setBackground(Color.blue);
 		
 		add(panelViewLog);
 		add(panelMino);

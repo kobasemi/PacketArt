@@ -5,11 +5,11 @@ package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
  * @author akasaka
  */
 public class ConfigStatus {
-	final static byte MUTE=0;
 	final static byte MINO4=0, MINO5=1, MINOBOTH=2;
+	final static byte MUTE=0;
 	final static byte BGMLOW=50, BGMMEDIUM=75, BGMHIGH=100;
 	final static byte SELOW=1, SEMEDIUM=2, SEHIGH=3;
-	final static byte STATIC=0, DYNAMIC=2, AUTO=3;
+	final static byte STATIC=0, DYNAMIC=1, AUTO=2;
 	private static boolean viewLog;		// ビューの表示のオン・オフ
 	private static byte    mino;		// ミノの設定（4つ，5つ，両方）
 	private static byte    volMusic;	// 音楽の音量の設定（Mute, Low, Medium, High）

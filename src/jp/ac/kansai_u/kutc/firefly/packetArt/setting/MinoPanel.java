@@ -1,5 +1,8 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
+import java.awt.FlowLayout;
+
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -9,7 +12,7 @@ import javax.swing.JRadioButton;
  * @author akasaka
  */
 public class MinoPanel extends JPanel{
-	final String IMGPATH = new String("./Resources/image/");
+	final String IMGPATH = new String("./resource/image/config/");
 	private JRadioButton btnMino4, btnMino5, btnMinoBoth;	// 各コンポーネント
 	
 	/**
@@ -17,10 +20,8 @@ public class MinoPanel extends JPanel{
 	 * @param 初期化前のミノ個数の設定
 	 */
 	MinoPanel(byte b){
-		//ImageIcon icon = new ImageIcon(IMGPATH + "temp.png");
-		//ImageIcon icon3 = new ImageIcon(IMGPATH + "img3.png");
-		
-		JLabel labelMino = new JLabel("ミノの出現設定");//icon);
+		setLayout(new FlowLayout(FlowLayout.LEFT, 30, 0));
+		JLabel labelMino = new JLabel(new ImageIcon(IMGPATH + "labelMino.png"));
 		btnMino4 = new JRadioButton("4");//icon3);
 		btnMino5 = new JRadioButton("5");//icon3);
 		btnMinoBoth = new JRadioButton("Both");//icon3);

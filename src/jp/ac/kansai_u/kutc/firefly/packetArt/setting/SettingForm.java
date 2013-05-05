@@ -8,6 +8,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -21,24 +27,40 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
  * @author akasaka
  */
 public class SettingForm extends FormBase implements ActionListener {
+	final public String IMGPATH = new String("./resource/image/config/");
 	private ConfigStatusMainPanel madoka;
 	private JButton mami1, mami2;
 	private KeyConfigPanel qbee;
 	
+	private BufferedImage image;
+	
 	public void initialize() {
+		
+		try{
+			image = ImageIO.read(new File(IMGPATH + "background3.png"));
+		}catch(IOException e){
+			System.err.println(e.getMessage());
+		}
+		
 		Container homura = getContentPane();
+		
+		homura.setBackground(Color.black);
+		JLabel walpurgisNight = new JLabel(new ImageIcon(image));
+		walpurgisNight.setBounds(0, 0, image.getWidth(), image.getHeight());
+		//walpurgisNight.setOpaque(false);
 		
 		JLabel sayaka = new JLabel("設定画面");
 		sayaka.setFont(new Font("Self", Font.PLAIN, 48));
 		sayaka.setBounds(30, 30, 540, 100);
-		sayaka.setBackground(Color.red);
-		sayaka.setOpaque(true);
+		sayaka.setForeground(Color.white);
+		sayaka.setOpaque(false);
 		sayaka.setHorizontalAlignment(JLabel.CENTER);
 		
 		madoka= new ConfigStatusMainPanel();
 	    madoka.setBounds(30, 130, 540, 250);
 	    
-	    JLabel kusojo = new JLabel("キーコンフィグ");
+	    JLabel kusojo = new JLabel(new ImageIcon(IMGPATH + "labelKeyConf.png"));
+	    
 	    kusojo.setBounds(30, 380, 540, 50);
 	    qbee = new KeyConfigPanel(ConfigStatus.getKey());
 	    qbee.setBounds(30, 430, 540, 250);
@@ -53,6 +75,7 @@ public class SettingForm extends FormBase implements ActionListener {
 	    kyoko.add(mami1);
 	    kyoko.add(mami2);
 	    
+	    homura.add(walpurgisNight, 0);
 	    homura.add(sayaka, 0);
 	    homura.add(madoka, 0);
 	    homura.add(kusojo, 0);

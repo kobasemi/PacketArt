@@ -1,10 +1,13 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
 
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -14,11 +17,12 @@ import javax.swing.JPanel;
  * @author akasaka
  */
 public class KeyConfigPanel extends JPanel implements KeyListener, ActionListener{
-	//final public String IMGPATH = new String("./Resources/image/");
-	JButton btnUp, btnDown, btnLeft, btnRight, btnLeftSpin, btnRightSpin;
+	final public String ARRPATH = new String("./resource/image/config/arrow/");
+	private JButton btnUp, btnDown, btnLeft, btnRight, btnLeftSpin, btnRightSpin;
 	JLabel labelUp, labelDown, labelLeft, labelRight, labelLeftSpin, labelRightSpin;
-	JLabel[] labelArray;
-	String cmd;
+	private JLabel[] labelArray;
+	private JButton[] btnArray;
+	private String cmd;
 	
 	/**
 	 * デフォルトコンストラクタ
@@ -26,12 +30,20 @@ public class KeyConfigPanel extends JPanel implements KeyListener, ActionListene
 	 */
 	KeyConfigPanel(char [] key){
 		
-		btnUp = new JButton("Up");
-		btnDown = new JButton("Down");
-		btnLeft = new JButton("Left");
-		btnRight = new JButton("Right");
-		btnLeftSpin = new JButton("LeftSpin");
-		btnRightSpin = new JButton("RightSpin");
+		btnUp = new JButton(new ImageIcon(ARRPATH + "arrUp.png"));
+		btnUp.setActionCommand("Up");
+		btnDown = new JButton(new ImageIcon(ARRPATH + "arrDown.png"));
+		btnDown.setActionCommand("Down");
+		btnLeft = new JButton(new ImageIcon(ARRPATH + "arrLeft.png"));
+		btnLeft.setActionCommand("Left");
+		btnRight = new JButton(new ImageIcon(ARRPATH + "arrRight.png"));
+		btnRight.setActionCommand("Right");
+		btnLeftSpin = new JButton(new ImageIcon(ARRPATH + "arrLSpin.png"));
+		btnLeftSpin.setActionCommand("LeftSpin");
+		btnRightSpin = new JButton(new ImageIcon(ARRPATH + "arrRSpin.png"));
+		btnRightSpin.setActionCommand("RightSpin");
+		btnArray = new JButton[]{btnUp, btnDown, btnLeft, btnRight,
+				btnLeftSpin, btnRightSpin};
 		
 		labelUp = new JLabel(String.valueOf(key[0]));
 		labelDown = new JLabel(String.valueOf(key[1]));
@@ -41,6 +53,17 @@ public class KeyConfigPanel extends JPanel implements KeyListener, ActionListene
 		labelRightSpin = new JLabel(String.valueOf(key[5]));
 		labelArray = new JLabel[]{labelUp, labelDown, labelLeft, labelRight,
 				labelLeftSpin, labelRightSpin};
+
+		for(int i=0; i<btnArray.length; i++){
+			btnArray[i].setContentAreaFilled(false);
+			btnArray[i].addActionListener(this);
+			btnArray[i].addKeyListener(this);
+		}
+		for(int i=0; i<labelArray.length; i++){
+			labelArray[i].setPreferredSize(new Dimension(50, 50));
+			labelArray[i].setFont(new Font("Self", Font.PLAIN, 30));
+			labelArray[i].setHorizontalAlignment(JLabel.CENTER);
+		}
 		
 		add(btnUp);
 		add(labelUp);
@@ -54,25 +77,6 @@ public class KeyConfigPanel extends JPanel implements KeyListener, ActionListene
 		add(labelLeftSpin);
 		add(btnRightSpin);
 		add(labelRightSpin);
-		
-		btnUp.setActionCommand("Up");
-		btnUp.addActionListener(this);
-	    btnUp.addKeyListener(this);
-	    btnDown.setActionCommand("Down");
-		btnDown.addActionListener(this);
-	    btnDown.addKeyListener(this);
-	    btnLeft.setActionCommand("Left");
-		btnLeft.addActionListener(this);
-	    btnLeft.addKeyListener(this);
-	    btnRight.setActionCommand("Right");
-		btnRight.addActionListener(this);
-	    btnRight.addKeyListener(this);
-	    btnLeftSpin.setActionCommand("LeftSpin");
-		btnLeftSpin.addActionListener(this);
-	    btnLeftSpin.addKeyListener(this);
-	    btnRightSpin.setActionCommand("RightSpin");
-		btnRightSpin.addActionListener(this);
-	    btnRightSpin.addKeyListener(this);
 	}
 
 	@Override
@@ -85,12 +89,16 @@ public class KeyConfigPanel extends JPanel implements KeyListener, ActionListene
 		char key = e.getKeyChar();
 		int code = e.getKeyCode();
 		
-		// キー入力のうち，Space, Enter, Escape, BackSpaceのキーコード，
+		// キー入力のうち，Space, Enter, Escape, BackSpace, Controlのキーコード，
 		// そして未定義の文字を読み飛ばそう
+		///////////////////////////////////////////////////////////////////
+		// 後々，シフト，コントロールなどをマスクする方に変えようか
+		////////////////////////////////////////////////////////////////////
 		if( code == KeyEvent.VK_SPACE ||
 			code == KeyEvent.VK_ENTER ||
 			code == KeyEvent.VK_ESCAPE ||
 			code == KeyEvent.VK_BACK_SPACE ||
+			code == KeyEvent.VK_CONTROL ||
 			key == KeyEvent.CHAR_UNDEFINED) return;
 		
 		// キーの重複を探索

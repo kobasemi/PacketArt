@@ -1,7 +1,9 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
+
 import java.awt.FlowLayout;
 
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -11,7 +13,8 @@ import javax.swing.JRadioButton;
  * @author akasaka
  */
 public class ViewLogPanel extends JPanel{
-	final String IMGPATH = new String("./Resources/image/");
+	final String IMGPATH = new String("./resource/image/config/");
+	final String BTNPATH = new String(IMGPATH + "button/");
 	private JRadioButton btnOn, btnOff;
 	
 	/**
@@ -19,12 +22,10 @@ public class ViewLogPanel extends JPanel{
 	 * @param 初期化前のログ表示設定
 	 */
 	ViewLogPanel(boolean f){
-		//ImageIcon icon = new ImageIcon(IMGPATH + "temp.png");
-		//ImageIcon icon2 = new ImageIcon(IMGPATH + "img2.png");
-		setLayout(new FlowLayout(FlowLayout.LEFT, 20, 20));
-		JLabel labelViewLog = new JLabel("ログの表示");//icon);
-		btnOn = new JRadioButton("On");//icon2);
-		btnOff = new JRadioButton("Off");//icon2);
+		setLayout(new FlowLayout(FlowLayout.LEFT, 30, 0));
+		JLabel labelViewLog = new JLabel(new ImageIcon(IMGPATH + "labelLog.png"));
+		btnOn = new JRadioButton(new ImageIcon(BTNPATH + "btnOn.png"));
+		btnOff = new JRadioButton(new ImageIcon(BTNPATH + "btnOff.png"));
 		ButtonGroup logViewGroup = new ButtonGroup();
 		logViewGroup.add(btnOn); logViewGroup.add(btnOff);
 		add(labelViewLog);
