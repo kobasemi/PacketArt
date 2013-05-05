@@ -6,17 +6,27 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 
-public class MusicPlayer {
-	public static boolean judgetone;
-	public static int velocity;
-	public static int length;
+public class MusicPlayer extends Thread{
 	public static Sequencer sequencer;
 	public static Sequence sequence;
-	
-	public static void main(String[] args) throws InvalidMidiDataException{
-		playMusic(70, 300, false);
+	public static int velocity;
+	public static int length;
+	public static boolean judgetone;
+
+	public MusicPlayer(int _velocity, int _length, boolean _judgetone){
+		velocity = _velocity;
+		length = _length;
+		judgetone = _judgetone;
 	}
 	
+	public void run(){
+		try {
+			playMusic(velocity, length, judgetone);
+		} catch (InvalidMidiDataException e) {
+			e.printStackTrace();
+		}
+	}
+		
 	public static void playMusic(int velocity, int length, boolean judgetone) throws InvalidMidiDataException{
 		Sequence sequence = new Sequence(Sequence.PPQ, 24, 3);
 		if(judgetone == true){

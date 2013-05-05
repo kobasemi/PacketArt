@@ -1,10 +1,48 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.music;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
+import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
+import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketHolder;
+import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketUtil;
+
+import org.jnetpcap.packet.PcapPacket;
+import org.jnetpcap.protocol.network.Ip4;
+
 public class MelodyAlgorithm {
+	
 	public static int[] defCheerfulAlgorithm(int length){
 		String[] code = CodeMaker.setCheerfulCode(length);
+
+		//-----
+		PacketHolder ph = new PacketHolder();
+		PcapManager pm = PcapManager.getInstance();
+		
+		while(!pm.isReadyRun()){
+		}
+		
+		List<Integer> desposedipArrayList = new ArrayList<Integer>(length);
+		while(desposedipArrayList.size() < length){
+			PcapPacket pkt = pm.nextPacketFromQueue();
+			if(pkt != null){
+				ph.setPacket(pkt);
+				Ip4 ip4 = null;
+				try{
+					ip4 = ph.getIp4();
+				}catch(Exception e){
+				}
+				if(ip4 != null){
+					int[] ints = PacketUtil.bytes2ints(ip4.source());
+					for(int j : ints){
+						desposedipArrayList.add(j);
+					}
+				}
+			}
+		}
+		Integer[] desposedip = desposedipArrayList.toArray(new Integer[desposedipArrayList.size()]);
+		
 		int[] cheerfulmelody = new int[code.length];
 		int[] melodyscale = ScaleMaker.setCheerfulMelodyScale();
 		
@@ -13,15 +51,21 @@ public class MelodyAlgorithm {
 		int[] listg7 = {melodyscale[1], melodyscale[3], melodyscale[4]};
 		
 		for(int i = 0; i < length; i++){
-			Random rnd = new Random();
-			int tmp = rnd.nextInt(3);
+			int judge = 0;
+			if(desposedip[i] < 4){
+				judge = 0;
+			}else if(desposedip[i] < 7){
+				judge = 1;
+			}else if(desposedip[i] < 10){
+				judge = 2;
+			}
 			
 			if("C".equals(code[i])){
-				cheerfulmelody[i] = listc[tmp];
+				cheerfulmelody[i] = listc[judge];
 			}else if("F".equals(code[i])){
-				cheerfulmelody[i] = listf[tmp];
+				cheerfulmelody[i] = listf[judge];
 			}else if("G7".equals(code[i])){
-				cheerfulmelody[i] = listg7[tmp];
+				cheerfulmelody[i] = listg7[judge];
 			}
 		}
 		return cheerfulmelody;
