@@ -26,9 +26,9 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.util.LimitedRing;
  * そこで、非常に再生時間が短いSEのために、変わった手法でClipを再生することにしました。<br>
  * リングバッファのようなものを使用し、重複しまくったSEを流す場合は音声が鳴らないバグを許容する、という方法です。<br>
  * 実際のプレイには全く問題ないので、こちらを使ってください。
- * 
+ *
  * @author Nakata
-*/    
+*/
 public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineListener{
     private static final PlaySE instance = new PlaySE();
 
@@ -36,7 +36,6 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
      * @return シングルトンのインスタンスを返します。
     */
     public static  synchronized PlaySE getInstance(){
-        //System.out.println("PlaySE.getInstance()");
         return instance;
     }
 
@@ -68,7 +67,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
     //固定のSEここまで
 
     //このクラスの肝です。
-    public static final int RING_SIZE= 30;//30個の同時重複再生を許します。
+    public static final int RING_SIZE= 5;//5個の同時重複再生を許します。
     //このクラスの肝です。
 
     /**
@@ -181,8 +180,8 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
     //http://www.javadocexamples.com/java_source/de/pxlab/pxl/sound/Controls.java.html
     /**
      * 名前のとおりです。
-     * 
-     * @param clip くりっぷ
+     *
+     * @param line ボリュームを変動させたいLineオブジェクト
      * @param pos 正か負のfloat。ボリュームの増分(マイナスなら減分)を表す
     */
     public static void dialVolume(Line line, float pos) {
