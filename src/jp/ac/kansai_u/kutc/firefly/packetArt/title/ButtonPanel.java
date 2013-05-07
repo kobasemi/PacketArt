@@ -83,7 +83,7 @@ class ButtonPanel extends JPanel {
 			int imageIndex = i - firstIndex;
 			button[i] = new JButton(new ImageIcon(image[imageIndex]));
 			setButton(i);
-			button[i].setName(buttonName[imageIndex]);
+			button[i].setName(buttonName[firstIndex + imageIndex]);
 			
 			if (i == firstIndex) {
 				button[i].setBounds(center - image[imageIndex].getWidth() / 2, interval, image[imageIndex].getWidth(), image[imageIndex].getHeight());
