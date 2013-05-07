@@ -45,10 +45,13 @@ public class PacketrisModel {
 		}
 		for (int i = 0; i < board.length; i++) {
 			board[i][0].setBlockType(BlockType.Wall);
+			board[i][0].setLocation(0,i);
 			board[i][column - 1].setBlockType(BlockType.Wall);
+			board[i][column - 1].setLocation(column - 1, i);	
 		}
 		for (int i = 0; i < board[row - 1].length; i++) {
 			board[row - 1][i].setBlockType(BlockType.Wall);
+			board[row - 1][i].setLocation(i, row - 1);
 		}
 		
 		isAsphyxia = false;

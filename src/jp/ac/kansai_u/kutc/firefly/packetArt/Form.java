@@ -1,6 +1,7 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt;
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,7 +42,8 @@ public class Form extends JFrame{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationByPlatform(true);
 		setTitle("Packet Art");
-		setSize(600, 800);
+		getContentPane().setPreferredSize(new Dimension(600, 800));
+		pack();
 		getRootPane().setDoubleBuffered(true);
 		((JComponent)getContentPane()).setDoubleBuffered(true);
 		try{
@@ -155,11 +157,13 @@ public class Form extends JFrame{
 		// currentFormInstanceを変える
 		currentFormInstanceName = formName;
 		System.out.println(getCurrentForm());
+		
+		getCurrentForm().initialize();
+		
 		registerInvokeMethodsToTimer(getCurrentForm());
 		timer.showInvokeMethods();
 
 		getCurrentForm().setVisible(true);
-		getCurrentForm().initialize();
 
 		// タイマー再開
 		synchronized(timer){

@@ -3,6 +3,9 @@ package jp.ac.kansai_u.kutc.firefly.packetArt.playing;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
@@ -12,7 +15,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.JButton;
+
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
+import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
+
+import com.sun.jmx.snmp.tasks.Task;
 
 /**
  * パケットを利用したテトリスを表示、処理するフォームです。
@@ -28,6 +36,9 @@ public class PlayForm extends FormBase {
 	long tick;
 	int falldownLimit;
 	long falldownTimer;
+	int minoSize;
+	
+	Point topLeft;
 
 	/**
 	 * キー入力に対する敏感さを取得します。この値は0から60までの値をとります。
@@ -57,8 +68,6 @@ public class PlayForm extends FormBase {
 	}
 
 	public PlayForm() {
-		keyQueue = new LinkedList<Integer>();
-		keyPressedTime = new HashMap<Integer, Long>();
 		model = new PacketrisModel();
 		falldownLimit = 60;
 		addComponentListener(new ComponentListener() {
@@ -73,54 +82,136 @@ public class PlayForm extends FormBase {
 
 	@Override
 	public void initialize() {
+		keyQueue = new LinkedList<Integer>();
+		keyPressedTime = new HashMap<Integer, Long>();
 		model.initialize();
 		addKeyListener(this);
+		minoSize = (int)(Math.min(getSize().width / model.column, getSize().height / model.row) * 0.9);
+		topLeft = new Point(
+				(getSize().width - (minoSize * model.column)) / 2, 
+				(getSize().height - (minoSize * model.row)) / 2);
 	}
 
 	@Override
 	public void paint(Graphics g) {
 		// TODO: backgrownd
 		
-		// TODO: painting PacketBlocks using packet data.
 		for(PacketBlock item : model.currentMinos) {
-			g.setColor(Color.getHSBColor(model.parentLocation.getX() % 360.0f, 0.7f, 0.7f));
-			g.drawRect(
-					((model.parentLocation.getX() + item.location.getX()) * 16), 
-					((model.parentLocation.getY() + item.location.getY()) * 16), 14, 14);
-			
+			paintMino(g, item,
+					topLeft.x + ((model.parentLocation.getX() + item.location.getX()) * minoSize), 
+					topLeft.y + ((model.parentLocation.getY() + item.location.getY()) * minoSize));
 		}
 		for (PacketBlock[] column : model.getBoard()) {
 			for(PacketBlock item : column){
-				g.setColor(Color.blue);
-				g.drawRect(item.location.getX() * 16, item.location.getY() * 16, 14, 14);
+				paintMino(g, item,
+						topLeft.x + item.location.getX() * minoSize, 
+						topLeft.y + item.location.getY() * minoSize);
 			}
 		}
 		if(model.isGameOverd()){
-			g.setColor(Color.getHSBColor(0.0f, 0.75f, 0.5f));
-			g.setFont(new Font(null, Font.PLAIN, 30));
-			g.drawString("Game Over", 100, 100);
+			String over = "Game Over";
 			
-		}
+			g.setFont(new Font(null, Font.PLAIN, 45));
+			int x = getSize().width / 2 - g.getFontMetrics().stringWidth(over) / 2;
+			int y = getSize().height / 4;
+			
+			// ドロップシャドウのような効果
+			g.setColor(Color.BLACK);
 
+			g.drawString(over, x - 3, y);
+			g.drawString(over, x + 3, y);
+			g.drawString(over, x, y - 3);
+			g.drawString(over, x, y + 3);
+			
+			g.setColor(Color.getHSBColor(0.0f, 0.85f, 0.7f));
+			g.drawString(over, x, y);
+		}
+	}
+	
+	// TODO: painting PacketBlocks using packet data.
+	void paintMino(Graphics g, PacketBlock block, int x, int y){
+		if(block.blockType == BlockType.Wall)
+			g.setColor(Color.blue);
+		else if(block.blockType == BlockType.Mino)
+			g.setColor(Color.getHSBColor(model.parentLocation.getX() % 360.0f, 0.7f, 0.7f));
+		else
+			g.setColor(new Color(0,0,0,0));
+		
+		g.drawRect(x, y, minoSize - 2, minoSize - 2);
 	}
 
 	@Override
 	public void update() {
 		// 入力されたキーを配列へ
 		List<Integer> keys = new ArrayList<Integer>();
-		while (keyQueue.size() != 0) {
+		while (keyQueue.size() != 0 && keyPressedTime.size() != 0) {
 			// 未来の話なら抜ける(そんなことあり得るのか)
-			if (keyPressedTime.get(keyQueue.get(0)) > tick)
+			int tgt = keyQueue.get(0);
+			if (keyPressedTime.get(tgt) > tick)
 				break;
 			//if (keyPressedTime.get(keyQueue.get(0)) < tick)
 			keys.add(keyQueue.pop());
 		}
 		
 		// ゲームオーバー判定
-		if(model.isGameOverd())
+		if(model.isGameOverd()){
+			// JDK 8のラムダ式が利用できればこんなコードにはならなかった(はず)
+			new Task() {
+				@Override
+				public void run() {
+					try {
+						// ボタン表示待ち
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					
+					final JButton[] buttons = new JButton[]{
+						new JButton("リトライ"),
+						new JButton("タイトルに戻る")
+					};
+					
+					ActionListener actionListener = new ActionListener() {
+						
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							// JButtonの挙動を定義
+							if(e.getSource() instanceof JButton){
+								if(((JButton) (e.getSource())).getName() == "Retry"){
+									// ボタンがRetryならボタンを消して再初期化
+									for(JButton item : buttons){
+										getContentPane().remove(item);
+										getContentPane().validate();
+										
+									}
+									initialize();
+								} else {
+									// タイトルに帰る
+									FormUtil.getInstance().changeForm("Title");
+								}
+							}
+								
+						}
+					};
+					
+					// 各種ボタンの設定
+					for(int i = 0; i < buttons.length; i++){
+						JButton item = buttons[i];
+						item.setName(i == 0 ? "Retry" : "Quit");
+						item.addActionListener(actionListener);
+						item.setLocation(getSize().width / 3, (getSize().height / 4) * (i + 2));
+						item.setSize(getSize().width / 3, getSize().height / 10);
+						getContentPane().add(item, 0);
+					}
+				}
+				@Override
+				public void cancel() { }
+			}.run();
 			return;
+		}
 		
 		// if pressedkey is configured key then try to operation
+		// TODO: キーコード(int)からキーを取得できるようにする
 		if (false/* */)
 			model.rotate(Direction.Left);
 		if (false/* */)
@@ -151,7 +242,6 @@ public class PlayForm extends FormBase {
 	private void generateNextBlockFromPacket() {
 		// TODO ミノの生成方法を決定する
 		model.generateMino(TetroMino.T, false, model.column / 2);
-
 	}
 
 	@Override
@@ -211,10 +301,15 @@ public class PlayForm extends FormBase {
 
 	@Override
 	public void onClose() {
+		onFormChanged();
 	}
 
 	@Override
 	public void onFormChanged() {
+		keyQueue = null;
+		keyPressedTime = null;
+		//model = null;
+		removeKeyListener(this);
 	}
 
 }
