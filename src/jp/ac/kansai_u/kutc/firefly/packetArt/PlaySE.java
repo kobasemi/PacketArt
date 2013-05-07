@@ -79,10 +79,10 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         //openFile(MOVE_FILE);//まだファイルが無い
         openFile(HARDDROP_FILE);
         openFile(TURN_FILE);
-        //openFile(DEMISE_FILE);//まだファイルが無い
+        openFile(DEMISE_FILE);//まだファイルが無い
         openFile(SELECT_FILE);
         openFile(CANCEL_FILE);
-        //openFile(OPEN_FILE);//まだファイルが無い
+        openFile(OPEN_FILE);//まだファイルが無い
         openFile(RDFSE1_FILE);
         openFile(RDFSE2_FILE);
         openFile(RDFSE3_FILE);
@@ -142,14 +142,14 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
             //case MOVE: play(MOVE_FILE);break;
             case HARDDROP: play(HARDDROP_FILE);break;
             case TURN: play(TURN_FILE);break;
-            //case DEMISE: play(DEMISE_FILE);break;
+            case DEMISE: play(DEMISE_FILE);break;
             case SELECT: play(SELECT_FILE);break;
             case CANCEL: play(CANCEL_FILE);break;
             case RDFSE1: play(RDFSE1_FILE);break;
             case RDFSE2: play(RDFSE2_FILE);break;
             case RDFSE3: play(RDFSE3_FILE);break;
             case RDFSE4: play(RDFSE4_FILE);break;
-            //case OPEN: play(OPEN_FILE);break;
+            case OPEN: play(OPEN_FILE);break;
             default : System.out.println("NO SUCH FILE ID");break;
         }
     }
