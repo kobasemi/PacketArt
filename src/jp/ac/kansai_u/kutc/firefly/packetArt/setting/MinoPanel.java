@@ -33,6 +33,10 @@ public class MinoPanel extends JPanel{
 		btnMino5.setSelectedIcon(new ImageIcon(BTNPATH + "btnMino5Selected.png"));
 		btnMinoBoth.setSelectedIcon(new ImageIcon(BTNPATH + "btnMinoBothSelected.png"));
 		
+		btnMino4.setContentAreaFilled(false);
+		btnMino5.setContentAreaFilled(false);
+		btnMinoBoth.setContentAreaFilled(false);
+		
 		add(labelMino);
 		add(btnMino4);
 		add(btnMino5);

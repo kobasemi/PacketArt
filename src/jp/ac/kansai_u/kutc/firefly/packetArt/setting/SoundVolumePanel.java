@@ -36,6 +36,10 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
 		btnVolumeLow.setSelectedIcon(new ImageIcon(VOLPATH + "volLowSelected.png"));
 		btnVolumeMed.setSelectedIcon(new ImageIcon(VOLPATH + "volMediumSelected.png"));
 		btnVolumeHigh.setSelectedIcon(new ImageIcon(VOLPATH + "volHighSelected.png"));
+		btnVolumeMute.setContentAreaFilled(false);
+		btnVolumeLow.setContentAreaFilled(false);
+		btnVolumeMed.setContentAreaFilled(false);
+		btnVolumeHigh.setContentAreaFilled(false);
 		ButtonGroup volumeGroup = new ButtonGroup();
 		volumeGroup.add(btnVolumeMute); volumeGroup.add(btnVolumeLow);
 		volumeGroup.add(btnVolumeMed); volumeGroup.add(btnVolumeHigh);

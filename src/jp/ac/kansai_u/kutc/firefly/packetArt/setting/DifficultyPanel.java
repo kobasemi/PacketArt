@@ -33,7 +33,11 @@ public class DifficultyPanel extends JPanel{
 	    btnDifficultyStatic.setSelectedIcon(new ImageIcon(BTNPATH + "btnStaticSelected.png"));
 	    btnDifficultyDynamic.setSelectedIcon(new ImageIcon(BTNPATH + "btnDynamicSelected.png"));
 	    btnDifficultyAuto.setSelectedIcon(new ImageIcon(BTNPATH + "btnAutoSelected.png"));
-		
+	    
+	    btnDifficultyStatic.setContentAreaFilled(false);
+	    btnDifficultyDynamic.setContentAreaFilled(false);
+	    btnDifficultyAuto.setContentAreaFilled(false);
+	    
 	    add(labelDifficulty);
 		add(btnDifficultyStatic);
 		add(btnDifficultyDynamic);
