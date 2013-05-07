@@ -69,7 +69,7 @@ public class KeyConfigPanel extends JPanel implements KeyListener, ActionListene
 		btnLeftSpin.setSelectedIcon(new ImageIcon(ARRPATH + "arrLSpinSelected.png"));
 		btnRightSpin.setSelectedIcon(new ImageIcon(ARRPATH + "arrRSpinSelected.png"));
 		for(int i=0; i<btnArray.length; i++){
-			btnArray[i].setContentAreaFilled(true);
+			btnArray[i].setContentAreaFilled(false);
 			btnArray[i].addActionListener(this);
 			btnArray[i].addKeyListener(this);
 		}
