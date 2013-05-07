@@ -16,7 +16,7 @@ public class MelodyAlgorithm {
 	public static int[] defCheerfulAlgorithm(int length){
 		String[] code = CodeMaker.setCheerfulCode(length);
 
-		//-----
+		/*
 		PacketHolder ph = new PacketHolder();
 		PcapManager pm = PcapManager.getInstance();
 		
@@ -42,7 +42,8 @@ public class MelodyAlgorithm {
 			}
 		}
 		Integer[] desposedip = desposedipArrayList.toArray(new Integer[desposedipArrayList.size()]);
-		
+		*/
+		int[] desposedip = {2,3,4,5,2,3,4,5,2,3,4,5,2,3,4,5,2,3,4,5,2,3,4,5};
 		int[] cheerfulmelody = new int[code.length];
 		int[] melodyscale = ScaleMaker.setCheerfulMelodyScale();
 		

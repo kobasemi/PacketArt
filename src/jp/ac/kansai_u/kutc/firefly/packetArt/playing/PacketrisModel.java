@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.Location;
+import jp.ac.kansai_u.kutc.firefly.packetArt.music.MusicPlayer;
 
 /**
  * パケリスのモデルです。
@@ -18,6 +19,7 @@ public class PacketrisModel {
 	final int column = 15;
 	boolean canReverse;
 	boolean isAsphyxia = false;
+    private MusicPlayer mp;
 	
 	/**
 	 * ミノ
@@ -38,6 +40,8 @@ public class PacketrisModel {
 	 * 初期化を行います。
 	 */
 	public void initialize(){
+        mp = new MusicPlayer(50,1000,true);
+        mp.start();
 		for (int i = 0; i < board.length; i++){
 			for (int j = 0; j < board[i].length; j++) {
 				board[i][j] = new PacketBlock();
@@ -437,6 +441,7 @@ public class PacketrisModel {
 		
 		// 窒息死
 		if(!canAllocate(parentLocation))
+            mp.stop();
 			isAsphyxia = true;
 		
 		// 反転 
