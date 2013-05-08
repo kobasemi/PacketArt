@@ -21,8 +21,6 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
 import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigStatus;
 
-import com.sun.jmx.snmp.tasks.Task;
-
 /**
  * パケットを利用したテトリスを表示、処理するフォームです。
  * 
@@ -38,6 +36,7 @@ public class PlayForm extends FormBase {
 	int falldownLimit;
 	long falldownTimer;
 	int minoSize;
+	boolean isPaused = false;
 	
 	Point topLeft;
 
@@ -97,16 +96,18 @@ public class PlayForm extends FormBase {
 	public void paint(Graphics g) {
 		// TODO: backgrownd
 		
-		for(PacketBlock item : model.currentMinos) {
-			paintMino(g, item,
-					topLeft.x + ((model.parentLocation.getX() + item.location.getX()) * minoSize), 
-					topLeft.y + ((model.parentLocation.getY() + item.location.getY()) * minoSize));
-		}
-		for (PacketBlock[] column : model.getBoard()) {
-			for(PacketBlock item : column){
+		if(!isPaused){
+			for(PacketBlock item : model.currentMinos) {
 				paintMino(g, item,
-						topLeft.x + item.location.getX() * minoSize, 
-						topLeft.y + item.location.getY() * minoSize);
+						topLeft.x + ((model.parentLocation.getX() + item.location.getX()) * minoSize), 
+						topLeft.y + ((model.parentLocation.getY() + item.location.getY()) * minoSize));
+			}
+			for (PacketBlock[] column : model.getBoard()) {
+				for(PacketBlock item : column){
+					paintMino(g, item,
+							topLeft.x + item.location.getX() * minoSize, 
+							topLeft.y + item.location.getY() * minoSize);
+				}
 			}
 		}
 		if(model.isGameOverd()){
@@ -157,7 +158,7 @@ public class PlayForm extends FormBase {
 		// ゲームオーバー判定
 		if(model.isGameOverd()){
 			// JDK 8のラムダ式が利用できればこんなコードにはならなかった(はず)
-			new Task() {
+			new Thread() {
 				@Override
 				public void run() {
 					try {
@@ -206,11 +207,16 @@ public class PlayForm extends FormBase {
 						getContentPane().add(item, 0);
 					}
 				}
-				@Override
-				public void cancel() { }
 			}.run();
 			return;
 		}
+
+		if (keys.contains(KeyEvent.VK_ESCAPE)){
+			isPaused = !isPaused;
+			System.out.print(isPaused);
+		}
+		if(isPaused)
+			return;
 		
 		// キー入力の処理
 		if (keys.contains(ConfigStatus.getKeyLeftSpin()))
@@ -221,17 +227,19 @@ public class PlayForm extends FormBase {
 			model.translate(Direction.Left);
 		if(keys.contains(ConfigStatus.getKeyRight()))
 			model.translate(Direction.Right);
-		if (keys.contains(ConfigStatus.getKeyDown()))
-			falldownTimer = falldownLimit + 1;
+		if (keys.contains(ConfigStatus.getKeyDown())){
+			model.fallDown();
+			falldownTimer = 0;
+		}
 		if (keys.contains(ConfigStatus.getKeyUp())) {
-			while (model.fallDown()) {
-			}
-			falldownTimer = falldownLimit + 1;
+			while (model.fallDown()) { }
+			falldownTimer = 0;
 		}
 
+		
 		// もし指定のタイミングになったらfalldown
 		if (falldownTimer > falldownLimit) {
-			System.out.println("falling - " + model.parentLocation.toString());
+			//System.out.println("falling - " + model.parentLocation.toString());
 			falldownTimer = 0;
 			// 落下に失敗したら、Next生成
 			if (!model.fallDown()) {
