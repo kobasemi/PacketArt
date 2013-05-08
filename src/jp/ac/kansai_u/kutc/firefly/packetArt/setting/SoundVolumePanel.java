@@ -10,7 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
-//import jp.ac.kansai_u.kutc.firefly.packetArt.playSE;
+import jp.ac.kansai_u.kutc.firefly.packetArt.PlaySE;
 
 /**
  * SEボリューム設定に関するパネル
@@ -72,12 +72,14 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		/*if(e.getSource() == btnVolumeLow)
-			playSE.volume = playSE.Volume.LOW;
+		PlaySE playSE = PlaySE.getInstance();
+		playSE.initialize();
+		if(e.getSource() == btnVolumeLow)
+			playSE.setVolumeAll(30);
 		else if(e.getSource() == btnVolumeMed)
-			playSE.volume = playSE.Volume.MEDIUM;
+			playSE.setVolumeAll(60);
 		else if(e.getSource() == btnVolumeHigh)
-			playSE.volume = playSE.Volume.HIGH;
-		playSE.SELECT.play();*/
+			playSE.setVolumeAll(100);
+		playSE.play("select");
 	}
 }
