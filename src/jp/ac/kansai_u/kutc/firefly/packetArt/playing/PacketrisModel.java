@@ -128,6 +128,14 @@ public class PacketrisModel {
 	public void setCanReverse(boolean canReverse) {
 		this.canReverse = canReverse;
 	}
+	
+	public void translate(Direction direction){
+		if(direction == null)
+			return;
+		if(canAllocate(parentLocation.add(direction == Direction.Left ? -1 : 1, 0))) {
+			parentLocation.setX(parentLocation.getX() + (direction == Direction.Left ? -1 : 1));
+		}
+	}
 
 
 	/**

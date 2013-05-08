@@ -19,6 +19,7 @@ import javax.swing.JButton;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
+import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigStatus;
 
 import com.sun.jmx.snmp.tasks.Task;
 
@@ -86,7 +87,7 @@ public class PlayForm extends FormBase {
 		keyPressedTime = new HashMap<Integer, Long>();
 		model.initialize();
 		addKeyListener(this);
-		minoSize = (int)(Math.min(getSize().width / model.column, getSize().height / model.row) * 0.9);
+		minoSize = (int)(Math.min(getPreferredSize().width / model.column, getPreferredSize().height / model.row) * 0.9);
 		topLeft = new Point(
 				(getSize().width - (minoSize * model.column)) / 2, 
 				(getSize().height - (minoSize * model.row)) / 2);
@@ -181,6 +182,7 @@ public class PlayForm extends FormBase {
 									// ボタンがRetryならボタンを消して再初期化
 									for(JButton item : buttons){
 										getContentPane().remove(item);
+										item = null;
 										getContentPane().validate();
 										
 									}
@@ -210,13 +212,18 @@ public class PlayForm extends FormBase {
 			return;
 		}
 		
-		// if pressedkey is configured key then try to operation
-		// TODO: キーコード(int)からキーを取得できるようにする
-		if (false/* */)
+		// キー入力の処理
+		if (keys.contains(ConfigStatus.getKeyLeftSpin()))
 			model.rotate(Direction.Left);
-		if (false/* */)
+		if(keys.contains(ConfigStatus.getKeyRightSpin()))
+			model.rotate(Direction.Right);
+		if(keys.contains(ConfigStatus.getKeyLeft()))
+			model.translate(Direction.Left);
+		if(keys.contains(ConfigStatus.getKeyRight()))
+			model.translate(Direction.Right);
+		if (keys.contains(ConfigStatus.getKeyDown()))
 			falldownTimer = falldownLimit + 1;
-		if (keys.contains(KeyEvent.VK_ENTER)) {
+		if (keys.contains(ConfigStatus.getKeyUp())) {
 			while (model.fallDown()) {
 			}
 			falldownTimer = falldownLimit + 1;
@@ -275,13 +282,11 @@ public class PlayForm extends FormBase {
 		
 		System.out.println("input key:" + key);
 		
-		// TODO:1回だけ押せるようにする(長押し(何ms?)で連続反応するようにする)
 		if (!keyPressedTime.containsKey(key)) {
 			keyPressedTime.put(key, time);
 			keyQueue.push(key);
 		}
-
-		// TODO:入力キューに入力を入れる(長押し時に入れすぎても爆発するだけ)
+		
 		if (keyPressedTime.get(key) - time > keySensitivity)
 			keyQueue.push(key);
 	}

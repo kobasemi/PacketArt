@@ -19,6 +19,7 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
 import jp.ac.kansai_u.kutc.firefly.packetArt.playing.PlayForm;
 import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
 import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.ReadDumpForm;
+import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigStatus;
 import jp.ac.kansai_u.kutc.firefly.packetArt.setting.SettingForm;
 
 /**
@@ -35,6 +36,7 @@ public class TitleForm extends FormBase implements FocusListener {
 	 */
 	public TitleForm() {
 		PcapManager.getInstance().start();
+		new ConfigStatus();
 	}
 	
 	public void initialize() {
