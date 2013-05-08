@@ -22,13 +22,13 @@ public class ConfigStatus {
 	private static int    up, down, left, right, leftSpin, rightSpin;	// キー
 	private static int[]  key;			// キーコンフィグの配列（up, down, left, right, leftSpin, rightSpin)
 	
-	final private int DEFAULTKEYCODE[] =
-			new int[]{KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_SPACE, 0};
-	final private int GAMERKEYCODE[] =
+	final static int DEFAULTKEYCODE[] =
+			new int[]{KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_ALT, KeyEvent.VK_SPACE};
+	final static int GAMERKEYCODE[] =
 			new int[]{KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_J, KeyEvent.VK_K};
-	final private int VIMKEYCODE[] =
+	final static int VIMKEYCODE[] =
 			new int[]{KeyEvent.VK_K, KeyEvent.VK_J, KeyEvent.VK_H, KeyEvent.VK_L, KeyEvent.VK_A, KeyEvent.VK_S};
-	final private int[][] KEYBIND= new int[][]{DEFAULTKEYCODE, GAMERKEYCODE, VIMKEYCODE};
+	final static int[][] KEYBIND= new int[][]{DEFAULTKEYCODE, GAMERKEYCODE, VIMKEYCODE};
 	
 	/**
 	 * コンストラクタ
@@ -72,35 +72,40 @@ public class ConfigStatus {
 	 */
 	public static void setDifficulty(byte b){ difficulty = b; }
 	/**
+	 * キーバインドを設定する
+	 * @param keybind
+	 */
+	public static void setKeyBind(byte b){ keybind = b; }
+	/**
 	 * 上キーを設定する
 	 * @param up
 	 */
-	public static void setKeyUp(char c){ up = key[0] = c;}
+	public static void setKeyUp(int d){ up = key[0] = d;}
 	/**
 	 * 下キーを設定する
 	 * @param down
 	 */
-	public static void setKeyDown(char c){ down = key[1] = c; }
+	public static void setKeyDown(int d){ down = key[1] = d; }
 	/**
 	 * 左キーを設定する
 	 * @param left
 	 */
-	public static void setKeyLeft(char c){ left = key[2] = c; }
+	public static void setKeyLeft(int d){ left = key[2] = d; }
 	/**
 	 * 右キーを設定する
 	 * @param right
 	 */
-	public static void setKeyRight(char c){ right = key[3] = c; }
+	public static void setKeyRight(int d){ right = key[3] = d; }
 	/**
 	 * 左回転キーを設定する
 	 * @param leftSpin
 	 */
-	public static void setKeyLeftSpin(char c){ leftSpin = key[4] = c; }
+	public static void setKeyLeftSpin(int d){ leftSpin = key[4] = d; }
 	/**
 	 * 右回転キーを設定する
 	 * @param rightSpin
 	 */
-	public static void setKeyRightSpin(char c){ rightSpin = key[5] = c; }
+	public static void setKeyRightSpin(int d){ rightSpin = key[5] = d; }
 	
 	/**
 	 * ログの表示設定を取得する
@@ -178,6 +183,7 @@ public class ConfigStatus {
 		System.out.println(volMusic);
 		System.out.println(volSound);
 		System.out.println(difficulty);
+		System.out.println(keybind);
 		System.out.println(up);
 		System.out.println(down);
 		System.out.println(left);
