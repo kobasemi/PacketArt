@@ -30,7 +30,7 @@ public class SettingForm extends FormBase implements ActionListener {
 	final public String IMGPATH = new String("./resource/image/config/");
 	private ConfigStatusMainPanel madoka;
 	private JButton mami1, mami2;
-	private KeyConfigPanel qbee;
+	private KeyBindPanel qbee;
 	
 	private BufferedImage image;
 	
@@ -59,7 +59,7 @@ public class SettingForm extends FormBase implements ActionListener {
 	    
 	    JLabel kusojo = new JLabel(new ImageIcon(IMGPATH + "labelKeyConf.png"));
 	    kusojo.setBounds(30, 380, 540, 50);
-	    qbee = new KeyConfigPanel(ConfigStatus.getKey());
+	    qbee = new KeyBindPanel(ConfigStatus.getKey());
 	    qbee.setBounds(30, 430, 540, 250);
 	    qbee.setOpaque(false);
 	    
@@ -92,12 +92,14 @@ public class SettingForm extends FormBase implements ActionListener {
 			ConfigStatus.setVolMusic(madoka.panelMusic.getStatus());
 			ConfigStatus.setVolSound(madoka.panelSound.getStatus());
 			ConfigStatus.setDifficulty(madoka.panelDifficulty.getStatus());
+			/*
 			ConfigStatus.setKeyUp(qbee.labelUp.getText().charAt(0));
 			ConfigStatus.setKeyDown(qbee.labelDown.getText().charAt(0));
 			ConfigStatus.setKeyLeft(qbee.labelLeft.getText().charAt(0));
 			ConfigStatus.setKeyRight(qbee.labelRight.getText().charAt(0));
-			ConfigStatus.setKeyLeftSpin(qbee.labelLeftSpin.getText().charAt(0));
-			ConfigStatus.setKeyRightSpin(qbee.labelRightSpin.getText().charAt(0));
+			ConfigStatus.setKeyLeftSpin(qbee.labelLSpin.getText().charAt(0));
+			ConfigStatus.setKeyRightSpin(qbee.labelRSpin.getText().charAt(0));
+			*/
 			ConfigStatus.printStatus();
 			FormUtil.getInstance().changeForm("Title");
 		}else if(e.getSource() == mami2){
