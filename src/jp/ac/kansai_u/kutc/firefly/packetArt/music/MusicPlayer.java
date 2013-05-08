@@ -37,7 +37,7 @@ public class MusicPlayer extends Thread{
         if(judgetone == true){
             System.out.print("Make Cheerful Song.\r\n");
             try{
-                sequence = new Sequence(Sequence.PPQ, 24, 3);//この24という数字は何、3という数字は何
+                sequence = new Sequence(Sequence.PPQ, 24, 3);
                 MelodyMaker.setCheerfulMelody(sequence, length, velocity);
                 AccompanimentMaker.makeCheerfulAccompaniment(sequence, length, velocity);
                 sequencer = MidiSystem.getSequencer();
@@ -57,7 +57,7 @@ public class MusicPlayer extends Thread{
         }else if(judgetone == false){
             System.out.print("Make Gloomy Song.\r\n");
             try{
-                sequence = new Sequence(Sequence.PPQ, 24, 3);//この24という数字は何、3という数字は何
+                sequence = new Sequence(Sequence.PPQ, 24, 3);
                 MelodyMaker.setGloomyMelody(sequence, length, velocity);
                 AccompanimentMaker.makeGloomyAccompaniment(sequence, length, velocity);
                 sequencer = MidiSystem.getSequencer();

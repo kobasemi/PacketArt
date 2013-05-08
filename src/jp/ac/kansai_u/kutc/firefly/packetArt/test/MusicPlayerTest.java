@@ -12,17 +12,17 @@ public class MusicPlayerTest{
     	PcapManager pm = PcapManager.getInstance();
     	pm.start();
     	pm.openFile("src/jp/ac/kansai_u/kutc/firefly/PacketArt/test/10000.cap");
-        final MusicPlayer musicPlayer = new MusicPlayer(100, 1000, false);
+        final MusicPlayer musicPlayer = new MusicPlayer(75, 10000, false);
         musicPlayer.start();
 //        musicPlayer.playMusic();
-        (new Thread(new Runnable(){
-    		public void run(){
-    			try {
-    				Thread.sleep(10000);
-    				musicPlayer.stopMusic();
-    			} catch (InterruptedException e){
-    			}
-    		}})).start();
+//        (new Thread(new Runnable(){
+ //   		public void run(){
+ //   			try {
+ //   				Thread.sleep(10000);
+ //   				musicPlayer.stopMusic();
+//    			} catch (InterruptedException e){
+//    			}
+//    		}})).start();
         //pm.kill();
         //pm.close();
     }

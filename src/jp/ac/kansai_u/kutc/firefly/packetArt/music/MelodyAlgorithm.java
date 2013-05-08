@@ -2,7 +2,6 @@ package jp.ac.kansai_u.kutc.firefly.packetArt.music;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
 import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketHolder;
@@ -11,10 +10,19 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketUtil;
 import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.protocol.network.Ip4;
 
+/**
+ * IPv4を処理し、主旋律の決定要素を作成するクラスです。
+ * MelodyMakerからのみ呼び出されます。
+ * @author Lisa
+ */
 public class MelodyAlgorithm {
 	
-
-	public static Integer[] desposedIp(int length){
+	/**
+	 * IPv4をオクテット毎に処理し、配列に格納するメソッドです。
+	 * @param length
+	 * @return desposedip
+	 */
+	private static Integer[] desposeIp(int length){
 		PacketHolder ph = new PacketHolder();
 		PcapManager pm = PcapManager.getInstance();
 		
@@ -43,16 +51,16 @@ public class MelodyAlgorithm {
 		return desposedip;
 	}
 	
+	/**
+	 * 明るい曲の主旋律を生成するメソッドです。
+	 * @param length
+	 * @return cheerfulmelody
+	 */
 	public static int[] defCheerfulAlgorithm(int length){
 		String[] code = CodeMaker.setCheerfulCode(length);
-
-		
-
-		
-		//int[] desposedip = {2,3,4,5,2,3,4,5,2,3,4,5,2,3,4,5,2,3,4,5,2,3,4,5};
+		Integer[] desposedip = desposeIp(length);
 		int[] cheerfulmelody = new int[code.length];
 		int[] melodyscale = ScaleMaker.setCheerfulMelodyScale();
-		Integer[] desposedip = desposedIp(length);
 		
 		int[] listc = {melodyscale[0], melodyscale[2], melodyscale[4]};
 		int[] listf = {melodyscale[0], melodyscale[3], melodyscale[5]};
@@ -60,7 +68,7 @@ public class MelodyAlgorithm {
 		
 		for(int i = 0; i < length; i++){
 			int judge = 0;
-			if(desposedip[i] < 86){
+			if(desposedip[i] < 85){
 				judge = 0;
 			}else if(desposedip[i] < 170){
 				judge = 1;
@@ -79,8 +87,14 @@ public class MelodyAlgorithm {
 		return cheerfulmelody;
 	}
 	
+	/**
+	 * 暗い曲の主旋律を生成するメソッドです。
+	 * @param length
+	 * @return gloomymelody
+	 */
 	public static int[] defGloomyAlgorithm(int length){
 		String[] code = CodeMaker.setGloomyCode(length);
+		Integer[] desposedip = desposeIp(length);
 		int[] gloomymelody = new int[code.length];
 		int[] melodyscale = ScaleMaker.setGloomyMelodyScale();
 		
@@ -89,15 +103,21 @@ public class MelodyAlgorithm {
 		int[] listb7 = {melodyscale[1], melodyscale[3], melodyscale[4]};
 		
 		for(int i = 0; i < length; i++){
-			Random rnd = new Random();
-			int tmp = rnd.nextInt(3);
+			int judge = 0;
+			if(desposedip[i] < 85){
+				judge = 0;
+			}else if(desposedip[i] < 170){
+				judge = 1;
+			}else if(desposedip[i] < 256){
+				judge = 2;
+			}
 			
 			if("Em".equals(code[i])){
-				gloomymelody[i] = listem[tmp];
+				gloomymelody[i] = listem[judge];
 			}else if("Am".equals(code[i])){
-				gloomymelody[i] = listam[tmp];
+				gloomymelody[i] = listam[judge];
 			}else if("B7".equals(code[i])){
-				gloomymelody[i] = listb7[tmp];
+				gloomymelody[i] = listb7[judge];
 			}
 		}
 		return gloomymelody;
