@@ -13,10 +13,8 @@ import org.jnetpcap.protocol.network.Ip4;
 
 public class MelodyAlgorithm {
 	
-	public static int[] defCheerfulAlgorithm(int length){
-		String[] code = CodeMaker.setCheerfulCode(length);
 
-		/*
+	public static Integer[] desposedIp(int length){
 		PacketHolder ph = new PacketHolder();
 		PcapManager pm = PcapManager.getInstance();
 		
@@ -42,10 +40,19 @@ public class MelodyAlgorithm {
 			}
 		}
 		Integer[] desposedip = desposedipArrayList.toArray(new Integer[desposedipArrayList.size()]);
-		*/
-		int[] desposedip = {2,3,4,5,2,3,4,5,2,3,4,5,2,3,4,5,2,3,4,5,2,3,4,5};
+		return desposedip;
+	}
+	
+	public static int[] defCheerfulAlgorithm(int length){
+		String[] code = CodeMaker.setCheerfulCode(length);
+
+		
+
+		
+		//int[] desposedip = {2,3,4,5,2,3,4,5,2,3,4,5,2,3,4,5,2,3,4,5,2,3,4,5};
 		int[] cheerfulmelody = new int[code.length];
 		int[] melodyscale = ScaleMaker.setCheerfulMelodyScale();
+		Integer[] desposedip = desposedIp(length);
 		
 		int[] listc = {melodyscale[0], melodyscale[2], melodyscale[4]};
 		int[] listf = {melodyscale[0], melodyscale[3], melodyscale[5]};
@@ -53,11 +60,11 @@ public class MelodyAlgorithm {
 		
 		for(int i = 0; i < length; i++){
 			int judge = 0;
-			if(desposedip[i] < 4){
+			if(desposedip[i] < 86){
 				judge = 0;
-			}else if(desposedip[i] < 7){
+			}else if(desposedip[i] < 170){
 				judge = 1;
-			}else if(desposedip[i] < 10){
+			}else if(desposedip[i] < 256){
 				judge = 2;
 			}
 			
