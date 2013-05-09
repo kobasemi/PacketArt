@@ -22,7 +22,7 @@ import javax.swing.JPanel;
  * @author akasaka
  */
 public class KeyBindPanel extends JPanel implements ActionListener{
-	final public String KEYPATH = new String("./resource/image/config/key/");
+	final public String KEYPATH = new String(ConfigInfo.IMGPATH + "key/");
 	private JRadioButton btnKeyDefault, btnKeyGamer, btnKeyVim;
 	private JLabel labelUpImg, labelDownImg, labelLeftImg, labelRightImg, labelLSpinImg, labelRSpinImg;
 	private JLabel labelUpKey, labelDownKey, labelLeftKey, labelRightKey, labelLSpinKey, labelRSpinKey;
@@ -31,55 +31,63 @@ public class KeyBindPanel extends JPanel implements ActionListener{
 	
 	/**
 	 * デフォルトコンストラクタ
-	 * @param key（各キーの配列）
+	 * @param b（キーバインドの設定）
 	 */
 	KeyBindPanel(byte b){
-		//setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		JPanel p = new JPanel();
-		p.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 0));
-		p.setOpaque(false);
+		setBounds(30, 380, 540, 200);
+		setOpaque(false);
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		
+		JPanel sectionPanel = new JPanel();
+		sectionPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 30, 0));
+		sectionPanel.setOpaque(false);
+		JLabel kusojo = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "labelKeyConf.png"));
+		sectionPanel.add(kusojo);
+		
+		JPanel btnKeyBindPanel = new JPanel();
+		btnKeyBindPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 0));
+		btnKeyBindPanel.setOpaque(false);
 		btnKeyDefault = new JRadioButton(new ImageIcon(KEYPATH + "bindDefault.png"));
-		btnKeyGamer = new JRadioButton(new ImageIcon(KEYPATH + "bindGamer.png"));
-		btnKeyVim = new JRadioButton(new ImageIcon(KEYPATH + "bindVim.png"));
+		btnKeyGamer   = new JRadioButton(new ImageIcon(KEYPATH + "bindGamer.png"));
+		btnKeyVim     = new JRadioButton(new ImageIcon(KEYPATH + "bindVim.png"));
 		ButtonGroup bindGroup = new ButtonGroup();
 		bindGroup.add(btnKeyDefault); bindGroup.add(btnKeyGamer); bindGroup.add(btnKeyVim);
 		
 		btnKeyDefault.setContentAreaFilled(false);
-		btnKeyGamer.setContentAreaFilled(false);
-		btnKeyVim.setContentAreaFilled(false);
+		btnKeyGamer  .setContentAreaFilled(false);
+		btnKeyVim    .setContentAreaFilled(false);
 		btnKeyDefault.setSelectedIcon(new ImageIcon(KEYPATH + "bindDefaultSelected.png"));
-		btnKeyGamer.setSelectedIcon(new ImageIcon(KEYPATH + "bindGamerSelected.png"));
-		btnKeyVim.setSelectedIcon(new ImageIcon(KEYPATH + "bindVimSelected.png"));
-		
+		btnKeyGamer  .setSelectedIcon(new ImageIcon(KEYPATH + "bindGamerSelected.png"));
+		btnKeyVim    .setSelectedIcon(new ImageIcon(KEYPATH + "bindVimSelected.png"));
 		btnKeyDefault.addActionListener(this);
-		btnKeyGamer.addActionListener(this);
-		btnKeyVim.addActionListener(this);
+		btnKeyGamer  .addActionListener(this);
+		btnKeyVim    .addActionListener(this);
 		
-		p.add(btnKeyDefault);
-		p.add(btnKeyGamer);
-		p.add(btnKeyVim);
+		btnKeyBindPanel.add(btnKeyDefault);
+		btnKeyBindPanel.add(btnKeyGamer);
+		btnKeyBindPanel.add(btnKeyVim);
 		
-		JPanel p2 = new JPanel();
-		p2.setOpaque(false);
-		labelUpImg = new JLabel(new ImageIcon(KEYPATH + "arrUp.png"));
-		labelDownImg = new JLabel(new ImageIcon(KEYPATH + "arrDown.png"));
-		labelLeftImg = new JLabel(new ImageIcon(KEYPATH + "arrLeft.png"));
+		JPanel arrowImagePanel = new JPanel();
+		arrowImagePanel.setOpaque(false);
+		labelUpImg    = new JLabel(new ImageIcon(KEYPATH + "arrUp.png"));
+		labelDownImg  = new JLabel(new ImageIcon(KEYPATH + "arrDown.png"));
+		labelLeftImg  = new JLabel(new ImageIcon(KEYPATH + "arrLeft.png"));
 		labelRightImg = new JLabel(new ImageIcon(KEYPATH + "arrRight.png"));
 		labelLSpinImg = new JLabel(new ImageIcon(KEYPATH + "arrLSpin.png"));
 		labelRSpinImg = new JLabel(new ImageIcon(KEYPATH + "arrRSpin.png"));
 		labelImageArray = new JLabel[]{labelUpImg, labelDownImg, labelLeftImg, labelRightImg,
 				labelLSpinImg, labelRSpinImg};
 		for(int i=0; i<labelImageArray.length; i++){
-			labelImageArray[i].setPreferredSize(new Dimension(80, 50));
+			labelImageArray[i].setPreferredSize(new Dimension(80, 40));
 			labelImageArray[i].setHorizontalAlignment(JLabel.CENTER);
-			p2.add(labelImageArray[i]);
+			arrowImagePanel.add(labelImageArray[i]);
 		}
 		
-		JPanel p3 = new JPanel();
-		p3.setOpaque(false);
-		labelUpKey = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][0]));
-		labelDownKey = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][1]));
-		labelLeftKey = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][2]));
+		JPanel labelKeyPanel = new JPanel();
+		labelKeyPanel.setOpaque(false);
+		labelUpKey    = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][0]));
+		labelDownKey  = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][1]));
+		labelLeftKey  = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][2]));
 		labelRightKey = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][3]));
 		labelLSpinKey = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][4]));
 		labelRSpinKey = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][5]));
@@ -88,18 +96,19 @@ public class KeyBindPanel extends JPanel implements ActionListener{
 		for(int i=0; i<labelKeyCodeArray.length; i++){
 			labelKeyCodeArray[i].setPreferredSize(new Dimension(80, 30));
 			labelKeyCodeArray[i].setHorizontalAlignment(JLabel.CENTER);
-			labelKeyCodeArray[i].setFont(new Font("Self", Font.PLAIN, 20));
+			labelKeyCodeArray[i].setFont(new Font("Self", Font.PLAIN, 24));
 			labelKeyCodeArray[i].setForeground(Color.white);
-			p3.add(labelKeyCodeArray[i]);
+			labelKeyPanel.add(labelKeyCodeArray[i]);
 		}
 		
-		add(p);
-		add(p2);
-		add(p3);
+		add(sectionPanel);
+		add(btnKeyBindPanel);
+		add(arrowImagePanel);
+		add(labelKeyPanel);
 		
-		if     (b == ConfigStatus.KEYDEFAULT) btnKeyDefault.setSelected(true);
-		else if(b == ConfigStatus.KEYGAMER)   btnKeyGamer.setSelected(true);
-		else if(b == ConfigStatus.KEYVIM)     btnKeyVim.setSelected(true);
+		if     (b == ConfigInfo.KEYDEFAULT) btnKeyDefault.setSelected(true);
+		else if(b == ConfigInfo.KEYGAMER)   btnKeyGamer.setSelected(true);
+		else if(b == ConfigInfo.KEYVIM)     btnKeyVim.setSelected(true);
 	}
 
 	/**
@@ -107,22 +116,16 @@ public class KeyBindPanel extends JPanel implements ActionListener{
 	 * @return キーバインドの種類（default, gamer, vim）
 	 */
 	public byte getStatus(){
-		if     (btnKeyDefault.isSelected()) return ConfigStatus.KEYDEFAULT;
-		else if(btnKeyGamer.isSelected())   return ConfigStatus.KEYGAMER;
-		else if(btnKeyVim.isSelected())     return ConfigStatus.KEYVIM;
+		if     (btnKeyDefault.isSelected()) return ConfigInfo.KEYDEFAULT;
+		else if(btnKeyGamer.isSelected())   return ConfigInfo.KEYGAMER;
+		else if(btnKeyVim.isSelected())     return ConfigInfo.KEYVIM;
 		return -1;
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == btnKeyDefault)
-			for(int i=0; i<labelKeyCodeArray.length; i++)
-				labelKeyCodeArray[i].setText(KeyEvent.getKeyText(ConfigStatus.KEYBIND[ConfigStatus.KEYDEFAULT][i]));
-		else if(e.getSource() == btnKeyGamer)
-			for(int i=0; i<labelKeyCodeArray.length; i++)
-				labelKeyCodeArray[i].setText(KeyEvent.getKeyText(ConfigStatus.KEYBIND[ConfigStatus.KEYGAMER][i]));
-		else if(e.getSource() == btnKeyVim)
-			for(int i=0; i<labelKeyCodeArray.length; i++)
-				labelKeyCodeArray[i].setText(KeyEvent.getKeyText(ConfigStatus.KEYBIND[ConfigStatus.KEYVIM][i]));
+		byte idx = getStatus();
+		for(int i=0; i<labelKeyCodeArray.length; i++)
+				labelKeyCodeArray[i].setText(KeyEvent.getKeyText(ConfigStatus.KEYBIND[idx][i]));
 	}
 }

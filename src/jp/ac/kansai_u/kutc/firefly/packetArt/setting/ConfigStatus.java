@@ -7,20 +7,15 @@ import java.awt.event.KeyEvent;
  * @author akasaka
  */
 public class ConfigStatus {
-	final static byte MINO4=0, MINO5=1, MINOBOTH=2;
-	final static byte MUTE=0;
-	final static byte BGMLOW=50, BGMMEDIUM=75, BGMHIGH=100;
-	final static byte SELOW=1, SEMEDIUM=2, SEHIGH=3;
-	final static byte STATIC=0, DYNAMIC=1, AUTO=2;
-	final static byte KEYDEFAULT=0, KEYGAMER=1, KEYVIM=2;
 	private static boolean viewLog;		// ビューの表示のオン・オフ
 	private static byte    mino;		// ミノの設定（4つ，5つ，両方）
+	private static boolean melody;		// メロディ（明るめ，暗め）
 	private static byte    volMusic;	// 音楽の音量の設定（Mute, Low, Medium, High）
 	private static byte    volSound;	// 効果音の音量の設定（Mute, Low, Medium, High）
 	private static byte    difficulty;	// 難易度（静的，動的，自動）
 	private static byte    keybind;		// キーバインド（Default, Gamer, Vim）
-	private static int    up, down, left, right, leftSpin, rightSpin;	// キー
-	private static int[]  key;			// キーコンフィグの配列（up, down, left, right, leftSpin, rightSpin)
+	private static int     up, down, left, right, leftSpin, rightSpin;	// キー
+	private static int[]   key;			// キーコンフィグの配列（up, down, left, right, leftSpin, rightSpin)
 	
 	final static int DEFAULTKEYCODE[] =
 			new int[]{KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_ALT, KeyEvent.VK_SPACE};
@@ -35,11 +30,12 @@ public class ConfigStatus {
 	 */
 	public ConfigStatus(){
 		viewLog = false;
-		mino = MINO4;
-		volMusic = MUTE; //TODO :実装時，MEDIUMに．
-		volSound = SEMEDIUM;
-		difficulty = AUTO;
-		keybind = KEYDEFAULT;
+		mino = ConfigInfo.MINO4;
+		melody = true;
+		volMusic = ConfigInfo.MUTE; //TODO :実装時，MEDIUMに．
+		volSound = ConfigInfo.SEMEDIUM;
+		difficulty = ConfigInfo.AUTO;
+		keybind = ConfigInfo.KEYDEFAULT;
 		up = KEYBIND[keybind][0]; down = KEYBIND[keybind][1];
 		left = KEYBIND[keybind][2]; right = KEYBIND[keybind][3];
 		leftSpin = KEYBIND[keybind][4]; rightSpin = KEYBIND[keybind][5];
@@ -50,12 +46,17 @@ public class ConfigStatus {
 	 * ログ表示のオン・オフを設定する
 	 * @param viewLog
 	 */
-	public static void setViewLog(boolean b){ viewLog = b; }
+	public static void setViewLog(boolean f){ viewLog = f; }
 	/**
 	 * ミノの出現個数を設定する
 	 * @param mino
 	 */
 	public static void setMino(byte b){ mino = b; }
+	/**
+	 * メロディ調を設定する
+	 * @param melody
+	 */
+	public static void setMelody(boolean f) { melody = f; }
 	/**
 	 * 音楽の音量を設定する
 	 * @param volMusic
@@ -117,6 +118,11 @@ public class ConfigStatus {
 	 * @return ミノの個数（4つ, 5つ, 両方）
 	 */
 	public static byte getMino(){ return mino; }
+	/**
+	 * メロディ調を取得する
+	 * @return メロディ調（明るめ，暗め）
+	 */
+	public static boolean isMelody(){ return melody; }
 	/**
 	 * 音楽の音量設定を取得する
 	 * @return 音楽の音量（Mute, Low, Medium, High）

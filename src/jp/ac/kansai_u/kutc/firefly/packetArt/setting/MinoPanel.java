@@ -12,8 +12,7 @@ import javax.swing.JRadioButton;
  * @author akasaka
  */
 public class MinoPanel extends JPanel{
-	final String IMGPATH = new String("./resource/image/config/");
-	final String BTNPATH = new String(IMGPATH + "button/");
+	final String BTNPATH = new String(ConfigInfo.IMGPATH + "button/");
 	private JRadioButton btnMino4, btnMino5, btnMinoBoth;	// 各コンポーネント
 	
 	/**
@@ -22,7 +21,9 @@ public class MinoPanel extends JPanel{
 	 */
 	MinoPanel(byte b){
 		setLayout(new FlowLayout(FlowLayout.LEFT, 30, 0));
-		JLabel labelMino = new JLabel(new ImageIcon(IMGPATH + "labelMino.png"));
+		setOpaque(false);
+		
+		JLabel labelMino = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "labelMino.png"));
 		btnMino4 = new JRadioButton(new ImageIcon(BTNPATH + "btnMino4.png"));
 		btnMino5 = new JRadioButton(new ImageIcon(BTNPATH + "btnMino5.png"));
 		btnMinoBoth = new JRadioButton(new ImageIcon(BTNPATH + "btnMinoBoth.png"));
@@ -42,9 +43,9 @@ public class MinoPanel extends JPanel{
 		add(btnMino5);
 		add(btnMinoBoth);
 		
-		if     (b == ConfigStatus.MINO4)    btnMino4.setSelected(true);
-		else if(b == ConfigStatus.MINO5)    btnMino5.setSelected(true);
-		else if(b == ConfigStatus.MINOBOTH) btnMinoBoth.setSelected(true);
+		if     (b == ConfigInfo.MINO4)    btnMino4.setSelected(true);
+		else if(b == ConfigInfo.MINO5)    btnMino5.setSelected(true);
+		else if(b == ConfigInfo.MINOBOTH) btnMinoBoth.setSelected(true);
 	}
 	
 	/**
@@ -52,9 +53,9 @@ public class MinoPanel extends JPanel{
 	 * @return ミノの出現個数（4つ, 5つ, 両方）
 	 */
 	public byte getStatus(){
-		if     (btnMino4.isSelected())    return ConfigStatus.MINO4;
-		else if(btnMino5.isSelected())    return ConfigStatus.MINO5;
-		else if(btnMinoBoth.isSelected()) return ConfigStatus.MINOBOTH;
+		if     (btnMino4.isSelected())    return ConfigInfo.MINO4;
+		else if(btnMino5.isSelected())    return ConfigInfo.MINO5;
+		else if(btnMinoBoth.isSelected()) return ConfigInfo.MINOBOTH;
 		return -1;
 	}
 }
