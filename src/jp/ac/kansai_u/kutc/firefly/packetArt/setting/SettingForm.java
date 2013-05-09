@@ -76,26 +76,12 @@ public class SettingForm extends FormBase implements ActionListener {
 		if(madoka.panelMusicVolume.thread != null)
 			//スレッドが動いているかも．動いていればストップ
 			madoka.panelMusicVolume.thread.stop();
+		
 		if(e.getSource() == mami1){
-			ConfigStatus.setViewLog     (madoka.panelViewLog.getStatus());
-			ConfigStatus.setMino        (madoka.panelMino.getStatus());
-			ConfigStatus.setMelody      (madoka.panelMelody.getStatus());
-			ConfigStatus.setVolMusic    (madoka.panelMusicVolume.getStatus());
-			ConfigStatus.setVolSound    (madoka.panelSoundVolume.getStatus());
-			ConfigStatus.setDifficulty  (madoka.panelDifficulty.getStatus());
-			ConfigStatus.setKeyBind     (madoka.panelKeyBind.getStatus());
-			ConfigStatus.setKeyUp       (ConfigStatus.KEYBIND[madoka.panelKeyBind.getStatus()][0]);
-			ConfigStatus.setKeyDown     (ConfigStatus.KEYBIND[madoka.panelKeyBind.getStatus()][1]);
-			ConfigStatus.setKeyLeft     (ConfigStatus.KEYBIND[madoka.panelKeyBind.getStatus()][2]);
-			ConfigStatus.setKeyRight    (ConfigStatus.KEYBIND[madoka.panelKeyBind.getStatus()][3]);
-			ConfigStatus.setKeyLeftSpin (ConfigStatus.KEYBIND[madoka.panelKeyBind.getStatus()][4]);
-			ConfigStatus.setKeyRightSpin(ConfigStatus.KEYBIND[madoka.panelKeyBind.getStatus()][5]);
+			madoka.setStatus();
 			ConfigStatus.printStatus();
-			FormUtil.getInstance().changeForm("Title");
-		}else if(e.getSource() == mami2){
-			System.out.println("CANCEL pushed");
-			FormUtil.getInstance().changeForm("Title");
-		}
+		}else if(e.getSource() == mami2){}
+		FormUtil.getInstance().changeForm("Title");
 	}
 
 	// 描画関連のコードはここに

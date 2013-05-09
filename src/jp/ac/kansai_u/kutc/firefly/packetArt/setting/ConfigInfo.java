@@ -12,6 +12,6 @@ public class ConfigInfo {
 	final static String BTNPATH = new String(IMGPATH + "button/");
 	
 	final static int WIDTH=600, HEIGHT=800;
-	final static int MARGIN=30;
+	final static int WMARGIN=(int)(WIDTH*.05), HMARGIN=(int)(HEIGHT*.05);
 	
 }
