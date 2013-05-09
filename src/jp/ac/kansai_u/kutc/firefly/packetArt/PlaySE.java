@@ -255,10 +255,11 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         final LimitedRing<Clip> clips = get(name);
         if (clips != null) {
             final Clip clip = clips.peek();
-            clip.start();
             /*clipHolder.add(clip);
-            //キューに突っ込むことで、clipの参照を保持し、
-            //音が途中で途切れるのを防ぐ*/
+            キューに突っ込むことで、clipの参照を保持し、
+            音が途中で途切れるのを防ぐ*/
+            clip.start();
+            /*
             new Thread(new Runnable(){
                 public void run(){
                     while (clip.isRunning()){
@@ -271,9 +272,10 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
                 }
                 }
             ).start();
+            */
             return true;
         } else {
-            System.out.println("Before play, Load it : " + name);
+            System.out.println("Before play, initialize() and Load it : " + name);
             return false;
         }
     }
@@ -316,15 +318,40 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
 
     /**
      * <a href="http://www.javadocexamples.com/java_source/de/pxlab/pxl/sound/Controls.java.html">Controls</a>
+     * Lineを継承した(Clipなど)何らかの音声用オブジェクトのボリュームを返します。<br>
+     * 多くの場合、そのLineはopen()を呼びだされていなければなりません。 <br>
+     *
+     * @return volume 0-100で指定された音量の数値です。エラーなら-1が返ります。
+    */
+    public synchronized static float getVolume(final Line line) {
+        FloatControl ctrl = null;
+        try {
+            ctrl = (FloatControl)(line.getControl(FloatControl.Type.MASTER_GAIN));
+        } catch (IllegalArgumentException iax1) {
+            try {
+                ctrl = (FloatControl)(line.getControl(FloatControl.Type.VOLUME));
+            } catch (IllegalArgumentException iax2) {
+                System.out.println("Your Computer getVolume() not supported.");
+                return -1;
+            }
+        }
+        final float current = ctrl.getValue();
+        final float minimum = ctrl.getMinimum();
+        final float maximum = ctrl.getMaximum();
+        return (float)( ( ( current  - minimum) / (maximum - minimum) )* 100.0F);
+    }
+
+    /**
+     * <a href="http://www.javadocexamples.com/java_source/de/pxlab/pxl/sound/Controls.java.html">Controls</a>
      * Lineを継承した(Clipなど)何らかの音声用オブジェクトのボリュームを変更します。<br>
      * 多くの場合、そのLineはopen()を呼びだされていなければなりません。 <br>
      *
      * @param line 音量を変更するLineオブジェクト です。
-     * @param volume 1-100で指定された音量の数値です。-1は0に、101は100に自動で変換されます。
+     * @param volume 0-100で指定された音量の数値です。-1は0に、101は100に自動で変換されます。
     */
     public synchronized static void setVolume(final Line line, double volume) {
         if (volume > 100.0) volume = 100.0;
-        if (volume >= 0.0) volume = 0.0;
+        if (volume <= 0.0) volume = 0.0;
         FloatControl ctrl = null;
         try {
             ctrl = (FloatControl)(line.getControl(FloatControl.Type.MASTER_GAIN));
@@ -336,11 +363,28 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
                 return;
             }
         }
-        float current = ctrl.getValue();
-        float minimum = ctrl.getMinimum();
-        float maximum = ctrl.getMaximum();
-        float newValue = (float)(minimum + volume * (maximum - minimum) / 100.0F);
+        final float minimum = ctrl.getMinimum();
+        final float maximum = ctrl.getMaximum();
+        final float newValue = (float)(minimum + volume * (maximum - minimum) / 100.0F);
+        final float current = ctrl.getValue();
         ctrl.setValue(newValue);
+    }
+
+    /**
+     * このクラスに登録され、文字列で指定されたそれぞれのClipのうち、<br>
+     * LimitedRingの先頭のものに対してgetVolumeを実行します<br>
+     * setVolumeAllを行った後に使うと便利です。
+     *
+     * @param name SEファイルのキーです。
+     * @return ボリューム、1-100の数値。
+    */
+    public synchronized float getVolume(final String name) {
+        LimitedRing<Clip> clips = get(name);
+        if (clips == null) {
+            return -1;
+        }
+        final Clip clip = clips.peek();
+        return getVolume(clip);
     }
 
     /**
@@ -398,4 +442,33 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         return new ByteArrayInputStream(byteData);
     }
 
+    public void debugMe(String header) {
+        FloatControl ctrl = null;
+        for (LimitedRing<Clip> clips : values()) {
+            for(Clip clip : clips) {
+                debugMe(header, clip);
+            }
+        }
+    }
+
+    public void debugMe(String header, Line line) {
+        FloatControl ctrl = null;
+        try {
+            ctrl = (FloatControl)(line.getControl(FloatControl.Type.MASTER_GAIN));
+        } catch (IllegalArgumentException iax1) {
+            try {
+                ctrl = (FloatControl)(line.getControl(FloatControl.Type.VOLUME));
+            } catch (IllegalArgumentException iax2) {
+                System.out.println("Your Computer setVolume() not supported.");
+                return;
+            }
+        }
+        final float minimum = ctrl.getMinimum();
+        final float maximum = ctrl.getMaximum();
+        final float current = ctrl.getValue();
+        System.out.println("-----------" + header);
+        System.out.println("Current Volume (inner Value) = " + current);
+        System.out.println("Max Volume (inner Value) = " + maximum);
+        System.out.println("Min Volume (inner Value) = " + minimum);
+    }
 }

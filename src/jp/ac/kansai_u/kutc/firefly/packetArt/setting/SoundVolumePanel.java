@@ -48,6 +48,7 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
 		add(btnVolumeLow);
 		add(btnVolumeMed);
 		add(btnVolumeHigh);
+		btnVolumeMute.addActionListener(this);
 		btnVolumeLow.addActionListener(this);
 		btnVolumeMed.addActionListener(this);
 		btnVolumeHigh.addActionListener(this);
@@ -73,13 +74,19 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		PlaySE playSE = PlaySE.getInstance();
-		playSE.initialize();
-		if(e.getSource() == btnVolumeLow)
-			playSE.setVolumeAll(30);
-		else if(e.getSource() == btnVolumeMed)
+		if(e.getSource() == btnVolumeMute) {
+			playSE.setVolumeAll(0);
+			System.out.println("SE VOLUME => " + playSE.getVolume("select"));
+		}else if(e.getSource() == btnVolumeLow) {
 			playSE.setVolumeAll(60);
-		else if(e.getSource() == btnVolumeHigh)
+			System.out.println("SE VOLUME => " + playSE.getVolume("select"));
+		} else if(e.getSource() == btnVolumeMed) {
+			playSE.setVolumeAll(80);
+			System.out.println("SE VOLUME => " + playSE.getVolume("select"));
+		} else if(e.getSource() == btnVolumeHigh) {
 			playSE.setVolumeAll(100);
+			System.out.println("SE VOLUME => " + playSE.getVolume("select"));
+		}
 		playSE.play("select");
 	}
 }

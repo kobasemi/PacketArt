@@ -16,6 +16,7 @@ import javax.swing.KeyStroke;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
+import jp.ac.kansai_u.kutc.firefly.packetArt.PlaySE;
 import jp.ac.kansai_u.kutc.firefly.packetArt.playing.PlayForm;
 import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
 import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.ReadDumpForm;
@@ -35,6 +36,7 @@ public class TitleForm extends FormBase implements FocusListener {
 	 */
 	public TitleForm() {
 		PcapManager.getInstance().start();
+		PlaySE.getInstance().initialize();
 	}
 	
 	public void initialize() {
