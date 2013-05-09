@@ -79,6 +79,7 @@ public class SettingForm extends FormBase implements ActionListener {
 		if(e.getSource() == mami1){
 			ConfigStatus.setViewLog     (madoka.panelViewLog.getStatus());
 			ConfigStatus.setMino        (madoka.panelMino.getStatus());
+			ConfigStatus.setMelody      (madoka.panelMelody.getStatus());
 			ConfigStatus.setVolMusic    (madoka.panelMusicVolume.getStatus());
 			ConfigStatus.setVolSound    (madoka.panelSoundVolume.getStatus());
 			ConfigStatus.setDifficulty  (madoka.panelDifficulty.getStatus());
