@@ -19,7 +19,7 @@ public class DifficultyPanel extends JPanel{
 	 * @param 初期化前の難易度の設定
 	 */
 	DifficultyPanel(byte b){
-		setLayout(new FlowLayout(FlowLayout.LEFT, 30, 0));
+		setLayout(new FlowLayout(FlowLayout.LEFT, ConfigInfo.HGAP, 0));
 		setOpaque(false);
 		
 		JLabel labelDifficulty = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "labelDifficulty.png"));

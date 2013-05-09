@@ -10,8 +10,9 @@ public class ConfigInfo {
 	
 	final static String IMGPATH = new String("./resource/image/config/");
 	final static String BTNPATH = new String(IMGPATH + "button/");
+	final static String VOLPATH = new String(IMGPATH + "volume/");
 	
 	final static int WIDTH=600, HEIGHT=800;
 	final static int WMARGIN=(int)(WIDTH*.05), HMARGIN=(int)(HEIGHT*.05);
-	
+	final static int HGAP=30;
 }
