@@ -33,31 +33,36 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
 		btnVolumeLow  = new JRadioButton(new ImageIcon(VOLPATH + "volLow.png"));
 		btnVolumeMed  = new JRadioButton(new ImageIcon(VOLPATH + "volMedium.png"));
 		btnVolumeHigh = new JRadioButton(new ImageIcon(VOLPATH + "volHigh.png"));
+		
 		btnVolumeMute.setSelectedIcon(new ImageIcon(VOLPATH + "volMuteSelected.png"));
-		btnVolumeLow.setSelectedIcon(new ImageIcon(VOLPATH + "volLowSelected.png"));
-		btnVolumeMed.setSelectedIcon(new ImageIcon(VOLPATH + "volMediumSelected.png"));
+		btnVolumeLow .setSelectedIcon(new ImageIcon(VOLPATH + "volLowSelected.png"));
+		btnVolumeMed .setSelectedIcon(new ImageIcon(VOLPATH + "volMediumSelected.png"));
 		btnVolumeHigh.setSelectedIcon(new ImageIcon(VOLPATH + "volHighSelected.png"));
+		
 		btnVolumeMute.setContentAreaFilled(false);
-		btnVolumeLow.setContentAreaFilled(false);
-		btnVolumeMed.setContentAreaFilled(false);
+		btnVolumeLow .setContentAreaFilled(false);
+		btnVolumeMed .setContentAreaFilled(false);
 		btnVolumeHigh.setContentAreaFilled(false);
+		
 		ButtonGroup volumeGroup = new ButtonGroup();
 		volumeGroup.add(btnVolumeMute); volumeGroup.add(btnVolumeLow);
 		volumeGroup.add(btnVolumeMed); volumeGroup.add(btnVolumeHigh);
-		add(labelVolume);
-		add(btnVolumeMute);
-		add(btnVolumeLow);
-		add(btnVolumeMed);
-		add(btnVolumeHigh);
+		
 		btnVolumeMute.addActionListener(this);
 		btnVolumeLow.addActionListener(this);
 		btnVolumeMed.addActionListener(this);
 		btnVolumeHigh.addActionListener(this);
 		
-		if     (b == ConfigInfo.MUTE)     btnVolumeMute.setSelected(true);
-		else if(b == ConfigInfo.SELOW)    btnVolumeLow .setSelected(true);
-		else if(b == ConfigInfo.SEMEDIUM) btnVolumeMed .setSelected(true);
-		else if(b == ConfigInfo.SEHIGH)   btnVolumeHigh.setSelected(true);
+		add(labelVolume);
+		add(btnVolumeMute);
+		add(btnVolumeLow);
+		add(btnVolumeMed);
+		add(btnVolumeHigh);
+		
+		if     (b == ConfigInfo.MUTE)      btnVolumeMute.setSelected(true);
+		else if(b == ConfigInfo.VOLLOW)    btnVolumeLow .setSelected(true);
+		else if(b == ConfigInfo.VOLMEDIUM) btnVolumeMed .setSelected(true);
+		else if(b == ConfigInfo.VOLHIGH)   btnVolumeHigh.setSelected(true);
 	}
 	
 	/**
@@ -66,28 +71,19 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
 	 */
 	public byte getStatus(){
 		if     (btnVolumeMute.isSelected()) return ConfigInfo.MUTE;
-	    else if(btnVolumeLow.isSelected())  return ConfigInfo.SELOW;
-	    else if(btnVolumeMed.isSelected())  return ConfigInfo.SEMEDIUM;
-	    else if(btnVolumeHigh.isSelected()) return ConfigInfo.SEHIGH;
+	    else if(btnVolumeLow.isSelected())  return ConfigInfo.VOLLOW;
+	    else if(btnVolumeMed.isSelected())  return ConfigInfo.VOLMEDIUM;
+	    else if(btnVolumeHigh.isSelected()) return ConfigInfo.VOLHIGH;
 		return -1;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		PlaySE playSE = PlaySE.getInstance();
-		if(e.getSource() == btnVolumeMute) {
-			playSE.setVolumeAll(0);
-			System.out.println("SE VOLUME => " + playSE.getVolume("select"));
-		}else if(e.getSource() == btnVolumeLow) {
-			playSE.setVolumeAll(60);
-			System.out.println("SE VOLUME => " + playSE.getVolume("select"));
-		} else if(e.getSource() == btnVolumeMed) {
-			playSE.setVolumeAll(80);
-			System.out.println("SE VOLUME => " + playSE.getVolume("select"));
-		} else if(e.getSource() == btnVolumeHigh) {
-			playSE.setVolumeAll(100);
-			System.out.println("SE VOLUME => " + playSE.getVolume("select"));
-		}
+		
+		playSE.setVolumeAll(getStatus());
+		System.out.println("SE VOLUME => " + playSE.getVolume("select"));
+		
 		playSE.play("select");
 		playSE = null;
 	}

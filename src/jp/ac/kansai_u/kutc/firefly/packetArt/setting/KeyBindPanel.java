@@ -34,7 +34,6 @@ public class KeyBindPanel extends JPanel implements ActionListener{
 	 * @param b（キーバインドの設定）
 	 */
 	KeyBindPanel(byte b){
-		setBounds(30, 380, 540, 200);
 		setOpaque(false);
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
@@ -107,8 +106,8 @@ public class KeyBindPanel extends JPanel implements ActionListener{
 		add(labelKeyPanel);
 		
 		if     (b == ConfigInfo.KEYDEFAULT) btnKeyDefault.setSelected(true);
-		else if(b == ConfigInfo.KEYGAMER)   btnKeyGamer.setSelected(true);
-		else if(b == ConfigInfo.KEYVIM)     btnKeyVim.setSelected(true);
+		else if(b == ConfigInfo.KEYGAMER)   btnKeyGamer  .setSelected(true);
+		else if(b == ConfigInfo.KEYVIM)     btnKeyVim    .setSelected(true);
 	}
 
 	/**

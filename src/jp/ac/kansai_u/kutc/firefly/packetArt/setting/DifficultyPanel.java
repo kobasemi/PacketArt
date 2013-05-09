@@ -12,8 +12,6 @@ import javax.swing.JRadioButton;
  * @author akasaka
  */
 public class DifficultyPanel extends JPanel{
-	final public String IMGPATH = new String("./resource/image/config/");
-	final public String BTNPATH = new String(IMGPATH + "button/");
 	private JRadioButton btnDifficultyStatic, btnDifficultyDynamic, btnDifficultyAuto;
 	
 	/**
@@ -24,30 +22,31 @@ public class DifficultyPanel extends JPanel{
 		setLayout(new FlowLayout(FlowLayout.LEFT, 30, 0));
 		setOpaque(false);
 		
-		JLabel labelDifficulty = new JLabel(new ImageIcon(IMGPATH + "labelDifficulty.png"));
-		btnDifficultyStatic = new JRadioButton(new ImageIcon(BTNPATH + "btnStatic.png"));
-	    btnDifficultyDynamic = new JRadioButton(new ImageIcon(BTNPATH + "btnDynamic.png"));
-	    btnDifficultyAuto = new JRadioButton(new ImageIcon(BTNPATH + "btnAuto.png"));
+		JLabel labelDifficulty = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "labelDifficulty.png"));
+		btnDifficultyStatic  = new JRadioButton(new ImageIcon(ConfigInfo.BTNPATH + "btnStatic.png"));
+	    btnDifficultyDynamic = new JRadioButton(new ImageIcon(ConfigInfo.BTNPATH + "btnDynamic.png"));
+	    btnDifficultyAuto    = new JRadioButton(new ImageIcon(ConfigInfo.BTNPATH + "btnAuto.png"));
+	    
 	    ButtonGroup difficultyGroup = new ButtonGroup();
 	    difficultyGroup.add(btnDifficultyStatic); difficultyGroup.add(btnDifficultyDynamic);
 	    difficultyGroup.add(btnDifficultyAuto);
 	    
-	    btnDifficultyStatic.setSelectedIcon(new ImageIcon(BTNPATH + "btnStaticSelected.png"));
-	    btnDifficultyDynamic.setSelectedIcon(new ImageIcon(BTNPATH + "btnDynamicSelected.png"));
-	    btnDifficultyAuto.setSelectedIcon(new ImageIcon(BTNPATH + "btnAutoSelected.png"));
+	    btnDifficultyStatic .setSelectedIcon(new ImageIcon(ConfigInfo.BTNPATH + "btnStaticSelected.png"));
+	    btnDifficultyDynamic.setSelectedIcon(new ImageIcon(ConfigInfo.BTNPATH + "btnDynamicSelected.png"));
+	    btnDifficultyAuto   .setSelectedIcon(new ImageIcon(ConfigInfo.BTNPATH + "btnAutoSelected.png"));
 	    
-	    btnDifficultyStatic.setContentAreaFilled(false);
+	    btnDifficultyStatic .setContentAreaFilled(false);
 	    btnDifficultyDynamic.setContentAreaFilled(false);
-	    btnDifficultyAuto.setContentAreaFilled(false);
+	    btnDifficultyAuto   .setContentAreaFilled(false);
 	    
 	    add(labelDifficulty);
 		add(btnDifficultyStatic);
 		add(btnDifficultyDynamic);
 		add(btnDifficultyAuto);
 		
-		if     (b == ConfigInfo.STATIC)  btnDifficultyStatic.setSelected(true);
+		if     (b == ConfigInfo.STATIC)  btnDifficultyStatic .setSelected(true);
 		else if(b == ConfigInfo.DYNAMIC) btnDifficultyDynamic.setSelected(true);
-		else if(b == ConfigInfo.AUTO)    btnDifficultyAuto.setSelected(true);
+		else if(b == ConfigInfo.AUTO)    btnDifficultyAuto   .setSelected(true);
 	}
 	
 	/**

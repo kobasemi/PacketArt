@@ -9,7 +9,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
-import jp.ac.kansai_u.kutc.firefly.packetArt.music.BGMExperimenter;
+import jp.ac.kansai_u.kutc.firefly.packetArt.music.MidiPlayer;
 
 /**
  * BGMボリューム設定に関するパネル
@@ -20,6 +20,7 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 	 
 	private JRadioButton btnVolumeMute, btnVolumeLow, btnVolumeMed, btnVolumeHigh;
 	Thread thread = null;
+	private String file = "BGMTestSound.mid";
 	
 	/**
 	 * コンストラクタ
@@ -60,9 +61,9 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 	    btnVolumeHigh.addActionListener(this);
 	    
 	    if     (b == ConfigInfo.MUTE)      btnVolumeMute.setSelected(true);
-	    else if(b == ConfigInfo.BGMLOW)    btnVolumeLow .setSelected(true);
-	    else if(b == ConfigInfo.BGMMEDIUM) btnVolumeMed .setSelected(true);
-	    else if(b == ConfigInfo.BGMHIGH)   btnVolumeHigh.setSelected(true);
+	    else if(b == ConfigInfo.VOLLOW)    btnVolumeLow .setSelected(true);
+	    else if(b == ConfigInfo.VOLMEDIUM) btnVolumeMed .setSelected(true);
+	    else if(b == ConfigInfo.VOLHIGH)   btnVolumeHigh.setSelected(true);
 	}
 	
 	/**
@@ -71,9 +72,9 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 	 */
 	public byte getStatus(){
 		if     (btnVolumeMute.isSelected()) return ConfigInfo.MUTE;
-	    else if(btnVolumeLow .isSelected()) return ConfigInfo.BGMLOW; 
-	    else if(btnVolumeMed .isSelected()) return ConfigInfo.BGMMEDIUM;
-	    else if(btnVolumeHigh.isSelected()) return ConfigInfo.BGMHIGH;
+	    else if(btnVolumeLow .isSelected()) return ConfigInfo.VOLLOW; 
+	    else if(btnVolumeMed .isSelected()) return ConfigInfo.VOLMEDIUM;
+	    else if(btnVolumeHigh.isSelected()) return ConfigInfo.VOLHIGH;
 		return -1;
 	}
 
@@ -83,12 +84,8 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 			// スレッドに何か入っているときは，ストップする
 //			TODO ストップをやめて，halt(), interrupt()を使用しよう
 			thread.stop();
-		if(e.getSource() == btnVolumeLow)
-			thread = new BGMExperimenter(ConfigInfo.BGMLOW);
-		else if(e.getSource() == btnVolumeMed)
-			thread = new BGMExperimenter(ConfigInfo.BGMMEDIUM);
-		else if(e.getSource() == btnVolumeHigh)
-			thread = new BGMExperimenter(ConfigInfo.BGMHIGH);
+		thread = new MidiPlayer(getStatus(), file);
+		
 		thread.start();
 	}
 }

@@ -33,7 +33,7 @@ public class ConfigStatus {
 		mino = ConfigInfo.MINO4;
 		melody = true;
 		volMusic = ConfigInfo.MUTE; //TODO :実装時，MEDIUMに．
-		volSound = ConfigInfo.SEMEDIUM;
+		volSound = ConfigInfo.VOLMEDIUM;
 		difficulty = ConfigInfo.AUTO;
 		keybind = ConfigInfo.KEYDEFAULT;
 		up = KEYBIND[keybind][0]; down = KEYBIND[keybind][1];

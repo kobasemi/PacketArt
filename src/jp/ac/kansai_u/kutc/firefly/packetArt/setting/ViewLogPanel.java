@@ -13,7 +13,6 @@ import javax.swing.JRadioButton;
  * @author akasaka
  */
 public class ViewLogPanel extends JPanel{
-	final String BTNPATH = new String(ConfigInfo.IMGPATH + "button/");
 	private JRadioButton btnOn, btnOff;
 	
 	/**
@@ -25,12 +24,12 @@ public class ViewLogPanel extends JPanel{
 		setOpaque(false);
 		
 		JLabel labelViewLog = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "labelLog.png"));
-		btnOn = new JRadioButton(new ImageIcon(BTNPATH + "btnOn.png"));
-		btnOff = new JRadioButton(new ImageIcon(BTNPATH + "btnOff.png"));
+		btnOn  = new JRadioButton(new ImageIcon(ConfigInfo.BTNPATH + "btnOn.png"));
+		btnOff = new JRadioButton(new ImageIcon(ConfigInfo.BTNPATH + "btnOff.png"));
 
-		btnOn.setSelectedIcon(new ImageIcon(BTNPATH + "btnOnSelected.png"));
-		btnOff.setSelectedIcon(new ImageIcon(BTNPATH + "btnOffSelected.png"));
-		btnOn.setContentAreaFilled(false);
+		btnOn .setSelectedIcon(new ImageIcon(ConfigInfo.BTNPATH + "btnOnSelected.png"));
+		btnOff.setSelectedIcon(new ImageIcon(ConfigInfo.BTNPATH + "btnOffSelected.png"));
+		btnOn .setContentAreaFilled(false);
 		btnOff.setContentAreaFilled(false);
 		
 		ButtonGroup logViewGroup = new ButtonGroup();

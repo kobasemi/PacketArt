@@ -14,27 +14,30 @@ public class ConfigStatusMainPanel extends JPanel{
 	MusicVolumePanel panelMusicVolume;
 	SoundVolumePanel panelSoundVolume;
 	DifficultyPanel  panelDifficulty;
+	KeyBindPanel     panelKeyBind;
 	
 	/**
 	 * コンストラクタ
 	 */
 	ConfigStatusMainPanel(){
-		setBounds(30, 130, 540, 250);
+		setBounds(30, 140, 540, 450);
 		setOpaque(false);
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
 		panelViewLog     = new ViewLogPanel(ConfigStatus.isViewLog());
 		panelMino        = new MinoPanel(ConfigStatus.getMino());
-//		panelMelody      = new MelodyPanel(ConfigStatus.isMelody());
+		panelMelody      = new MelodyPanel(ConfigStatus.isMelody());
 		panelMusicVolume = new MusicVolumePanel(ConfigStatus.getVolMusic());
 		panelSoundVolume = new SoundVolumePanel(ConfigStatus.getVolSound());
 		panelDifficulty  = new DifficultyPanel(ConfigStatus.getDifficulty());
+		panelKeyBind     = new KeyBindPanel(ConfigStatus.getKeyBind());
 		
 		add(panelViewLog);
 		add(panelMino);
-//		add(panelMelody);
+		add(panelMelody);
 		add(panelMusicVolume);
 		add(panelSoundVolume);
 		add(panelDifficulty);
+		add(panelKeyBind);
 	}
 }
