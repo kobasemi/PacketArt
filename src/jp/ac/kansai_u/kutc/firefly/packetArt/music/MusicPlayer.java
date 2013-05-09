@@ -6,6 +6,13 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 
+/**
+ * ゲームBGMを再生するメソッドです。
+ * スレッドに対応してます。
+ * <code>playMusic(100, 240, true)</code>
+ * のように呼び出して使用して下さい。
+ * @author Lisa
+ */
 public class MusicPlayer extends Thread{
     private Sequencer sequencer;
     private Sequence sequence;
