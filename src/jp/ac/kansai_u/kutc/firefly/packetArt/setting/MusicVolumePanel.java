@@ -16,11 +16,10 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.music.BGMExperimenter;
  * @author akasaka
  */
 public class MusicVolumePanel extends JPanel implements ActionListener{
-	final String IMGPATH = new String("./resource/image/config/");
-	final String VOLPATH = new String(IMGPATH + "volume/");
+	final String VOLPATH = new String(ConfigInfo.IMGPATH + "volume/");
 	 
 	private JRadioButton btnVolumeMute, btnVolumeLow, btnVolumeMed, btnVolumeHigh;
-	Thread thread;
+	Thread thread = null;
 	
 	/**
 	 * コンストラクタ
@@ -28,40 +27,42 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 	 */
 	MusicVolumePanel(byte b){
 		setLayout(new FlowLayout(FlowLayout.LEFT, 30, 0));
-		JLabel labelVolume = new JLabel(new ImageIcon(IMGPATH + "labelBGM.png"));
+		setOpaque(false);
+		
+		JLabel labelVolume = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "labelBGM.png"));
 		btnVolumeMute = new JRadioButton(new ImageIcon(VOLPATH + "volMute.png"));
-	    btnVolumeLow  = new JRadioButton(new ImageIcon(VOLPATH + "volLow.png"));
-	    btnVolumeMed  = new JRadioButton(new ImageIcon(VOLPATH + "volMedium.png"));
-	    btnVolumeHigh = new JRadioButton(new ImageIcon(VOLPATH + "volHigh.png"));
-	    btnVolumeMute.setSelectedIcon(new ImageIcon(VOLPATH + "volMuteSelected.png"));
-		btnVolumeLow.setSelectedIcon(new ImageIcon(VOLPATH + "volLowSelected.png"));
-		btnVolumeMed.setSelectedIcon(new ImageIcon(VOLPATH + "volMediumSelected.png"));
+		btnVolumeLow  = new JRadioButton(new ImageIcon(VOLPATH + "volLow.png"));
+		btnVolumeMed  = new JRadioButton(new ImageIcon(VOLPATH + "volMedium.png"));
+		btnVolumeHigh = new JRadioButton(new ImageIcon(VOLPATH + "volHigh.png"));
+	
+		btnVolumeMute.setSelectedIcon(new ImageIcon(VOLPATH + "volMuteSelected.png"));
+		btnVolumeLow .setSelectedIcon(new ImageIcon(VOLPATH + "volLowSelected.png"));
+		btnVolumeMed .setSelectedIcon(new ImageIcon(VOLPATH + "volMediumSelected.png"));
 		btnVolumeHigh.setSelectedIcon(new ImageIcon(VOLPATH + "volHighSelected.png"));
+		
 		btnVolumeMute.setContentAreaFilled(false);
-		btnVolumeLow.setContentAreaFilled(false);
-		btnVolumeMed.setContentAreaFilled(false);
+		btnVolumeLow .setContentAreaFilled(false);
+		btnVolumeMed .setContentAreaFilled(false);
 		btnVolumeHigh.setContentAreaFilled(false);
-	    ButtonGroup volumeGroup = new ButtonGroup();
-	    volumeGroup.add(btnVolumeMute); volumeGroup.add(btnVolumeLow);
-	    volumeGroup.add(btnVolumeMed); volumeGroup.add(btnVolumeHigh);
+	    
+		ButtonGroup volumeGroup = new ButtonGroup();
+	    volumeGroup.add(btnVolumeMute); volumeGroup.add(btnVolumeLow );
+	    volumeGroup.add(btnVolumeMed ); volumeGroup.add(btnVolumeHigh);
+	    
 	    add(labelVolume);
 	    add(btnVolumeMute);
 	    add(btnVolumeLow);
 	    add(btnVolumeMed);
 	    add(btnVolumeHigh);
 	    
-	    btnVolumeLow.addActionListener(this);
-	    btnVolumeMed.addActionListener(this);
+	    btnVolumeLow .addActionListener(this);
+	    btnVolumeMed .addActionListener(this);
 	    btnVolumeHigh.addActionListener(this);
 	    
-	    if     (b == ConfigStatus.MUTE)      btnVolumeMute.setSelected(true);
-	    else if(b == ConfigStatus.BGMLOW)    btnVolumeLow .setSelected(true);
-	    else if(b == ConfigStatus.BGMMEDIUM) btnVolumeMed .setSelected(true);
-	    else if(b == ConfigStatus.BGMHIGH)   btnVolumeHigh.setSelected(true);
-	    
-	    //スレッドに何もしない処理を一応登録する．
-	    //じゃないとstop()でエラーが出るのだもの
-	    thread = new BGMExperimenter(ConfigStatus.MUTE);
+	    if     (b == ConfigInfo.MUTE)      btnVolumeMute.setSelected(true);
+	    else if(b == ConfigInfo.BGMLOW)    btnVolumeLow .setSelected(true);
+	    else if(b == ConfigInfo.BGMMEDIUM) btnVolumeMed .setSelected(true);
+	    else if(b == ConfigInfo.BGMHIGH)   btnVolumeHigh.setSelected(true);
 	}
 	
 	/**
@@ -69,22 +70,25 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 	 * @return ボリューム設定（Mute, Low, Medium, High）
 	 */
 	public byte getStatus(){
-		if     (btnVolumeMute.isSelected()) return ConfigStatus.MUTE;
-	    else if(btnVolumeLow .isSelected()) return ConfigStatus.BGMLOW; 
-	    else if(btnVolumeMed .isSelected()) return ConfigStatus.BGMMEDIUM;
-	    else if(btnVolumeHigh.isSelected()) return ConfigStatus.BGMHIGH;
+		if     (btnVolumeMute.isSelected()) return ConfigInfo.MUTE;
+	    else if(btnVolumeLow .isSelected()) return ConfigInfo.BGMLOW; 
+	    else if(btnVolumeMed .isSelected()) return ConfigInfo.BGMMEDIUM;
+	    else if(btnVolumeHigh.isSelected()) return ConfigInfo.BGMHIGH;
 		return -1;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		thread.stop();
+		if(thread != null)
+			// スレッドに何か入っているときは，ストップする
+//			TODO ストップをやめて，halt(), interrupt()を使用しよう
+			thread.stop();
 		if(e.getSource() == btnVolumeLow)
-			thread = new BGMExperimenter(ConfigStatus.BGMLOW);
+			thread = new BGMExperimenter(ConfigInfo.BGMLOW);
 		else if(e.getSource() == btnVolumeMed)
-			thread = new BGMExperimenter(ConfigStatus.BGMMEDIUM);
+			thread = new BGMExperimenter(ConfigInfo.BGMMEDIUM);
 		else if(e.getSource() == btnVolumeHigh)
-			thread = new BGMExperimenter(ConfigStatus.BGMHIGH);
+			thread = new BGMExperimenter(ConfigInfo.BGMHIGH);
 		thread.start();
 	}
 }

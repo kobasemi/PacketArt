@@ -22,6 +22,8 @@ public class DifficultyPanel extends JPanel{
 	 */
 	DifficultyPanel(byte b){
 		setLayout(new FlowLayout(FlowLayout.LEFT, 30, 0));
+		setOpaque(false);
+		
 		JLabel labelDifficulty = new JLabel(new ImageIcon(IMGPATH + "labelDifficulty.png"));
 		btnDifficultyStatic = new JRadioButton(new ImageIcon(BTNPATH + "btnStatic.png"));
 	    btnDifficultyDynamic = new JRadioButton(new ImageIcon(BTNPATH + "btnDynamic.png"));
@@ -43,9 +45,9 @@ public class DifficultyPanel extends JPanel{
 		add(btnDifficultyDynamic);
 		add(btnDifficultyAuto);
 		
-		if     (b == ConfigStatus.STATIC)  btnDifficultyStatic.setSelected(true);
-		else if(b == ConfigStatus.DYNAMIC) btnDifficultyDynamic.setSelected(true);
-		else if(b == ConfigStatus.AUTO)    btnDifficultyAuto.setSelected(true);
+		if     (b == ConfigInfo.STATIC)  btnDifficultyStatic.setSelected(true);
+		else if(b == ConfigInfo.DYNAMIC) btnDifficultyDynamic.setSelected(true);
+		else if(b == ConfigInfo.AUTO)    btnDifficultyAuto.setSelected(true);
 	}
 	
 	/**
@@ -53,9 +55,9 @@ public class DifficultyPanel extends JPanel{
 	 * @return 難易度（静的, 動的, 自動）
 	 */
 	public byte getStatus(){
-		if     (btnDifficultyStatic.isSelected())  return ConfigStatus.STATIC;
-		else if(btnDifficultyDynamic.isSelected()) return ConfigStatus.DYNAMIC;
-		else if(btnDifficultyAuto.isSelected())    return ConfigStatus.AUTO;
+		if     (btnDifficultyStatic.isSelected())  return ConfigInfo.STATIC;
+		else if(btnDifficultyDynamic.isSelected()) return ConfigInfo.DYNAMIC;
+		else if(btnDifficultyAuto.isSelected())    return ConfigInfo.AUTO;
 		return -1;
 	}
 }

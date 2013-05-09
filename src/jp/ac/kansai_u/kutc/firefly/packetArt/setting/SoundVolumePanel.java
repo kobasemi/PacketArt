@@ -17,8 +17,7 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.PlaySE;
  * @author akasaka
  */
 public class SoundVolumePanel extends JPanel implements ActionListener{
-	final String IMGPATH = new String("./resource/image/config/");
-	final String VOLPATH = new String(IMGPATH + "/volume/");
+	final String VOLPATH = new String(ConfigInfo.IMGPATH + "/volume/");
 	private JRadioButton btnVolumeMute, btnVolumeLow, btnVolumeMed, btnVolumeHigh;
 	
 	/**
@@ -27,7 +26,9 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
 	 */
 	SoundVolumePanel(byte b){
 		setLayout(new FlowLayout(FlowLayout.LEFT, 30, 0));
-		JLabel labelVolume = new JLabel(new ImageIcon(IMGPATH + "labelSE.png"));
+		setOpaque(false);
+		
+		JLabel labelVolume = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "labelSE.png"));
 		btnVolumeMute = new JRadioButton(new ImageIcon(VOLPATH + "volMute.png"));
 		btnVolumeLow  = new JRadioButton(new ImageIcon(VOLPATH + "volLow.png"));
 		btnVolumeMed  = new JRadioButton(new ImageIcon(VOLPATH + "volMedium.png"));
@@ -53,10 +54,10 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
 		btnVolumeMed.addActionListener(this);
 		btnVolumeHigh.addActionListener(this);
 		
-		if     (b == ConfigStatus.MUTE)     btnVolumeMute.setSelected(true);
-		else if(b == ConfigStatus.SELOW)    btnVolumeLow .setSelected(true);
-		else if(b == ConfigStatus.SEMEDIUM) btnVolumeMed .setSelected(true);
-		else if(b == ConfigStatus.SEHIGH)   btnVolumeHigh.setSelected(true);
+		if     (b == ConfigInfo.MUTE)     btnVolumeMute.setSelected(true);
+		else if(b == ConfigInfo.SELOW)    btnVolumeLow .setSelected(true);
+		else if(b == ConfigInfo.SEMEDIUM) btnVolumeMed .setSelected(true);
+		else if(b == ConfigInfo.SEHIGH)   btnVolumeHigh.setSelected(true);
 	}
 	
 	/**
@@ -64,10 +65,10 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
 	 * @return ボリューム設定（Mute, Low, Medium, High）
 	 */
 	public byte getStatus(){
-		if     (btnVolumeMute.isSelected()) return ConfigStatus.MUTE;
-	    else if(btnVolumeLow.isSelected())  return ConfigStatus.SELOW;
-	    else if(btnVolumeMed.isSelected())  return ConfigStatus.SEMEDIUM;
-	    else if(btnVolumeHigh.isSelected()) return ConfigStatus.SEHIGH;
+		if     (btnVolumeMute.isSelected()) return ConfigInfo.MUTE;
+	    else if(btnVolumeLow.isSelected())  return ConfigInfo.SELOW;
+	    else if(btnVolumeMed.isSelected())  return ConfigInfo.SEMEDIUM;
+	    else if(btnVolumeHigh.isSelected()) return ConfigInfo.SEHIGH;
 		return -1;
 	}
 

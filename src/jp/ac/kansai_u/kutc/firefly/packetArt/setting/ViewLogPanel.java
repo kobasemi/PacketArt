@@ -13,8 +13,7 @@ import javax.swing.JRadioButton;
  * @author akasaka
  */
 public class ViewLogPanel extends JPanel{
-	final String IMGPATH = new String("./resource/image/config/");
-	final String BTNPATH = new String(IMGPATH + "button/");
+	final String BTNPATH = new String(ConfigInfo.IMGPATH + "button/");
 	private JRadioButton btnOn, btnOff;
 	
 	/**
@@ -23,12 +22,14 @@ public class ViewLogPanel extends JPanel{
 	 */
 	ViewLogPanel(boolean f){
 		setLayout(new FlowLayout(FlowLayout.LEFT, 30, 0));
-		JLabel labelViewLog = new JLabel(new ImageIcon(IMGPATH + "labelLog.png"));
-		btnOn = new JRadioButton(new ImageIcon(BTNPATH + "btnOn.png"));
-		btnOn.setSelectedIcon(new ImageIcon(BTNPATH + "btnOnSelected.png"));
-		btnOff = new JRadioButton(new ImageIcon(BTNPATH + "btnOff.png"));
-		btnOff.setSelectedIcon(new ImageIcon(BTNPATH + "btnOffSelected.png"));
+		setOpaque(false);
 		
+		JLabel labelViewLog = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "labelLog.png"));
+		btnOn = new JRadioButton(new ImageIcon(BTNPATH + "btnOn.png"));
+		btnOff = new JRadioButton(new ImageIcon(BTNPATH + "btnOff.png"));
+
+		btnOn.setSelectedIcon(new ImageIcon(BTNPATH + "btnOnSelected.png"));
+		btnOff.setSelectedIcon(new ImageIcon(BTNPATH + "btnOffSelected.png"));
 		btnOn.setContentAreaFilled(false);
 		btnOff.setContentAreaFilled(false);
 		
