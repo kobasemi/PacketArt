@@ -65,7 +65,7 @@ public class PacketrisModel {
 	 */
 	public PacketBlock getBlock(int x, int y) {
 		if(x < 0 || y < 0 || x >= column || y >= row)
-			throw new InvalidParameterException();
+			throw new InvalidParameterException("Specified parameter is [" + x + ", " + y + "] is out of range.");
 		else
 			return board[y][x];
 	}
@@ -143,27 +143,31 @@ public class PacketrisModel {
 	 * @param direction 回転方向
 	 */
 	public void rotate(Direction direction){
-		// TODO: 回転させる際に、壁にめり込んだ場合、横にずらして回す
+		Location[] rotated = new Location[5];
+		Location[] stored = new Location[5];
+		int i = 0;
 		
-		// TODO: 昇竜ぷよ？みたいなことはさせないようにする
 		for (Block item : currentMinos) {
-			int x = parentLocation.getX();
-			int y = parentLocation.getY();
+			stored[i] = currentMinos.get(i).location;
+			int x = item.location.getX();
+			int y = item.location.getY();
 			
 			// 回転行列を利用
-			if(direction == Direction.Left){
-				x += item.location.getY();
-				y += -1 * item.location.getX();
+			if(direction == Direction.Right){
+				x = item.location.getY();
+				y = -1 * item.location.getX();
 			} else {
-				x += -1 * item.location.getY();
-				y += item.location.getX();
+				x = -1 * item.location.getY();
+				y = item.location.getX();
 			}
-			Block destination = getBlock(x, y);
-			if(destination.blockType == BlockType.Wall){
-				parentLocation.add(-1, 0);
-			} else if(destination.blockType == BlockType.Mino) {
-				
-			}
+			rotated[i] = new Location(x, y);
+			currentMinos.get(i).location = rotated[i];
+			i++;
+		}
+		
+		// 配置できないとき
+		if(!canAllocate(parentLocation)){
+			System.out.println("can't allocated.");
 		}
 	}
 
@@ -190,13 +194,12 @@ public class PacketrisModel {
 			item.location = new Location(parentLocation.getX() + item.location.getX(), parentLocation.getY()+ item.location.getY());
 		}
 		
-		/* stdoutで見えるミノ
+		// stdoutで見えるミノ
 		for(PacketBlock[] column : board){
 			for(Block item : column)
 				System.out.print(item.blockType == BlockType.Wall ? "W" : item.blockType == BlockType.Void ? "_": "o");
 			System.out.println();
 		}
-		*/
 	}
 	
 	/**
@@ -224,7 +227,7 @@ public class PacketrisModel {
 		ArrayList<Integer> deletedLines = new ArrayList<Integer>(5);
 		
 		// 調べる処理
-		for(int i = 1; i < board.length; i++){
+		for(int i = row - 2; i > 0; i--){
 			boolean canDeleteFlag = true;
 			for (int j = 0; j < board[i].length; j++)
 				if(board[i][j].blockType == BlockType.Void)
@@ -233,18 +236,21 @@ public class PacketrisModel {
 			// 消す処理
 			if(canDeleteFlag){
 				deletedLines.add(i);
-				for(int j = 0; j < board[i].length; j++)
+				for(int j = 1; j < board[i].length - 1; j++)
 					board[i][j]  = new PacketBlock();
 			}
 		}
 		
 		// 落とす処理
-		int offset = 1;
-		for(int i = deletedLines.get(deletedLines.size() - 1); i > 0; i--){
-			if(deletedLines.contains(i))
-				offset++;
-			for(int j = 1; j < board[i].length - 1; j++){
-				board[i-offset][j] = board[i][j];
+		if(deletedLines.size() > 0){
+			int offset = 0;
+			for(int i = deletedLines.get(deletedLines.size() - 1); i > 0; i--){
+				if(deletedLines.contains(i))
+					offset++;
+				for(int j = 1; j < board[i].length - 1; j++){
+					board[i][j] = board[i - offset][j];
+					board[i][j].location.set(j, i);
+				}
 			}
 		}
 	}

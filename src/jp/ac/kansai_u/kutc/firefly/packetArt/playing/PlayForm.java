@@ -37,6 +37,7 @@ public class PlayForm extends FormBase {
 	long falldownTimer;
 	int minoSize;
 	boolean isPaused = false;
+	boolean isGranded = false;
 	
 	Point topLeft;
 
@@ -85,6 +86,7 @@ public class PlayForm extends FormBase {
 		keyQueue = new LinkedList<Integer>();
 		keyPressedTime = new HashMap<Integer, Long>();
 		model.initialize();
+		generateNextBlockFromPacket();
 		addKeyListener(this);
 		minoSize = (int)(Math.min(getPreferredSize().width / model.column, getPreferredSize().height / model.row) * 0.9);
 		topLeft = new Point(
@@ -97,11 +99,10 @@ public class PlayForm extends FormBase {
 		// TODO: backgrownd
 		
 		if(!isPaused){
-			for(PacketBlock item : model.currentMinos) {
+			for(PacketBlock item : model.currentMinos) 
 				paintMino(g, item,
 						topLeft.x + ((model.parentLocation.getX() + item.location.getX()) * minoSize), 
 						topLeft.y + ((model.parentLocation.getY() + item.location.getY()) * minoSize));
-			}
 			for (PacketBlock[] column : model.getBoard()) {
 				for(PacketBlock item : column){
 					paintMino(g, item,
@@ -148,9 +149,11 @@ public class PlayForm extends FormBase {
 		List<Integer> keys = new ArrayList<Integer>();
 		while (keyQueue.size() != 0 && keyPressedTime.size() != 0) {
 			// 未来の話なら抜ける(そんなことあり得るのか)
+			// 中断したら落ちる
 			int tgt = keyQueue.get(0);
-			if (keyPressedTime.get(tgt) > tick)
-				break;
+			if(keyPressedTime.containsKey(tgt))
+				if (keyPressedTime.get(tgt) > tick)
+					break;
 			//if (keyPressedTime.get(keyQueue.get(0)) < tick)
 			keys.add(keyQueue.pop());
 		}
@@ -241,12 +244,23 @@ public class PlayForm extends FormBase {
 		if (falldownTimer > falldownLimit) {
 			//System.out.println("falling - " + model.parentLocation.toString());
 			falldownTimer = 0;
+			
+			// 接地済みなら新しく生成
+			if (isGranded){
+				isGranded = false;
+				if(!model.fallDown()){
+					model.fixMino();
+					generateNextBlockFromPacket();
+					System.out.println("generate - " + model.parentLocation);
+				}
+			}
+			
 			// 落下に失敗したら、Next生成
 			if (!model.fallDown()) {
-				System.out.println("generate");
-				model.fixMino();
-				generateNextBlockFromPacket();
+				isGranded = true;
 			}
+
+			model.deleteLines();
 		} else {
 			falldownTimer++;
 		}
@@ -256,7 +270,7 @@ public class PlayForm extends FormBase {
 
 	private void generateNextBlockFromPacket() {
 		// TODO ミノの生成方法を決定する
-		model.generateMino(TetroMino.T, false, model.column / 2);
+		model.generateMino(TetroMino.I, false, model.column / 2);
 	}
 
 	@Override
