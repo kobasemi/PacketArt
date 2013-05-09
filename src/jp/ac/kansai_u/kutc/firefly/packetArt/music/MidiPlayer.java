@@ -13,7 +13,7 @@ import javax.sound.midi.Track;
 public class MidiPlayer extends Thread {
 	private int coefficient;
 	private String filename;
-	private boolean killps;
+	private static boolean killps;
 	private static Sequencer sequencer;
 
 	/**
@@ -66,6 +66,7 @@ public class MidiPlayer extends Thread {
 		} finally {
 			if (sequencer != null && sequencer.isOpen())
 				sequencer.close();
+				killps = true;
 		}
 	}
 
