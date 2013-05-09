@@ -88,7 +88,6 @@ public class TitleForm extends FormBase implements FocusListener {
 		// タイトルBGMを鳴らす。 by Lisa
 		titlemusic = new MidiPlayer(ConfigStatus.getVolMusic(), "TitleMusic.mid");
 		titlemusic.start();
-		getContentPane().setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, backwardKeys);
 	}
 	
 	public void paint(Graphics g) {}
