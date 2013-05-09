@@ -10,7 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
-//import jp.ac.kansai_u.kutc.firefly.packetArt.playSE;
+import jp.ac.kansai_u.kutc.firefly.packetArt.PlaySE;
 
 /**
  * SEボリューム設定に関するパネル
@@ -49,6 +49,7 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
 		add(btnVolumeLow);
 		add(btnVolumeMed);
 		add(btnVolumeHigh);
+		btnVolumeMute.addActionListener(this);
 		btnVolumeLow.addActionListener(this);
 		btnVolumeMed.addActionListener(this);
 		btnVolumeHigh.addActionListener(this);
@@ -73,12 +74,21 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		/*if(e.getSource() == btnVolumeLow)
-			playSE.volume = playSE.Volume.LOW;
-		else if(e.getSource() == btnVolumeMed)
-			playSE.volume = playSE.Volume.MEDIUM;
-		else if(e.getSource() == btnVolumeHigh)
-			playSE.volume = playSE.Volume.HIGH;
-		playSE.SELECT.play();*/
+		PlaySE playSE = PlaySE.getInstance();
+		if(e.getSource() == btnVolumeMute) {
+			playSE.setVolumeAll(0);
+			System.out.println("SE VOLUME => " + playSE.getVolume("select"));
+		}else if(e.getSource() == btnVolumeLow) {
+			playSE.setVolumeAll(60);
+			System.out.println("SE VOLUME => " + playSE.getVolume("select"));
+		} else if(e.getSource() == btnVolumeMed) {
+			playSE.setVolumeAll(80);
+			System.out.println("SE VOLUME => " + playSE.getVolume("select"));
+		} else if(e.getSource() == btnVolumeHigh) {
+			playSE.setVolumeAll(100);
+			System.out.println("SE VOLUME => " + playSE.getVolume("select"));
+		}
+		playSE.play("select");
+		playSE = null;
 	}
 }

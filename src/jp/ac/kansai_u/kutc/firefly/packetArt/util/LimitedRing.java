@@ -17,7 +17,7 @@ public class LimitedRing<E> extends LimitedQueue<E> {
     */
     public synchronized E peek() {
         E o = super.remove();
-        add(o);
+        super.add(o);
         return o;
     }
 }

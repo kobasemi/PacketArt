@@ -16,6 +16,7 @@ import javax.swing.KeyStroke;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
+import jp.ac.kansai_u.kutc.firefly.packetArt.PlaySE;
 import jp.ac.kansai_u.kutc.firefly.packetArt.playing.PlayForm;
 import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
 import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.ReadDumpForm;
@@ -35,6 +36,8 @@ public class TitleForm extends FormBase implements FocusListener {
 	 */
 	public TitleForm() {
 		PcapManager.getInstance().start();
+		PlaySE.getInstance().initialize();
+		PlaySE.getInstance().play(PlaySE.OPEN);
 	}
 	
 	public void initialize() {
@@ -142,6 +145,7 @@ public class TitleForm extends FormBase implements FocusListener {
 			
 			for (int i = 0; i < panel.getButtonArray().length; i++) {
 				if (b == panel.getButton(i)) {
+					PlaySE.getInstance().play(PlaySE.SELECT2);
 					panel.moveCursor(i);
 					break;
 				}
@@ -166,6 +170,7 @@ public class TitleForm extends FormBase implements FocusListener {
     // ボタンをクリックするか、ボタン上でエンターキーを押下した時の動作
     private void buttonPressed(JButton button) {
     	panel.repaint();
+		PlaySE.getInstance().play(PlaySE.SELECT);
     	
 		switch (panel.getButtonIndex(button)) {
 		case 0: // Start
