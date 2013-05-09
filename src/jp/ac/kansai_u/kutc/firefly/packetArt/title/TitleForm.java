@@ -39,6 +39,7 @@ public class TitleForm extends FormBase implements FocusListener {
 		PcapManager.getInstance().start();
 		PlaySE.getInstance().initialize();
 		PlaySE.getInstance().play(PlaySE.OPEN);
+		new ConfigStatus();
 	}
 	
 	public void initialize() {
@@ -76,7 +77,7 @@ public class TitleForm extends FormBase implements FocusListener {
 		forwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_DOWN, 0));
 		forwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_UP, InputEvent.SHIFT_MASK));
 		forwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_SPACE, 0));
-		focusManager.setDefaultFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, forwardKeys);
+		getContentPane().setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, forwardKeys);
 		// 逆送り
 		Set<AWTKeyStroke> backwardKeys = new HashSet<AWTKeyStroke>(focusManager.getDefaultFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS));
 		backwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_UP, 0));
@@ -87,6 +88,7 @@ public class TitleForm extends FormBase implements FocusListener {
 		// タイトルBGMを鳴らす。 by Lisa
 		titlemusic = new MidiPlayer(ConfigStatus.getVolMusic(), "TitleMusic.mid");
 		titlemusic.start();
+		getContentPane().setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, backwardKeys);
 	}
 	
 	public void paint(Graphics g) {}
