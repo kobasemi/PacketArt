@@ -83,11 +83,7 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 		if(thread != null)
 			// スレッドに何か入っているときは，ストップする
 //			TODO ストップをやめて，halt(), interrupt()を使用しよう
-<<<<<<< HEAD
-			thread.stopMidi();
-=======
 			((MidiPlayer) thread).stopMidi();
->>>>>>> 2fd7942b7fe01014f01b7c723ef8bfcad40b5f8a
 		thread = new MidiPlayer(getStatus(), file);
 		
 		thread.start();

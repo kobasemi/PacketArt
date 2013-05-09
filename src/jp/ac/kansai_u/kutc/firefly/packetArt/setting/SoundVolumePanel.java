@@ -85,7 +85,7 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
         }else if(e.getSource() == btnVolumeLow) {
                 playSE.play("select", ConfigInfo.VOLLOW);
         } else if(e.getSource() == btnVolumeMed) {
-                playSE.play("select", ConfigInfo.VOLMIDIUM);
+                playSE.play("select", ConfigInfo.VOLMEDIUM);
         } else if(e.getSource() == btnVolumeHigh) {
                 playSE.play("select", ConfigInfo.VOLHIGH);
         }
