@@ -88,5 +88,6 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
 			System.out.println("SE VOLUME => " + playSE.getVolume("select"));
 		}
 		playSE.play("select");
+		playSE = null;
 	}
 }

@@ -62,6 +62,8 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
     public static final String DEMISE = "demise";
     public static final String SELECT_FILE = "resource/se/select.wav";//メニュー：セレクト用効果音
     public static final String SELECT = "select";
+    public static final String SELECT2_FILE = "resource/se/select2.wav";//メニュー：セレクト用効果音2
+    public static final String SELECT2 = "select2";
     public static final String CANCEL_FILE = "resource/se/cancel.wav";//メニュー：キャンセル音
     public static final String CANCEL = "cancel";
     public static final String OPEN_FILE = "resource/se/open.wav";//アプリケーション起動音（仮)
@@ -100,8 +102,10 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
     */
     public void initialize() {
         if (!inited) {
+            //openSE(MOVE, new File(MOVE_FILE));
+            //System.out.println("Loading " + MOVE_FILE);
+            //まだファイルが無い
             System.out.println("Loading " + HARDDROP_FILE);
-            //openFile(MOVE_FILE);//まだファイルが無い
             openSE(HARDDROP, new File(HARDDROP_FILE));
             System.out.println("Loading " + TURN_FILE);
             openSE(TURN, new File(TURN_FILE));
@@ -109,6 +113,8 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
             openSE(DEMISE, new File(DEMISE_FILE));
             System.out.println("Loading " + SELECT_FILE);
             openSE(SELECT, new File(SELECT_FILE));
+            System.out.println("Loading " + SELECT2_FILE);
+            openSE(SELECT2, new File(SELECT2_FILE));
             System.out.println("Loading " + CANCEL_FILE);
             openSE(CANCEL, new File(CANCEL_FILE));
             System.out.println("Loading " + OPEN_FILE);
