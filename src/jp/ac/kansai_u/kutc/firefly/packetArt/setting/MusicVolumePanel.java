@@ -19,7 +19,7 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 	final String VOLPATH = new String(ConfigInfo.IMGPATH + "volume/");
 	 
 	private JRadioButton btnVolumeMute, btnVolumeLow, btnVolumeMed, btnVolumeHigh;
-	Thread thread = null;
+	MidiPlayer thread = null;
 	private String file = "BGMTestSound.mid";
 	
 	/**
@@ -83,7 +83,7 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 		if(thread != null)
 			// スレッドに何か入っているときは，ストップする
 //			TODO ストップをやめて，halt(), interrupt()を使用しよう
-			thread.stop();
+			thread.stopMidi();
 		thread = new MidiPlayer(getStatus(), file);
 		
 		thread.start();

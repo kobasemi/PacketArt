@@ -91,6 +91,7 @@ public class SettingForm extends FormBase implements ActionListener {
 			ConfigStatus.setKeyLeftSpin (ConfigStatus.KEYBIND[madoka.panelKeyBind.getStatus()][4]);
 			ConfigStatus.setKeyRightSpin(ConfigStatus.KEYBIND[madoka.panelKeyBind.getStatus()][5]);
 			ConfigStatus.printStatus();
+			PlaySE.getInstance().setVolumeAll((double)ConfigStatus.getVolSound());
 			FormUtil.getInstance().changeForm("Title");
 		}else if(e.getSource() == mami2){
 			System.out.println("CANCEL pushed");
