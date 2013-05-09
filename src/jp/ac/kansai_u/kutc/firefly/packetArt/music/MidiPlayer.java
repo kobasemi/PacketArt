@@ -10,8 +10,9 @@ import javax.sound.midi.Sequencer;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 
-public class TitleMusic extends Thread {
+public class MidiPlayer extends Thread {
 	private int coefficient;
+	private String filename;
 
 	/**
 	 * タイトルのBGMを鳴らすメソッドです。
@@ -22,13 +23,14 @@ public class TitleMusic extends Thread {
 	 * @throws Exception
 	 */
 
-	public TitleMusic(int coef) {
-		coefficient = coef;
+	public MidiPlayer(int _coefficient, String _filename) {
+		coefficient = _coefficient;
+		filename = _filename;
 	}
 
 	public void run() {
 		try {
-			playTitleMusic(coefficient);
+			playMidiMusic(coefficient, filename);
 		} catch (Exception e) {
 			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
@@ -37,9 +39,9 @@ public class TitleMusic extends Thread {
 
 	//TODO: Config系統からの音量情報の受け取り
 	//		int velo = XXXX.getVolMusic();
-	public static void playTitleMusic(int coefficient) throws Exception {
+	public static void playMidiMusic(int coefficient, String filename) throws Exception {
 		Sequencer sequencer = null;
-		Sequence sequence = setNewSequence(coefficient);
+		Sequence sequence = setNewSequence(coefficient, filename);
 		try {
 			sequencer = MidiSystem.getSequencer();
 			sequencer.open();
@@ -64,8 +66,8 @@ public class TitleMusic extends Thread {
 	 * @throws Exception
 	 */
 
-	public static Sequence getSequenceData() throws Exception {
-		Sequence sequence0 = MidiSystem.getSequence(new File("resource/se/Titlemusic.mid"));
+	public static Sequence getSequenceData(String filename) throws Exception {
+		Sequence sequence0 = MidiSystem.getSequence(new File("resource/se/" + filename));
 		float division = sequence0.getDivisionType();
 		int resolution = sequence0.getResolution();
 
@@ -81,10 +83,10 @@ public class TitleMusic extends Thread {
 	 * @throws Exception
 	 */
 
-	public static Sequence setNewSequence(int coefficient) throws Exception {
+	public static Sequence setNewSequence(int coefficient, String filename) throws Exception {
 
-		Sequence sequence0 = MidiSystem.getSequence(new File("resource/se/Titlemusic.mid"));
-		Sequence sequence = getSequenceData();
+		Sequence sequence0 = MidiSystem.getSequence(new File("resource/se/" + filename));
+		Sequence sequence = getSequenceData(filename);
 		Track track1 = sequence.createTrack();
 
 		ShortMessage[] message1 = new ShortMessage[25565];

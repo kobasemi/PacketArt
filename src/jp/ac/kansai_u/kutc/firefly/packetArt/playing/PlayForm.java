@@ -19,6 +19,9 @@ import javax.swing.JButton;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
+import jp.ac.kansai_u.kutc.firefly.packetArt.music.MusicPlayer;
+import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
+import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigStatus;
 
 import com.sun.jmx.snmp.tasks.Task;
 
@@ -37,6 +40,7 @@ public class PlayForm extends FormBase {
 	int falldownLimit;
 	long falldownTimer;
 	int minoSize;
+	Thread musicplayer; // ゲームBGM用のスレッドを用意。
 	
 	Point topLeft;
 
@@ -90,6 +94,13 @@ public class PlayForm extends FormBase {
 		topLeft = new Point(
 				(getSize().width - (minoSize * model.column)) / 2, 
 				(getSize().height - (minoSize * model.row)) / 2);
+		
+		// ゲームBGMの音楽を鳴らす。
+		// TODO: パケットをファイルからではなく他の形で読む。
+		PcapManager pm = PcapManager.getInstance();
+		pm.openFile("src/jp/ac/kansai_u/kutc/firefly/PacketArt/test/10000.cap");
+		musicplayer = new MusicPlayer(ConfigStatus.getVolMusic(), 1000, true);
+		musicplayer.start();
 	}
 
 	@Override
@@ -171,6 +182,9 @@ public class PlayForm extends FormBase {
 						new JButton("タイトルに戻る")
 					};
 					
+					// ゲームオーバーになったときにBGMを止める。
+					musicplayer.stop();
+
 					ActionListener actionListener = new ActionListener() {
 						
 						@Override
@@ -193,6 +207,7 @@ public class PlayForm extends FormBase {
 								
 						}
 					};
+
 					
 					// 各種ボタンの設定
 					for(int i = 0; i < buttons.length; i++){
