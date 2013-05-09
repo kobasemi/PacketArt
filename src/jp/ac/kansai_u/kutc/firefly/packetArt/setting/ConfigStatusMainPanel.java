@@ -40,4 +40,20 @@ public class ConfigStatusMainPanel extends JPanel{
 		add(panelDifficulty);
 		add(panelKeyBind);
 	}
+	
+	public void setStatus(){
+		ConfigStatus.setViewLog     (panelViewLog.getStatus());
+		ConfigStatus.setMino        (panelMino.getStatus());
+		ConfigStatus.setMelody      (panelMelody.getStatus());
+		ConfigStatus.setVolMusic    (panelMusicVolume.getStatus());
+		ConfigStatus.setVolSound    (panelSoundVolume.getStatus());
+		ConfigStatus.setDifficulty  (panelDifficulty.getStatus());
+		ConfigStatus.setKeyBind     (panelKeyBind.getStatus());
+		ConfigStatus.setKeyUp       (ConfigStatus.KEYBIND[panelKeyBind.getStatus()][0]);
+		ConfigStatus.setKeyDown     (ConfigStatus.KEYBIND[panelKeyBind.getStatus()][1]);
+		ConfigStatus.setKeyLeft     (ConfigStatus.KEYBIND[panelKeyBind.getStatus()][2]);
+		ConfigStatus.setKeyRight    (ConfigStatus.KEYBIND[panelKeyBind.getStatus()][3]);
+		ConfigStatus.setKeyLeftSpin (ConfigStatus.KEYBIND[panelKeyBind.getStatus()][4]);
+		ConfigStatus.setKeyRightSpin(ConfigStatus.KEYBIND[panelKeyBind.getStatus()][5]);
+	}
 }
