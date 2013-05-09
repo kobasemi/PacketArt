@@ -23,8 +23,6 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.music.MusicPlayer;
 import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
 import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigStatus;
 
-import com.sun.jmx.snmp.tasks.Task;
-
 /**
  * パケットを利用したテトリスを表示、処理するフォームです。
  * 
@@ -41,6 +39,8 @@ public class PlayForm extends FormBase {
 	long falldownTimer;
 	int minoSize;
 	Thread musicplayer; // ゲームBGM用のスレッドを用意。
+	boolean isPaused = false;
+	boolean isGranded = false;
 	
 	Point topLeft;
 
@@ -89,8 +89,9 @@ public class PlayForm extends FormBase {
 		keyQueue = new LinkedList<Integer>();
 		keyPressedTime = new HashMap<Integer, Long>();
 		model.initialize();
+		generateNextBlockFromPacket();
 		addKeyListener(this);
-		minoSize = (int)(Math.min(getSize().width / model.column, getSize().height / model.row) * 0.9);
+		minoSize = (int)(Math.min(getPreferredSize().width / model.column, getPreferredSize().height / model.row) * 0.9);
 		topLeft = new Point(
 				(getSize().width - (minoSize * model.column)) / 2, 
 				(getSize().height - (minoSize * model.row)) / 2);
@@ -107,16 +108,17 @@ public class PlayForm extends FormBase {
 	public void paint(Graphics g) {
 		// TODO: backgrownd
 		
-		for(PacketBlock item : model.currentMinos) {
-			paintMino(g, item,
-					topLeft.x + ((model.parentLocation.getX() + item.location.getX()) * minoSize), 
-					topLeft.y + ((model.parentLocation.getY() + item.location.getY()) * minoSize));
-		}
-		for (PacketBlock[] column : model.getBoard()) {
-			for(PacketBlock item : column){
+		if(!isPaused){
+			for(PacketBlock item : model.currentMinos) 
 				paintMino(g, item,
-						topLeft.x + item.location.getX() * minoSize, 
-						topLeft.y + item.location.getY() * minoSize);
+						topLeft.x + ((model.parentLocation.getX() + item.location.getX()) * minoSize), 
+						topLeft.y + ((model.parentLocation.getY() + item.location.getY()) * minoSize));
+			for (PacketBlock[] column : model.getBoard()) {
+				for(PacketBlock item : column){
+					paintMino(g, item,
+							topLeft.x + item.location.getX() * minoSize, 
+							topLeft.y + item.location.getY() * minoSize);
+				}
 			}
 		}
 		if(model.isGameOverd()){
@@ -157,9 +159,11 @@ public class PlayForm extends FormBase {
 		List<Integer> keys = new ArrayList<Integer>();
 		while (keyQueue.size() != 0 && keyPressedTime.size() != 0) {
 			// 未来の話なら抜ける(そんなことあり得るのか)
+			// 中断したら落ちる
 			int tgt = keyQueue.get(0);
-			if (keyPressedTime.get(tgt) > tick)
-				break;
+			if(keyPressedTime.containsKey(tgt))
+				if (keyPressedTime.get(tgt) > tick)
+					break;
 			//if (keyPressedTime.get(keyQueue.get(0)) < tick)
 			keys.add(keyQueue.pop());
 		}
@@ -167,7 +171,7 @@ public class PlayForm extends FormBase {
 		// ゲームオーバー判定
 		if(model.isGameOverd()){
 			// JDK 8のラムダ式が利用できればこんなコードにはならなかった(はず)
-			new Task() {
+			new Thread() {
 				@Override
 				public void run() {
 					try {
@@ -195,6 +199,7 @@ public class PlayForm extends FormBase {
 									// ボタンがRetryならボタンを消して再初期化
 									for(JButton item : buttons){
 										getContentPane().remove(item);
+										item = null;
 										getContentPane().validate();
 										
 									}
@@ -219,34 +224,57 @@ public class PlayForm extends FormBase {
 						getContentPane().add(item, 0);
 					}
 				}
-				@Override
-				public void cancel() { }
 			}.run();
 			return;
 		}
+
+		if (keys.contains(KeyEvent.VK_ESCAPE)){
+			isPaused = !isPaused;
+			System.out.print(isPaused);
+		}
+		if(isPaused)
+			return;
 		
-		// if pressedkey is configured key then try to operation
-		// TODO: キーコード(int)からキーを取得できるようにする
-		if (false/* */)
+		// キー入力の処理
+		if (keys.contains(ConfigStatus.getKeyLeftSpin()))
 			model.rotate(Direction.Left);
-		if (false/* */)
-			falldownTimer = falldownLimit + 1;
-		if (keys.contains(KeyEvent.VK_ENTER)) {
-			while (model.fallDown()) {
-			}
-			falldownTimer = falldownLimit + 1;
+		if(keys.contains(ConfigStatus.getKeyRightSpin()))
+			model.rotate(Direction.Right);
+		if(keys.contains(ConfigStatus.getKeyLeft()))
+			model.translate(Direction.Left);
+		if(keys.contains(ConfigStatus.getKeyRight()))
+			model.translate(Direction.Right);
+		if (keys.contains(ConfigStatus.getKeyDown())){
+			model.fallDown();
+			falldownTimer = 0;
+		}
+		if (keys.contains(ConfigStatus.getKeyUp())) {
+			while (model.fallDown()) { }
+			falldownTimer = 0;
 		}
 
+		
 		// もし指定のタイミングになったらfalldown
 		if (falldownTimer > falldownLimit) {
-			System.out.println("falling - " + model.parentLocation.toString());
+			//System.out.println("falling - " + model.parentLocation.toString());
 			falldownTimer = 0;
+			
+			// 接地済みなら新しく生成
+			if (isGranded){
+				isGranded = false;
+				if(!model.fallDown()){
+					model.fixMino();
+					generateNextBlockFromPacket();
+					System.out.println("generate - " + model.parentLocation);
+				}
+			}
+			
 			// 落下に失敗したら、Next生成
 			if (!model.fallDown()) {
-				System.out.println("generate");
-				model.fixMino();
-				generateNextBlockFromPacket();
+				isGranded = true;
 			}
+
+			model.deleteLines();
 		} else {
 			falldownTimer++;
 		}
@@ -256,7 +284,7 @@ public class PlayForm extends FormBase {
 
 	private void generateNextBlockFromPacket() {
 		// TODO ミノの生成方法を決定する
-		model.generateMino(TetroMino.T, false, model.column / 2);
+		model.generateMino(TetroMino.I, false, model.column / 2);
 	}
 
 	@Override
@@ -290,13 +318,11 @@ public class PlayForm extends FormBase {
 		
 		System.out.println("input key:" + key);
 		
-		// TODO:1回だけ押せるようにする(長押し(何ms?)で連続反応するようにする)
 		if (!keyPressedTime.containsKey(key)) {
 			keyPressedTime.put(key, time);
 			keyQueue.push(key);
 		}
-
-		// TODO:入力キューに入力を入れる(長押し時に入れすぎても爆発するだけ)
+		
 		if (keyPressedTime.get(key) - time > keySensitivity)
 			keyQueue.push(key);
 	}
