@@ -1,5 +1,7 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
 
+import java.awt.event.KeyEvent;
+
 /**
  * 設定項目のデータ構造
  * @author akasaka
@@ -10,13 +12,23 @@ public class ConfigStatus {
 	final static byte BGMLOW=50, BGMMEDIUM=75, BGMHIGH=100;
 	final static byte SELOW=1, SEMEDIUM=2, SEHIGH=3;
 	final static byte STATIC=0, DYNAMIC=1, AUTO=2;
+	final static byte KEYDEFAULT=0, KEYGAMER=1, KEYVIM=2;
 	private static boolean viewLog;		// ビューの表示のオン・オフ
 	private static byte    mino;		// ミノの設定（4つ，5つ，両方）
 	private static byte    volMusic;	// 音楽の音量の設定（Mute, Low, Medium, High）
 	private static byte    volSound;	// 効果音の音量の設定（Mute, Low, Medium, High）
 	private static byte    difficulty;	// 難易度（静的，動的，自動）
-	private static char    up, down, left, right, leftSpin, rightSpin;	// キーコンフィグ
-	private static char[]  key;			// キーコンフィグの配列（up, down, left, right, leftSpin, rightSpin)
+	private static byte    keybind;		// キーバインド（Default, Gamer, Vim）
+	private static int    up, down, left, right, leftSpin, rightSpin;	// キー
+	private static int[]  key;			// キーコンフィグの配列（up, down, left, right, leftSpin, rightSpin)
+	
+	final static int DEFAULTKEYCODE[] =
+			new int[]{KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_ALT, KeyEvent.VK_SPACE};
+	final static int GAMERKEYCODE[] =
+			new int[]{KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_J, KeyEvent.VK_K};
+	final static int VIMKEYCODE[] =
+			new int[]{KeyEvent.VK_K, KeyEvent.VK_J, KeyEvent.VK_H, KeyEvent.VK_L, KeyEvent.VK_A, KeyEvent.VK_S};
+	final static int[][] KEYBIND= new int[][]{DEFAULTKEYCODE, GAMERKEYCODE, VIMKEYCODE};
 	
 	/**
 	 * コンストラクタ
@@ -27,9 +39,11 @@ public class ConfigStatus {
 		volMusic = MUTE; //TODO :実装時，MEDIUMに．
 		volSound = SEMEDIUM;
 		difficulty = AUTO;
-		up = 'i'; down = 'k'; left = 'j'; right = 'l';
-		leftSpin = 'z'; rightSpin = 'x';
-		key = new char[]{up, down, left, right, leftSpin, rightSpin};
+		keybind = KEYDEFAULT;
+		up = KEYBIND[keybind][0]; down = KEYBIND[keybind][1];
+		left = KEYBIND[keybind][2]; right = KEYBIND[keybind][3];
+		leftSpin = KEYBIND[keybind][4]; rightSpin = KEYBIND[keybind][5];
+		key = new int[]{up, down, left, right, leftSpin, rightSpin};
 	}
 	
 	/**
@@ -58,35 +72,40 @@ public class ConfigStatus {
 	 */
 	public static void setDifficulty(byte b){ difficulty = b; }
 	/**
+	 * キーバインドを設定する
+	 * @param keybind
+	 */
+	public static void setKeyBind(byte b){ keybind = b; }
+	/**
 	 * 上キーを設定する
 	 * @param up
 	 */
-	public static void setKeyUp(char c){ up = key[0] = c;}
+	public static void setKeyUp(int d){ up = key[0] = d;}
 	/**
 	 * 下キーを設定する
 	 * @param down
 	 */
-	public static void setKeyDown(char c){ down = key[1] = c; }
+	public static void setKeyDown(int d){ down = key[1] = d; }
 	/**
 	 * 左キーを設定する
 	 * @param left
 	 */
-	public static void setKeyLeft(char c){ left = key[2] = c; }
+	public static void setKeyLeft(int d){ left = key[2] = d; }
 	/**
 	 * 右キーを設定する
 	 * @param right
 	 */
-	public static void setKeyRight(char c){ right = key[3] = c; }
+	public static void setKeyRight(int d){ right = key[3] = d; }
 	/**
 	 * 左回転キーを設定する
 	 * @param leftSpin
 	 */
-	public static void setKeyLeftSpin(char c){ leftSpin = key[4] = c; }
+	public static void setKeyLeftSpin(int d){ leftSpin = key[4] = d; }
 	/**
 	 * 右回転キーを設定する
 	 * @param rightSpin
 	 */
-	public static void setKeyRightSpin(char c){ rightSpin = key[5] = c; }
+	public static void setKeyRightSpin(int d){ rightSpin = key[5] = d; }
 	
 	/**
 	 * ログの表示設定を取得する
@@ -114,40 +133,45 @@ public class ConfigStatus {
 	 */
 	public static byte getDifficulty(){ return difficulty; }
 	/**
+	 * キーバインドの設定を取得する
+	 * @return キーバインド（Default, Gamer, Vim）
+	 */
+	public static byte getKeyBind(){ return keybind; }
+	/**
 	 * 上キーの設定を取得する
 	 * @return 上キー
 	 */
-	public static char getKeyUp(){ return up; }
+	public static int getKeyUp(){ return up; }
 	/**
 	 * 下キーの設定を取得する
 	 * @return 下キー
 	 */
-	public static char getKeyDown(){ return down; }
+	public static int getKeyDown(){ return down; }
 	/**
 	 * 左キーの設定を取得する
 	 * @return 左キー
 	 */
-	public static char getKeyLeft(){ return left; }
+	public static int getKeyLeft(){ return left; }
 	/**
 	 * 右キーの設定を取得する
 	 * @return 右キー
 	 */
-	public static char getKeyRight(){ return right; }
+	public static int getKeyRight(){ return right; }
 	/**
 	 * 左回転キーの設定を取得する
 	 * @return 左回転キー
 	 */
-	public static char getKeyLeftSpin(){ return leftSpin; }
+	public static int getKeyLeftSpin(){ return leftSpin; }
 	/**
 	 * 右回転キーの設定を取得する
 	 * @return 右回転キー
 	 */
-	public static char getKeyRightSpin(){ return rightSpin; }
+	public static int getKeyRightSpin(){ return rightSpin; }
 	/**
 	 * 各キーの配列を取得する
 	 * @return 各キーの配列
 	 */
-	public static char[] getKey(){ return key; }
+	public static int[] getKey(){ return key; }
 	
 //	最終的には消すけど，今は変数確認用に使う
 	/**
@@ -159,6 +183,7 @@ public class ConfigStatus {
 		System.out.println(volMusic);
 		System.out.println(volSound);
 		System.out.println(difficulty);
+		System.out.println(keybind);
 		System.out.println(up);
 		System.out.println(down);
 		System.out.println(left);

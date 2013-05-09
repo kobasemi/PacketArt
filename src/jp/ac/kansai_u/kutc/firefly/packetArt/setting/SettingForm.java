@@ -30,7 +30,7 @@ public class SettingForm extends FormBase implements ActionListener {
 	final public String IMGPATH = new String("./resource/image/config/");
 	private ConfigStatusMainPanel madoka;
 	private JButton mami1, mami2;
-	private KeyConfigPanel qbee;
+	private KeyBindPanel qbee;
 	
 	private BufferedImage image;
 	
@@ -42,7 +42,6 @@ public class SettingForm extends FormBase implements ActionListener {
 		}
 		
 		Container homura = getContentPane();
-		
 		homura.setBackground(Color.black);
 		JLabel walpurgisNight = new JLabel(new ImageIcon(image));
 		walpurgisNight.setBounds(0, 0, image.getWidth(), image.getHeight());
@@ -59,7 +58,7 @@ public class SettingForm extends FormBase implements ActionListener {
 	    
 	    JLabel kusojo = new JLabel(new ImageIcon(IMGPATH + "labelKeyConf.png"));
 	    kusojo.setBounds(30, 380, 540, 50);
-	    qbee = new KeyConfigPanel(ConfigStatus.getKey());
+	    qbee = new KeyBindPanel(ConfigStatus.getKeyBind());
 	    qbee.setBounds(30, 430, 540, 250);
 	    qbee.setOpaque(false);
 	    
@@ -92,12 +91,13 @@ public class SettingForm extends FormBase implements ActionListener {
 			ConfigStatus.setVolMusic(madoka.panelMusic.getStatus());
 			ConfigStatus.setVolSound(madoka.panelSound.getStatus());
 			ConfigStatus.setDifficulty(madoka.panelDifficulty.getStatus());
-			ConfigStatus.setKeyUp(qbee.labelUp.getText().charAt(0));
-			ConfigStatus.setKeyDown(qbee.labelDown.getText().charAt(0));
-			ConfigStatus.setKeyLeft(qbee.labelLeft.getText().charAt(0));
-			ConfigStatus.setKeyRight(qbee.labelRight.getText().charAt(0));
-			ConfigStatus.setKeyLeftSpin(qbee.labelLeftSpin.getText().charAt(0));
-			ConfigStatus.setKeyRightSpin(qbee.labelRightSpin.getText().charAt(0));
+			ConfigStatus.setKeyBind(qbee.getStatus());
+			ConfigStatus.setKeyUp(ConfigStatus.KEYBIND[qbee.getStatus()][0]);
+			ConfigStatus.setKeyDown(ConfigStatus.KEYBIND[qbee.getStatus()][1]);
+			ConfigStatus.setKeyLeft(ConfigStatus.KEYBIND[qbee.getStatus()][2]);
+			ConfigStatus.setKeyRight(ConfigStatus.KEYBIND[qbee.getStatus()][3]);
+			ConfigStatus.setKeyLeftSpin(ConfigStatus.KEYBIND[qbee.getStatus()][4]);
+			ConfigStatus.setKeyRightSpin(ConfigStatus.KEYBIND[qbee.getStatus()][5]);
 			ConfigStatus.printStatus();
 			FormUtil.getInstance().changeForm("Title");
 		}else if(e.getSource() == mami2){
