@@ -17,9 +17,11 @@ import javax.swing.KeyStroke;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
 import jp.ac.kansai_u.kutc.firefly.packetArt.PlaySE;
+import jp.ac.kansai_u.kutc.firefly.packetArt.music.MidiPlayer;
 import jp.ac.kansai_u.kutc.firefly.packetArt.playing.PlayForm;
 import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
 import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.ReadDumpForm;
+import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigStatus;
 import jp.ac.kansai_u.kutc.firefly.packetArt.setting.SettingForm;
 
 /**
@@ -28,8 +30,7 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.setting.SettingForm;
  */
 public class TitleForm extends FormBase implements FocusListener {
 	MainPanel panel;
-	// TODO:実装時にコメントアウトをはずす。
-	// Thread thread;
+	Thread titlemusic; // by Lisa
 	
 	/**
 	 * タイトル画面のコンストラクタです。
@@ -57,12 +58,6 @@ public class TitleForm extends FormBase implements FocusListener {
 		// TODO: オプションから戻ってきた時にボタンがフォーカスを失うのをなんとかする
 		// panel.getButton(0).requestFocusInWindow();
 		
-		// TODO:実装時にコメントアウトをはずす。
-		// はずしたらタイトルで音楽が流れるようになります。
-		// PostScript by Lisa
-		// thread = new TitleMusic(75);
-		// thread.start();
-		
 		// 遷移先のフォームが存在しなければ生成する
 		if(!FormUtil.getInstance().getForm().isExistForm("Playing")) {
 			FormUtil.getInstance().createForm("Playing", PlayForm.class);
@@ -88,6 +83,10 @@ public class TitleForm extends FormBase implements FocusListener {
 		backwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_DOWN, InputEvent.SHIFT_MASK));
 		backwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_SPACE, InputEvent.SHIFT_MASK));
 		focusManager.setDefaultFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, backwardKeys);
+		
+		// タイトルBGMを鳴らす。 by Lisa
+		titlemusic = new MidiPlayer(ConfigStatus.getVolMusic(), "TitleMusic.mid");
+		titlemusic.start();
 	}
 	
 	public void paint(Graphics g) {}
@@ -161,8 +160,8 @@ public class TitleForm extends FormBase implements FocusListener {
     		b.removeFocusListener(this);
     	}
     	
-		// TODO:実装時にthreadのコメントアウトをはずす。	
-		// thread.stop();
+    	// フォームチェンジ時にはタイトルBGMを止める。 by Lisa
+		 titlemusic.stop();
     }
     
     public void onClose() {}
