@@ -99,7 +99,7 @@ public class PlayForm extends FormBase {
 		// TODO: パケットをファイルからではなく他の形で読む。
 		PcapManager pm = PcapManager.getInstance();
 		pm.openFile("src/jp/ac/kansai_u/kutc/firefly/PacketArt/test/10000.cap");
-		musicplayer = new MusicPlayer(ConfigStatus.getVolMusic(), 1000, true);
+		musicplayer = new MusicPlayer(ConfigStatus.getVolMusic(), 1000, ConfigStatus.isMelody());
 		musicplayer.start();
 	}
 
@@ -183,7 +183,7 @@ public class PlayForm extends FormBase {
 					};
 					
 					// ゲームオーバーになったときにBGMを止める。
-					musicplayer.stop();
+					((MusicPlayer) musicplayer).stopMusic();
 
 					ActionListener actionListener = new ActionListener() {
 						

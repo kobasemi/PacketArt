@@ -13,6 +13,8 @@ import javax.sound.midi.Track;
 public class MidiPlayer extends Thread {
 	private int coefficient;
 	private String filename;
+	private boolean killps;
+	private static Sequencer sequencer;
 
 	/**
 	 * タイトルのBGMを鳴らすメソッドです。
@@ -26,21 +28,30 @@ public class MidiPlayer extends Thread {
 	public MidiPlayer(int _coefficient, String _filename) {
 		coefficient = _coefficient;
 		filename = _filename;
+		killps = false;
 	}
 
 	public void run() {
-		try {
-			playMidiMusic(coefficient, filename);
-		} catch (Exception e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
+		while(killps == false){
+			try {
+				playMidiMusic(coefficient, filename);
+			} catch (Exception e) {
+				// TODO 自動生成された catch ブロック
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void stopMidi(){
+		killps = true;
+		if(sequencer.isRunning() == true){
+			sequencer.stop();
 		}
 	}
 
 	//TODO: Config系統からの音量情報の受け取り
 	//		int velo = XXXX.getVolMusic();
 	public static void playMidiMusic(int coefficient, String filename) throws Exception {
-		Sequencer sequencer = null;
 		Sequence sequence = setNewSequence(coefficient, filename);
 		try {
 			sequencer = MidiSystem.getSequencer();
