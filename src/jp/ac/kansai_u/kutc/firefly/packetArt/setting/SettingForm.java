@@ -74,6 +74,7 @@ public class SettingForm extends FormBase implements ActionListener {
 	}
 	
 	public void actionPerformed(ActionEvent e){
+		// TODO 上手いこと動かんらしい……
 		if(madoka.panelMusicVolume.thread != null)
 			//スレッドが動いているかも．動いていればストップ
 			madoka.panelMusicVolume.thread.stop();

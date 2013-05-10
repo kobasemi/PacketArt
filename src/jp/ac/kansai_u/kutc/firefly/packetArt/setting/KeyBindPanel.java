@@ -38,13 +38,13 @@ public class KeyBindPanel extends JPanel implements ActionListener{
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
 		JPanel sectionPanel = new JPanel();
-		sectionPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 30, 0));
+		sectionPanel.setLayout(new FlowLayout(FlowLayout.LEFT, ConfigInfo.HGAP, 0));
 		sectionPanel.setOpaque(false);
 		JLabel kusojo = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "labelKeyConf.png"));
 		sectionPanel.add(kusojo);
 		
 		JPanel btnKeyBindPanel = new JPanel();
-		btnKeyBindPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 0));
+		btnKeyBindPanel.setLayout(new FlowLayout(FlowLayout.CENTER, ConfigInfo.HGAP, 0));
 		btnKeyBindPanel.setOpaque(false);
 		btnKeyDefault = new JRadioButton(new ImageIcon(KEYPATH + "bindDefault.png"));
 		btnKeyGamer   = new JRadioButton(new ImageIcon(KEYPATH + "bindGamer.png"));
