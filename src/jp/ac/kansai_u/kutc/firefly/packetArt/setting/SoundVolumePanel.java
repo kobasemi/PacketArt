@@ -59,9 +59,9 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
 		add(btnVolumeHigh);
 		
 		if     (b == ConfigInfo.MUTE)      btnVolumeMute.setSelected(true);
-		else if(b == ConfigInfo.VOLLOW)    btnVolumeLow .setSelected(true);
-		else if(b == ConfigInfo.VOLMEDIUM) btnVolumeMed .setSelected(true);
-		else if(b == ConfigInfo.VOLHIGH)   btnVolumeHigh.setSelected(true);
+		else if(b == ConfigInfo.VOLSELOW)    btnVolumeLow .setSelected(true);
+		else if(b == ConfigInfo.VOLSEMEDIUM) btnVolumeMed .setSelected(true);
+		else if(b == ConfigInfo.VOLSEHIGH)   btnVolumeHigh.setSelected(true);
 	}
 	
 	/**
@@ -70,9 +70,9 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
 	 */
 	public byte getStatus(){
 		if     (btnVolumeMute.isSelected()) return ConfigInfo.MUTE;
-	    else if(btnVolumeLow .isSelected()) return ConfigInfo.VOLLOW;
-	    else if(btnVolumeMed .isSelected()) return ConfigInfo.VOLMEDIUM;
-	    else if(btnVolumeHigh.isSelected()) return ConfigInfo.VOLHIGH;
+	    else if(btnVolumeLow .isSelected()) return ConfigInfo.VOLSELOW;
+	    else if(btnVolumeMed .isSelected()) return ConfigInfo.VOLSEMEDIUM;
+	    else if(btnVolumeHigh.isSelected()) return ConfigInfo.VOLSEHIGH;
 		return -1;
 	}
 
