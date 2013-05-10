@@ -43,11 +43,14 @@ public class TimerThread extends Thread {
 		while(!isTerminated){
 			// スレッドが止まることを要求されているなら止まる
 			//System.out.print(isWait ? ";" : ".");
-			/*
 			if(isWait) {
 				System.out.println("Waiting...");
 				try{
 					synchronized(this){
+						notify();
+						while(isWaiting()){
+							sleep(sleepTime);
+						}
 						//wait();
 					}
 				} catch (Exception e) {
@@ -55,9 +58,9 @@ public class TimerThread extends Thread {
 				}
 				// 待機状態から復帰したときの浦島太郎状態を正す
 				oldTime = System.currentTimeMillis();
-			} else {*/
+			} else {
 				oldTime = currentTime;
-			//}
+			}
 
 			// 登録されたメソッドの実行
 			synchronized(methods){
