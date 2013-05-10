@@ -256,29 +256,31 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
      * ファイル名に紐付けされたClipを一つ再生します。
      *
      * @param name 再生するSEの名前
+     * @param vol 再生するときの音量
+    */
+    public synchronized boolean play(String name, double vol) {
+        final LimitedRing<Clip> clips = get(name);
+        if (clips != null) {
+            final Clip clip = clips.peek();
+            setVolume(clip, vol);
+            clip.start();
+            return true;
+        } else {
+            System.out.println("Before play, initialize() and Load it : " + name);
+            return false;
+        }
+    }
+
+    /**
+     * ファイル名に紐付けされたClipを一つ再生します。
+     *
+     * @param name 再生するSEの名前
     */
     public synchronized boolean play(String name) {
         final LimitedRing<Clip> clips = get(name);
         if (clips != null) {
             final Clip clip = clips.peek();
-            /*clipHolder.add(clip);
-            キューに突っ込むことで、clipの参照を保持し、
-            音が途中で途切れるのを防ぐ*/
             clip.start();
-            /*
-            new Thread(new Runnable(){
-                public void run(){
-                    while (clip.isRunning()){
-                        try {
-                            Thread.sleep(10);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                }
-            ).start();
-            */
             return true;
         } else {
             System.out.println("Before play, initialize() and Load it : " + name);

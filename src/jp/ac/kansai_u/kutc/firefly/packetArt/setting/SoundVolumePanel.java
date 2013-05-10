@@ -1,5 +1,5 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
-import java.awt.Dimension;
+
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -79,11 +79,6 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		PlaySE playSE = PlaySE.getInstance();
-		
-		playSE.setVolumeAll(getStatus());
-		System.out.println("SE VOLUME => " + playSE.getVolume("select"));
-		
-		playSE.play("select");
-		playSE = null;
+		playSE.play("select" ,getStatus());
 	}
 }

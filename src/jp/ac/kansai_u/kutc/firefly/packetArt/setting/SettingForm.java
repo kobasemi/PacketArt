@@ -18,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import jp.ac.kansai_u.kutc.firefly.packetArt.PlaySE;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
 
@@ -81,8 +82,11 @@ public class SettingForm extends FormBase implements ActionListener {
 		if(e.getSource() == mami1){
 			madoka.setStatus();
 			ConfigStatus.printStatus();
-		}else if(e.getSource() == mami2){}
-		FormUtil.getInstance().changeForm("Title");
+			PlaySE.getInstance().setVolumeAll((double)ConfigStatus.getVolSound());
+			FormUtil.getInstance().changeForm("Title");
+		}else if(e.getSource() == mami2){
+			FormUtil.getInstance().changeForm("Title");
+		}
 	}
 
 	// 描画関連のコードはここに

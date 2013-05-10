@@ -17,6 +17,7 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.music.MidiPlayer;
  */
 public class MusicVolumePanel extends JPanel implements ActionListener{
 	private JRadioButton btnVolumeMute, btnVolumeLow, btnVolumeMed, btnVolumeHigh;
+
 	Thread thread = null;
 	final private String FILE = "BGMTestSound.mid";
 	

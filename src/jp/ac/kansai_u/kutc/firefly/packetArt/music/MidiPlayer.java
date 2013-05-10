@@ -32,6 +32,7 @@ public class MidiPlayer extends Thread {
 	}
 
 	public void run() {
+		killps = false;
 		while(killps == false){
 			try {
 				playMidiMusic(coefficient, filename);
@@ -44,7 +45,7 @@ public class MidiPlayer extends Thread {
 	
 	public void stopMidi(){
 		killps = true;
-		if(sequencer.isRunning() == true){
+		if(sequencer != null && sequencer.isRunning() == true){
 			sequencer.stop();
 		}
 	}
@@ -59,7 +60,7 @@ public class MidiPlayer extends Thread {
 
 			sequencer.setSequence(sequence);
 			sequencer.start();
-			while (sequencer.isRunning())
+			while (sequencer.isRunning() && killps == false)
 				Thread.sleep(100);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
