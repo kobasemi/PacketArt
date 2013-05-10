@@ -1,4 +1,5 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
+
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,10 +17,9 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.music.MidiPlayer;
  * @author akasaka
  */
 public class MusicVolumePanel extends JPanel implements ActionListener{
-	private JRadioButton btnVolumeMute, btnVolumeLow, btnVolumeMed, btnVolumeHigh;
-
-	Thread thread = null;
 	final private String FILE = "BGMTestSound.mid";
+	private JRadioButton btnVolumeMute, btnVolumeLow, btnVolumeMed, btnVolumeHigh;
+	Thread testBGM = null;
 	
 	/**
 	 * コンストラクタ
@@ -49,6 +49,7 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 		btnVolumeMed .setContentAreaFilled(false);
 		btnVolumeHigh.setContentAreaFilled(false);
 
+		btnVolumeMute.addActionListener(this);
 		btnVolumeLow .addActionListener(this);
 		btnVolumeMed .addActionListener(this);
 		btnVolumeHigh.addActionListener(this);
@@ -79,10 +80,10 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(thread != null)
-			((MidiPlayer) thread).stopMidi();
-		thread = new MidiPlayer(getStatus(), FILE);
-		
-		thread.start();
+		if(testBGM != null)
+			((MidiPlayer) testBGM).stopMidi();
+//		testBGM = null;
+		testBGM = new MidiPlayer(getStatus(), FILE);
+		testBGM.start();
 	}
 }

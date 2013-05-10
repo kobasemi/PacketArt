@@ -1,4 +1,5 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
+
 import java.awt.FlowLayout;
 
 import javax.swing.ButtonGroup;
@@ -19,13 +20,14 @@ public class MinoPanel extends JPanel{
 	 * @param 初期化前のミノ個数の設定
 	 */
 	MinoPanel(byte b){
-		setLayout(new FlowLayout(FlowLayout.LEFT, 30, 0));
+		setLayout(new FlowLayout(FlowLayout.LEFT, ConfigInfo.HGAP, 0));
 		setOpaque(false);
 		
 		JLabel labelMino = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "labelMino.png"));
 		btnMino4    = new JRadioButton(new ImageIcon(ConfigInfo.BTNPATH + "btnMino4.png"));
 		btnMino5    = new JRadioButton(new ImageIcon(ConfigInfo.BTNPATH + "btnMino5.png"));
 		btnMinoBoth = new JRadioButton(new ImageIcon(ConfigInfo.BTNPATH + "btnMinoBoth.png"));
+		
 		ButtonGroup minoGroup = new ButtonGroup();
 		minoGroup.add(btnMino4); minoGroup.add(btnMino5); minoGroup.add(btnMinoBoth);
 		
@@ -42,8 +44,8 @@ public class MinoPanel extends JPanel{
 		add(btnMino5);
 		add(btnMinoBoth);
 		
-		if     (b == ConfigInfo.MINO4)    btnMino4.setSelected(true);
-		else if(b == ConfigInfo.MINO5)    btnMino5.setSelected(true);
+		if     (b == ConfigInfo.MINO4)    btnMino4   .setSelected(true);
+		else if(b == ConfigInfo.MINO5)    btnMino5   .setSelected(true);
 		else if(b == ConfigInfo.MINOBOTH) btnMinoBoth.setSelected(true);
 	}
 	
@@ -52,8 +54,8 @@ public class MinoPanel extends JPanel{
 	 * @return ミノの出現個数（4つ, 5つ, 両方）
 	 */
 	public byte getStatus(){
-		if     (btnMino4.isSelected())    return ConfigInfo.MINO4;
-		else if(btnMino5.isSelected())    return ConfigInfo.MINO5;
+		if     (btnMino4   .isSelected()) return ConfigInfo.MINO4;
+		else if(btnMino5   .isSelected()) return ConfigInfo.MINO5;
 		else if(btnMinoBoth.isSelected()) return ConfigInfo.MINOBOTH;
 		return -1;
 	}

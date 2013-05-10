@@ -17,6 +17,7 @@ public class ConfigStatus {
 	private static int     up, down, left, right, leftSpin, rightSpin;	// キー
 	private static int[]   key;			// キーコンフィグの配列（up, down, left, right, leftSpin, rightSpin)
 	
+	//各キーバインドの中身
 	final static int DEFAULTKEYCODE[] =
 			new int[]{KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_ALT, KeyEvent.VK_SPACE};
 	final static int GAMERKEYCODE[] =

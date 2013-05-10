@@ -28,6 +28,7 @@ public class MelodyPanel extends JPanel{
 		
 		btnLight.setSelectedIcon(new ImageIcon(ConfigInfo.BTNPATH + "btnLightSelected.png"));
 		btnDark .setSelectedIcon(new ImageIcon(ConfigInfo.BTNPATH + "btnDarkSelected.png"));
+		
 		btnLight.setContentAreaFilled(false);
 		btnDark .setContentAreaFilled(false);
 		
