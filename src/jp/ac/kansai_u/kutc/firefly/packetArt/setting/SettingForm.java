@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import jp.ac.kansai_u.kutc.firefly.packetArt.PlaySE;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
+import jp.ac.kansai_u.kutc.firefly.packetArt.music.MidiPlayer;
 
 
 /**
@@ -39,7 +40,6 @@ public class SettingForm extends FormBase implements ActionListener {
 		}catch(IOException e){
 			System.err.println(e.getMessage());
 		}
-		
 		
 		Container homura = getContentPane();
 //		TODO 背景をpaint()に書きてえええええええええ
@@ -74,19 +74,16 @@ public class SettingForm extends FormBase implements ActionListener {
 	}
 	
 	public void actionPerformed(ActionEvent e){
-		// TODO 上手いこと動かんらしい……
-		if(madoka.panelMusicVolume.thread != null)
+		if(madoka.panelMusicVolume.testBGM != null)
 			//スレッドが動いているかも．動いていればストップ
-			madoka.panelMusicVolume.thread.stop();
+			((MidiPlayer) madoka.panelMusicVolume.testBGM).stopMidi();
 		
 		if(e.getSource() == mami1){
-			madoka.setStatus();
-			ConfigStatus.printStatus();
-			PlaySE.getInstance().setVolumeAll((double)ConfigStatus.getVolSound());
-			FormUtil.getInstance().changeForm("Title");
-		}else if(e.getSource() == mami2){
-			FormUtil.getInstance().changeForm("Title");
+			madoka.setStatus();  // 各項目の状態をセットする
+			PlaySE.getInstance().setVolumeAll((double)ConfigStatus.getVolSound());  //SEのボリュームを設定
+			ConfigStatus.printStatus();//TODO 後々削除
 		}
+		FormUtil.getInstance().changeForm("Title");
 	}
 
 	// 描画関連のコードはここに

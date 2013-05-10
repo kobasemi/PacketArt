@@ -162,7 +162,7 @@ public class TitleForm extends FormBase implements FocusListener {
     	}
     	
     	// フォームチェンジ時にはタイトルBGMを止める。 by Lisa
-		 titlemusic.stop();
+		 ((MidiPlayer) titlemusic).stopMidi();
     }
     
     public void onClose() {}

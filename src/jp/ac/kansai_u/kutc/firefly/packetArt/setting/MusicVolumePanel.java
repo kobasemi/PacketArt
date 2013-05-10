@@ -1,4 +1,5 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
+
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,10 +17,9 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.music.MidiPlayer;
  * @author akasaka
  */
 public class MusicVolumePanel extends JPanel implements ActionListener{
-	private JRadioButton btnVolumeMute, btnVolumeLow, btnVolumeMed, btnVolumeHigh;
-
-	Thread thread = null;
 	final private String FILE = "BGMTestSound.mid";
+	private JRadioButton btnVolumeMute, btnVolumeLow, btnVolumeMed, btnVolumeHigh;
+	Thread testBGM = null;
 	
 	/**
 	 * コンストラクタ
@@ -49,6 +49,7 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 		btnVolumeMed .setContentAreaFilled(false);
 		btnVolumeHigh.setContentAreaFilled(false);
 
+		btnVolumeMute.addActionListener(this);
 		btnVolumeLow .addActionListener(this);
 		btnVolumeMed .addActionListener(this);
 		btnVolumeHigh.addActionListener(this);
@@ -60,9 +61,9 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 		add(btnVolumeHigh);
 		
 		if     (b == ConfigInfo.MUTE)      btnVolumeMute.setSelected(true);
-		else if(b == ConfigInfo.VOLLOW)    btnVolumeLow .setSelected(true);
-		else if(b == ConfigInfo.VOLMEDIUM) btnVolumeMed .setSelected(true);
-		else if(b == ConfigInfo.VOLHIGH)   btnVolumeHigh.setSelected(true);
+		else if(b == ConfigInfo.VOLBGMLOW)    btnVolumeLow .setSelected(true);
+		else if(b == ConfigInfo.VOLBGMMEDIUM) btnVolumeMed .setSelected(true);
+		else if(b == ConfigInfo.VOLBGMHIGH)   btnVolumeHigh.setSelected(true);
 	}
 	
 	/**
@@ -71,18 +72,18 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 	 */
 	public byte getStatus(){
 		if     (btnVolumeMute.isSelected()) return ConfigInfo.MUTE;
-	    else if(btnVolumeLow .isSelected()) return ConfigInfo.VOLLOW; 
-	    else if(btnVolumeMed .isSelected()) return ConfigInfo.VOLMEDIUM;
-	    else if(btnVolumeHigh.isSelected()) return ConfigInfo.VOLHIGH;
+	    else if(btnVolumeLow .isSelected()) return ConfigInfo.VOLBGMLOW; 
+	    else if(btnVolumeMed .isSelected()) return ConfigInfo.VOLBGMMEDIUM;
+	    else if(btnVolumeHigh.isSelected()) return ConfigInfo.VOLBGMHIGH;
 		return -1;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(thread != null)
-			((MidiPlayer) thread).stopMidi();
-		thread = new MidiPlayer(getStatus(), FILE);
-		
-		thread.start();
+		if(testBGM != null)
+			((MidiPlayer) testBGM).stopMidi();
+//		testBGM = null;
+		testBGM = new MidiPlayer(getStatus(), FILE);
+		testBGM.start();
 	}
 }

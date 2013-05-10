@@ -1,4 +1,5 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.setting;
+
 import java.awt.FlowLayout;
 
 import javax.swing.ButtonGroup;
@@ -54,9 +55,9 @@ public class DifficultyPanel extends JPanel{
 	 * @return 難易度（静的, 動的, 自動）
 	 */
 	public byte getStatus(){
-		if     (btnDifficultyStatic.isSelected())  return ConfigInfo.STATIC;
+		if     (btnDifficultyStatic .isSelected()) return ConfigInfo.STATIC;
 		else if(btnDifficultyDynamic.isSelected()) return ConfigInfo.DYNAMIC;
-		else if(btnDifficultyAuto.isSelected())    return ConfigInfo.AUTO;
+		else if(btnDifficultyAuto   .isSelected()) return ConfigInfo.AUTO;
 		return -1;
 	}
 }
