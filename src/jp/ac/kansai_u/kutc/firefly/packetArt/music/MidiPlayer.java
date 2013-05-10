@@ -32,19 +32,20 @@ public class MidiPlayer extends Thread {
 	}
 
 	public void run() {
-		while(killps == false){
+//		killps = false;
+//		while(killps == false){
 			try {
 				playMidiMusic(coefficient, filename);
 			} catch (Exception e) {
 				// TODO 自動生成された catch ブロック
 				e.printStackTrace();
 			}
-		}
+//		}
 	}
 	
 	public void stopMidi(){
 		killps = true;
-		if(sequencer.isRunning() == true){
+		if(sequencer != null && sequencer.isRunning() == true){
 			sequencer.stop();
 		}
 	}
@@ -61,8 +62,6 @@ public class MidiPlayer extends Thread {
 			sequencer.start();
 			while (sequencer.isRunning())
 				Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
 		} finally {
 			if (sequencer != null && sequencer.isOpen())
 				sequencer.close();

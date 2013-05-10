@@ -18,8 +18,10 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import jp.ac.kansai_u.kutc.firefly.packetArt.PlaySE;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
+import jp.ac.kansai_u.kutc.firefly.packetArt.music.MidiPlayer;
 
 
 /**
@@ -38,7 +40,6 @@ public class SettingForm extends FormBase implements ActionListener {
 		}catch(IOException e){
 			System.err.println(e.getMessage());
 		}
-		
 		
 		Container homura = getContentPane();
 //		TODO 背景をpaint()に書きてえええええええええ
@@ -73,29 +74,16 @@ public class SettingForm extends FormBase implements ActionListener {
 	}
 	
 	public void actionPerformed(ActionEvent e){
-		if(madoka.panelMusicVolume.thread != null)
+		if(madoka.panelMusicVolume.testBGM != null)
 			//スレッドが動いているかも．動いていればストップ
-			madoka.panelMusicVolume.thread.stop();
+			((MidiPlayer) madoka.panelMusicVolume.testBGM).stopMidi();
+		
 		if(e.getSource() == mami1){
-			ConfigStatus.setViewLog     (madoka.panelViewLog.getStatus());
-			ConfigStatus.setMino        (madoka.panelMino.getStatus());
-			ConfigStatus.setMelody      (madoka.panelMelody.getStatus());
-			ConfigStatus.setVolMusic    (madoka.panelMusicVolume.getStatus());
-			ConfigStatus.setVolSound    (madoka.panelSoundVolume.getStatus());
-			ConfigStatus.setDifficulty  (madoka.panelDifficulty.getStatus());
-			ConfigStatus.setKeyBind     (madoka.panelKeyBind.getStatus());
-			ConfigStatus.setKeyUp       (ConfigStatus.KEYBIND[madoka.panelKeyBind.getStatus()][0]);
-			ConfigStatus.setKeyDown     (ConfigStatus.KEYBIND[madoka.panelKeyBind.getStatus()][1]);
-			ConfigStatus.setKeyLeft     (ConfigStatus.KEYBIND[madoka.panelKeyBind.getStatus()][2]);
-			ConfigStatus.setKeyRight    (ConfigStatus.KEYBIND[madoka.panelKeyBind.getStatus()][3]);
-			ConfigStatus.setKeyLeftSpin (ConfigStatus.KEYBIND[madoka.panelKeyBind.getStatus()][4]);
-			ConfigStatus.setKeyRightSpin(ConfigStatus.KEYBIND[madoka.panelKeyBind.getStatus()][5]);
-			ConfigStatus.printStatus();
-			FormUtil.getInstance().changeForm("Title");
-		}else if(e.getSource() == mami2){
-			System.out.println("CANCEL pushed");
-			FormUtil.getInstance().changeForm("Title");
+			madoka.setStatus();  // 各項目の状態をセットする
+			PlaySE.getInstance().setVolumeAll((double)ConfigStatus.getVolSound());  //SEのボリュームを設定
+			ConfigStatus.printStatus();//TODO 後々削除
 		}
+		FormUtil.getInstance().changeForm("Title");
 	}
 
 	// 描画関連のコードはここに

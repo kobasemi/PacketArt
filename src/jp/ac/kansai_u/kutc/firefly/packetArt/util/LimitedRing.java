@@ -20,4 +20,13 @@ public class LimitedRing<E> extends LimitedQueue<E> {
         super.add(o);
         return o;
     }
+
+    /**
+     * peekFirstしたものは最後尾に回りません。
+     *
+     * @return 先頭のオブジェクト
+    */
+    public synchronized E peekFirst() {
+        return super.peek();
+    }
 }

@@ -20,25 +20,27 @@ public class ViewLogPanel extends JPanel{
 	 * @param 初期化前のログ表示設定
 	 */
 	ViewLogPanel(boolean f){
-		setLayout(new FlowLayout(FlowLayout.LEFT, 30, 0));
+		setLayout(new FlowLayout(FlowLayout.LEFT, ConfigInfo.HGAP, 0));
 		setOpaque(false);
 		
 		JLabel labelViewLog = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "labelLog.png"));
 		btnOn  = new JRadioButton(new ImageIcon(ConfigInfo.BTNPATH + "btnOn.png"));
 		btnOff = new JRadioButton(new ImageIcon(ConfigInfo.BTNPATH + "btnOff.png"));
 
+		ButtonGroup logViewGroup = new ButtonGroup();
+		logViewGroup.add(btnOn); logViewGroup.add(btnOff);
+		
 		btnOn .setSelectedIcon(new ImageIcon(ConfigInfo.BTNPATH + "btnOnSelected.png"));
 		btnOff.setSelectedIcon(new ImageIcon(ConfigInfo.BTNPATH + "btnOffSelected.png"));
+		
 		btnOn .setContentAreaFilled(false);
 		btnOff.setContentAreaFilled(false);
 		
-		ButtonGroup logViewGroup = new ButtonGroup();
-		logViewGroup.add(btnOn); logViewGroup.add(btnOff);
 		add(labelViewLog);
 		add(btnOn);
 		add(btnOff);
 		
-		if(f) btnOn.setSelected(true);
+		if(f) btnOn .setSelected(true);
 		else  btnOff.setSelected(true);
 	}
 	
@@ -46,7 +48,5 @@ public class ViewLogPanel extends JPanel{
 	 * ログの表示設定を取得する
 	 * @return ログ表示のオン・オフ
 	 */
-	public boolean getStatus(){
-		return btnOn.isSelected();
-	}
+	public boolean getStatus(){ return btnOn.isSelected(); }
 }

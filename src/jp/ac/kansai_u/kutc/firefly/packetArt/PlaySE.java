@@ -30,11 +30,26 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.util.LimitedRing;
 
 
 /**
+ * SEをならすクラスです。
+ * 多重再生をするために、何種類ものClipを予めロードし、複数保有します。<br>
+ * <br>
  * つかいかた：<br>
  * <code>
- * PlaySE playSE = PlaySE.getInstance();
- * playSE.initialize()//はじめに、ロードする余裕がある時にする。
- * playSE.play("select");
+ * //固定SEの場合<br>
+ * PlaySE playSE = PlaySE.getInstance();<br>
+ * playSE.initialize()//はじめに、ロードする余裕がある時にする。<br>
+ * playSE.play("select");<br>
+ * <br>
+ * //適当なファイルの場合<br>
+ * PlaySE playSE = PlaySE.getInstance();<br>
+ * playSE.openSE("unko", new File("unko.wav"));<br>
+ * //playSE.openSE("unko", new URL("http://www.uncom.jp/files/unko.wav"));でも可<br>
+ * playSE.play("unko")<br>
+ * <br>
+ * //ボリューム変更<br>
+ * setVolumeAll(100)<br>
+ * <br>
+ * </code>
  *
  * @author Nakata
 */
@@ -46,12 +61,11 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
      *
      * @return シングルトンのインスタンスを返します。
     */
-    public static  synchronized PlaySE getInstance(){
+    public static synchronized PlaySE getInstance(){
         return instance;
     }
 
     //固定のSEここから
-    //TODO SoundeEffect wavを決定すること
     public static final String MOVE_FILE = "resource/se/move.wav";//ゲーム：ミノ左右下移動
     public static final String MOVE = "move";
     public static final String HARDDROP_FILE = "resource/se/harddrop.wav";//ゲーム：ミノハードドロップ
@@ -100,7 +114,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
      * すべての固定SEをファイルからロードします。
      * 数秒の時間がかかります。
     */
-    public void initialize() {
+    public synchronized void initialize() {
         if (!inited) {
             //openSE(MOVE, new File(MOVE_FILE));
             //System.out.println("Loading " + MOVE_FILE);
@@ -254,6 +268,25 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
 
     /**
      * ファイル名に紐付けされたClipを一つ再生します。
+     * 「一時的に」Clipの音量をvolに変更し、再生します。
+     *
+     * @param name 再生するSEの名前
+     * @param vol 再生するときの音量
+    */
+    public synchronized boolean play(String name, double vol) {
+        final LimitedRing<Clip> clips = get(name);
+        if (clips != null) {
+            final Clip clip = clips.peek();
+            playTempVol(clip, vol);
+            return true;
+        } else {
+            System.out.println("Before play, initialize() and Load it : " + name);
+            return false;
+        }
+    }
+
+    /**
+     * ファイル名に紐付けされたClipを一つ再生します。
      *
      * @param name 再生するSEの名前
     */
@@ -261,29 +294,27 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         final LimitedRing<Clip> clips = get(name);
         if (clips != null) {
             final Clip clip = clips.peek();
-            /*clipHolder.add(clip);
-            キューに突っ込むことで、clipの参照を保持し、
-            音が途中で途切れるのを防ぐ*/
             clip.start();
-            /*
-            new Thread(new Runnable(){
-                public void run(){
-                    while (clip.isRunning()){
-                        try {
-                            Thread.sleep(10);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                }
-            ).start();
-            */
             return true;
         } else {
             System.out.println("Before play, initialize() and Load it : " + name);
             return false;
         }
+    }
+
+    /*
+     * 一時的にClipのボリュームを変更し再生した後ボリュームをもどす。
+    */
+    private void playTempVol(final Clip clip, double vol) {
+        final float buf = getVolume(clip);
+        setVolume(clip, vol);
+        clip.start();
+        new Thread(new Runnable(){
+            public void run() {
+                clip.drain();
+                setVolume(clip, buf);
+            }
+        }).start();
     }
 
     /**
@@ -372,7 +403,6 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         final float minimum = ctrl.getMinimum();
         final float maximum = ctrl.getMaximum();
         final float newValue = (float)(minimum + volume * (maximum - minimum) / 100.0F);
-        final float current = ctrl.getValue();
         ctrl.setValue(newValue);
     }
 
@@ -389,7 +419,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         if (clips == null) {
             return -1;
         }
-        final Clip clip = clips.peek();
+        final Clip clip = clips.peekFirst();
         return getVolume(clip);
     }
 

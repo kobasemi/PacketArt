@@ -41,7 +41,7 @@ public class LinerPanel extends JPanel implements PacketHandler{
 
     public LinerPanel() {
         super();
-        playSE = PlaySE.getInstance();//TEST
+        //playSE = PlaySE.getInstance();//TEST
         counter = 0;
         setPreferredSize(new Dimension(X,Y));
         setLayout(new GridLayout(GRID_X,GRID_Y, 0, 0));
@@ -61,7 +61,7 @@ public class LinerPanel extends JPanel implements PacketHandler{
         try {
             //WIDEの集めるパケッｔのOSI参照モデルの最上階はTCP/UDP
             if (pkt.hasHeader(JProtocol.TCP_ID)) {
-                playSE.play(PlaySE.RDFSE1);//TEST
+                PlaySE.getInstance().play(PlaySE.RDFSE1);//TEST
                 label.setText("T");//TCPならT
                 if (pkt.hasHeader(JProtocol.IP4_ID)) {
                     label.setForeground(Color.YELLOW);//IPv4が下の時の文字色
@@ -71,7 +71,7 @@ public class LinerPanel extends JPanel implements PacketHandler{
                     label.setForeground(Color.RED);//それ以外が下の時の文字色
                 }
             } else if (pkt.hasHeader(JProtocol.UDP_ID)) {
-                playSE.play(PlaySE.RDFSE2);//TEST
+                PlaySE.getInstance().play(PlaySE.RDFSE2);//TEST
                 label.setText("U");//UDPならU
                 if (pkt.hasHeader(JProtocol.IP4_ID)) {
                     label.setForeground(Color.GREEN);//IPv4が下の時の文字色
@@ -83,7 +83,7 @@ public class LinerPanel extends JPanel implements PacketHandler{
             //OSI参照モデルにおいて。ICMPはL3だが、
             //一般に、ICMPの上にTCPやUDPが来ることは少ないのでここで処理。
             } else if (pkt.hasHeader(JProtocol.ICMP_ID)) {
-                playSE.play(PlaySE.RDFSE3);//TEST
+                PlaySE.getInstance().play(PlaySE.RDFSE3);//TEST
                 label.setText("I");//ICMPならI
                 if (pkt.hasHeader(JProtocol.ETHERNET_ID)) {
                     label.setForeground(Color.CYAN);//IPv4が下の時の文字色
@@ -93,7 +93,7 @@ public class LinerPanel extends JPanel implements PacketHandler{
                     label.setForeground(Color.WHITE);//それ以外が下の時の文字色
                 }
             } else {//TCP,UDP,ICMPを含まないパケットはこちらへ。
-                playSE.play(PlaySE.RDFSE4);//TEST
+                PlaySE.getInstance().play(PlaySE.RDFSE4);//TEST
                 if (pkt.hasHeader(JProtocol.IP6_ID)) {
                     label.setText("6");//IPv6なら6
                     if (pkt.hasHeader(JProtocol.ETHERNET_ID)) {

@@ -24,8 +24,8 @@ import javax.swing.JPanel;
 public class KeyBindPanel extends JPanel implements ActionListener{
 	final public String KEYPATH = new String(ConfigInfo.IMGPATH + "key/");
 	private JRadioButton btnKeyDefault, btnKeyGamer, btnKeyVim;
-	private JLabel labelUpImg, labelDownImg, labelLeftImg, labelRightImg, labelLSpinImg, labelRSpinImg;
-	private JLabel labelUpKey, labelDownKey, labelLeftKey, labelRightKey, labelLSpinKey, labelRSpinKey;
+	private JLabel labelLeftImg, labelUpImg, labelRightImg, labelDownImg, labelLSpinImg, labelRSpinImg;
+	private JLabel labelLeftKey, labelUpKey, labelRightKey, labelDownKey, labelLSpinKey, labelRSpinKey;
 	private JLabel[] labelImageArray;
 	private JLabel[] labelKeyCodeArray;
 	
@@ -38,13 +38,13 @@ public class KeyBindPanel extends JPanel implements ActionListener{
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
 		JPanel sectionPanel = new JPanel();
-		sectionPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 30, 0));
+		sectionPanel.setLayout(new FlowLayout(FlowLayout.LEFT, ConfigInfo.HGAP, 0));
 		sectionPanel.setOpaque(false);
-		JLabel kusojo = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "labelKeyConf.png"));
-		sectionPanel.add(kusojo);
+		JLabel labelSection = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "labelKeyConf.png"));
+		sectionPanel.add(labelSection);
 		
 		JPanel btnKeyBindPanel = new JPanel();
-		btnKeyBindPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 0));
+		btnKeyBindPanel.setLayout(new FlowLayout(FlowLayout.CENTER, ConfigInfo.HGAP, 0));
 		btnKeyBindPanel.setOpaque(false);
 		btnKeyDefault = new JRadioButton(new ImageIcon(KEYPATH + "bindDefault.png"));
 		btnKeyGamer   = new JRadioButton(new ImageIcon(KEYPATH + "bindGamer.png"));
@@ -68,13 +68,13 @@ public class KeyBindPanel extends JPanel implements ActionListener{
 		
 		JPanel arrowImagePanel = new JPanel();
 		arrowImagePanel.setOpaque(false);
-		labelUpImg    = new JLabel(new ImageIcon(KEYPATH + "arrUp.png"));
-		labelDownImg  = new JLabel(new ImageIcon(KEYPATH + "arrDown.png"));
 		labelLeftImg  = new JLabel(new ImageIcon(KEYPATH + "arrLeft.png"));
+		labelUpImg    = new JLabel(new ImageIcon(KEYPATH + "arrUp.png"));
 		labelRightImg = new JLabel(new ImageIcon(KEYPATH + "arrRight.png"));
+		labelDownImg  = new JLabel(new ImageIcon(KEYPATH + "arrDown.png"));
 		labelLSpinImg = new JLabel(new ImageIcon(KEYPATH + "arrLSpin.png"));
 		labelRSpinImg = new JLabel(new ImageIcon(KEYPATH + "arrRSpin.png"));
-		labelImageArray = new JLabel[]{labelUpImg, labelDownImg, labelLeftImg, labelRightImg,
+		labelImageArray = new JLabel[]{labelLeftImg, labelUpImg, labelRightImg, labelDownImg,
 				labelLSpinImg, labelRSpinImg};
 		for(int i=0; i<labelImageArray.length; i++){
 			labelImageArray[i].setPreferredSize(new Dimension(80, 40));
@@ -84,13 +84,13 @@ public class KeyBindPanel extends JPanel implements ActionListener{
 		
 		JPanel labelKeyPanel = new JPanel();
 		labelKeyPanel.setOpaque(false);
-		labelUpKey    = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][0]));
-		labelDownKey  = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][1]));
-		labelLeftKey  = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][2]));
-		labelRightKey = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][3]));
-		labelLSpinKey = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][4]));
-		labelRSpinKey = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][5]));
-		labelKeyCodeArray = new JLabel[]{labelUpKey, labelDownKey, labelLeftKey, labelRightKey,
+		labelLeftKey  = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][ConfigInfo.LEFT]));
+		labelUpKey    = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][ConfigInfo.UP]));
+		labelRightKey = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][ConfigInfo.RIGHT]));
+		labelDownKey  = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][ConfigInfo.DOWN]));
+		labelLSpinKey = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][ConfigInfo.LSPIN]));
+		labelRSpinKey = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][ConfigInfo.RSPIN]));
+		labelKeyCodeArray = new JLabel[]{labelLeftKey, labelUpKey, labelRightKey, labelDownKey,
 				labelLSpinKey, labelRSpinKey};
 		for(int i=0; i<labelKeyCodeArray.length; i++){
 			labelKeyCodeArray[i].setPreferredSize(new Dimension(80, 30));

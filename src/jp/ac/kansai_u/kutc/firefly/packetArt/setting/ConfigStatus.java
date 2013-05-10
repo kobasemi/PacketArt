@@ -15,14 +15,14 @@ public class ConfigStatus {
 	private static byte    difficulty;	// 難易度（静的，動的，自動）
 	private static byte    keybind;		// キーバインド（Default, Gamer, Vim）
 	private static int     up, down, left, right, leftSpin, rightSpin;	// キー
-	private static int[]   key;			// キーコンフィグの配列（up, down, left, right, leftSpin, rightSpin)
 	
+	//各キーバインドの中身
 	final static int DEFAULTKEYCODE[] =
-			new int[]{KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_ALT, KeyEvent.VK_SPACE};
+			new int[]{KeyEvent.VK_LEFT, KeyEvent.VK_UP, KeyEvent.VK_RIGHT, KeyEvent.VK_DOWN, KeyEvent.VK_ALT, KeyEvent.VK_SPACE};
 	final static int GAMERKEYCODE[] =
-			new int[]{KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_J, KeyEvent.VK_K};
+			new int[]{KeyEvent.VK_A, KeyEvent.VK_W, KeyEvent.VK_D, KeyEvent.VK_S, KeyEvent.VK_J, KeyEvent.VK_K};
 	final static int VIMKEYCODE[] =
-			new int[]{KeyEvent.VK_K, KeyEvent.VK_J, KeyEvent.VK_H, KeyEvent.VK_L, KeyEvent.VK_A, KeyEvent.VK_S};
+			new int[]{KeyEvent.VK_H, KeyEvent.VK_K, KeyEvent.VK_L, KeyEvent.VK_J, KeyEvent.VK_A, KeyEvent.VK_S};
 	final static int[][] KEYBIND= new int[][]{DEFAULTKEYCODE, GAMERKEYCODE, VIMKEYCODE};
 	
 	/**
@@ -33,13 +33,12 @@ public class ConfigStatus {
 		mino = ConfigInfo.MINO4;
 		melody = true;
 		volMusic = ConfigInfo.MUTE; //TODO :実装時，MEDIUMに．
-		volSound = ConfigInfo.VOLMEDIUM;
+		volSound = ConfigInfo.VOLSEMEDIUM;
 		difficulty = ConfigInfo.AUTO;
 		keybind = ConfigInfo.KEYDEFAULT;
-		up = KEYBIND[keybind][0]; down = KEYBIND[keybind][1];
-		left = KEYBIND[keybind][2]; right = KEYBIND[keybind][3];
-		leftSpin = KEYBIND[keybind][4]; rightSpin = KEYBIND[keybind][5];
-		key = new int[]{up, down, left, right, leftSpin, rightSpin};
+		left = KEYBIND[keybind][ConfigInfo.LEFT]; up = KEYBIND[keybind][ConfigInfo.UP];
+		right = KEYBIND[keybind][ConfigInfo.RIGHT]; down = KEYBIND[keybind][ConfigInfo.DOWN];
+		leftSpin = KEYBIND[keybind][ConfigInfo.LSPIN]; rightSpin = KEYBIND[keybind][ConfigInfo.RSPIN];
 	}
 	
 	/**
@@ -81,32 +80,32 @@ public class ConfigStatus {
 	 * 上キーを設定する
 	 * @param up
 	 */
-	public static void setKeyUp(int d){ up = key[0] = d;}
+	public static void setKeyUp(int d){ up = d;}
 	/**
 	 * 下キーを設定する
 	 * @param down
 	 */
-	public static void setKeyDown(int d){ down = key[1] = d; }
+	public static void setKeyDown(int d){ down = d; }
 	/**
 	 * 左キーを設定する
 	 * @param left
 	 */
-	public static void setKeyLeft(int d){ left = key[2] = d; }
+	public static void setKeyLeft(int d){ left = d; }
 	/**
 	 * 右キーを設定する
 	 * @param right
 	 */
-	public static void setKeyRight(int d){ right = key[3] = d; }
+	public static void setKeyRight(int d){ right = d; }
 	/**
 	 * 左回転キーを設定する
 	 * @param leftSpin
 	 */
-	public static void setKeyLeftSpin(int d){ leftSpin = key[4] = d; }
+	public static void setKeyLeftSpin(int d){ leftSpin = d; }
 	/**
 	 * 右回転キーを設定する
 	 * @param rightSpin
 	 */
-	public static void setKeyRightSpin(int d){ rightSpin = key[5] = d; }
+	public static void setKeyRightSpin(int d){ rightSpin = d; }
 	
 	/**
 	 * ログの表示設定を取得する
@@ -173,12 +172,7 @@ public class ConfigStatus {
 	 * @return 右回転キー
 	 */
 	public static int getKeyRightSpin(){ return rightSpin; }
-	/**
-	 * 各キーの配列を取得する
-	 * @return 各キーの配列
-	 */
-	public static int[] getKey(){ return key; }
-	
+
 //	最終的には消すけど，今は変数確認用に使う
 	/**
 	 * 各項目の設定を標準出力する
@@ -190,14 +184,12 @@ public class ConfigStatus {
 		System.out.println(volSound);
 		System.out.println(difficulty);
 		System.out.println(keybind);
-		System.out.println(up);
-		System.out.println(down);
 		System.out.println(left);
+		System.out.println(up);
 		System.out.println(right);
+		System.out.println(down);
 		System.out.println(leftSpin);
 		System.out.println(rightSpin);
-		for(int i=0; i<6; i++)
-			System.out.print(key[i] + " ");
 		System.out.println();
 	}
 }

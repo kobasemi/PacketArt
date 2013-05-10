@@ -16,7 +16,7 @@ public class MelodyPanel extends JPanel{
 	 * @param 初期化前のメロディ設定
 	 */
 	MelodyPanel(boolean f){
-		setLayout(new FlowLayout(FlowLayout.LEFT, 30, 0));
+		setLayout(new FlowLayout(FlowLayout.LEFT, ConfigInfo.HGAP, 0));
 		setOpaque(false);
 		
 		JLabel labelViewLog = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "labelMelody.png"));
@@ -28,6 +28,7 @@ public class MelodyPanel extends JPanel{
 		
 		btnLight.setSelectedIcon(new ImageIcon(ConfigInfo.BTNPATH + "btnLightSelected.png"));
 		btnDark .setSelectedIcon(new ImageIcon(ConfigInfo.BTNPATH + "btnDarkSelected.png"));
+		
 		btnLight.setContentAreaFilled(false);
 		btnDark .setContentAreaFilled(false);
 		
@@ -36,7 +37,7 @@ public class MelodyPanel extends JPanel{
 		add(btnDark);
 		
 		if(f) btnLight.setSelected(true);
-		else  btnDark.setSelected(true);
+		else  btnDark .setSelected(true);
 	}
 	
 	/**

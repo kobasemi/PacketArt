@@ -12,6 +12,9 @@ import org.jnetpcap.PcapBpfProgram;
 
 import org.jnetpcap.PcapClosedException;
 
+
+// いまさらだけど、これ使っても良かったかも http://d.hatena.ne.jp/backpaper0/20111111/1321012118
+
 /**
  * 完全にパケットアート用。<br>
  * シングルトンになったので、<br>
