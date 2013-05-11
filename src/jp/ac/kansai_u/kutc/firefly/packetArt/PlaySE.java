@@ -65,6 +65,9 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         return instance;
     }
 
+    //HashMap(key, filename)
+    private final HashMap<String, String> staticSE = new HashMap<String, String>();
+
     //固定のSEここから
     public static final String MOVE_FILE = "resource/se/move.wav";//ゲーム：ミノ左右下移動
     public static final String MOVE = "move";
@@ -98,7 +101,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
     public static final int QUEUE_SIZE= 5;//5個の同時再生を許します。
     //このクラスの肝です。
 
-    public static boolean inited;
+    //public static boolean inited;
     //private LimitedQueue<Clip> clipHolder;
 
     /**
@@ -106,45 +109,60 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
     */
     private PlaySE() {
         super();
-        inited = false;
+        staticSE.put(MOVE, MOVE_FILE);
+        staticSE.put(HARDDROP, HARDDROP_FILE);
+        staticSE.put(TURN, TURN_FILE);
+        staticSE.put(SELECT, SELECT_FILE);
+        staticSE.put(SELECT2, SELECT2_FILE);
+        staticSE.put(CANCEL, CANCEL_FILE);
+        staticSE.put(OPEN, OPEN_FILE);
+        staticSE.put(RDFSE1, RDFSE1_FILE);
+        staticSE.put(RDFSE2, RDFSE2_FILE);
+        staticSE.put(RDFSE3, RDFSE3_FILE);
+        staticSE.put(RDFSE4, RDFSE4_FILE);
+        //inited = false;
         //clipHolder = new LimitedQueue<Clip>(QUEUE_SIZE);
     }
 
-    /**
+/*
+    //
      * すべての固定SEをファイルからロードします。
      * 数秒の時間がかかります。
-    */
+    //
     public synchronized void initialize() {
         if (!inited) {
-            //openSE(MOVE, new File(MOVE_FILE));
-            //System.out.println("Loading " + MOVE_FILE);
-            //まだファイルが無い
-            System.out.println("Loading " + HARDDROP_FILE);
-            openSE(HARDDROP, new File(HARDDROP_FILE));
-            System.out.println("Loading " + TURN_FILE);
-            openSE(TURN, new File(TURN_FILE));
-            System.out.println("Loading " + DEMISE_FILE);
-            openSE(DEMISE, new File(DEMISE_FILE));
-            System.out.println("Loading " + SELECT_FILE);
-            openSE(SELECT, new File(SELECT_FILE));
-            System.out.println("Loading " + SELECT2_FILE);
-            openSE(SELECT2, new File(SELECT2_FILE));
-            System.out.println("Loading " + CANCEL_FILE);
-            openSE(CANCEL, new File(CANCEL_FILE));
-            System.out.println("Loading " + OPEN_FILE);
-            openSE(OPEN, new File(OPEN_FILE));
-            System.out.println("Loading " + RDFSE1_FILE);
-            openSE(RDFSE1, new File(RDFSE1_FILE));
-            System.out.println("Loading " + RDFSE2_FILE);
-            openSE(RDFSE2, new File(RDFSE2_FILE));
-            System.out.println("Loading " + RDFSE3_FILE);
-            openSE(RDFSE3, new File(RDFSE3_FILE));
-            System.out.println("Loading " + RDFSE4_FILE);
-            openSE(RDFSE4, new File(RDFSE4_FILE));
-            System.out.println("PlaySE initialized! ");
-            inited = true;
+            new Thread(new Runnable(){
+                public void run(){
+                    //openSE(MOVE, new File(MOVE_FILE));
+                    //System.out.println("Loading " + MOVE_FILE);
+                    //まだファイルが無い
+                    /*System.out.println("Loading " + HARDDROP_FILE);
+                    openSE(HARDDROP, new File(HARDDROP_FILE));
+                    System.out.println("Loading " + TURN_FILE);
+                    openSE(TURN, new File(TURN_FILE));
+                    System.out.println("Loading " + DEMISE_FILE);
+                    openSE(DEMISE, new File(DEMISE_FILE));
+                    System.out.println("Loading " + SELECT_FILE);
+                    openSE(SELECT, new File(SELECT_FILE));
+                    System.out.println("Loading " + SELECT2_FILE);
+                    openSE(SELECT2, new File(SELECT2_FILE));
+                    System.out.println("Loading " + CANCEL_FILE);
+                    openSE(CANCEL, new File(CANCEL_FILE));
+                    System.out.println("Loading " + OPEN_FILE);
+                    openSE(OPEN, new File(OPEN_FILE));
+                    System.out.println("Loading " + RDFSE1_FILE);
+                    openSE(RDFSE1, new File(RDFSE1_FILE));
+                    System.out.println("Loading " + RDFSE2_FILE);
+                    openSE(RDFSE2, new File(RDFSE2_FILE));
+                    System.out.println("Loading " + RDFSE3_FILE);
+                    openSE(RDFSE3, new File(RDFSE3_FILE));
+                    System.out.println("Loading " + RDFSE4_FILE);
+                    openSE(RDFSE4, new File(RDFSE4_FILE));
+                    System.out.println("PlaySE initialized! ");
+                    inited = true;
+                }}).start();
         }
-    }
+    }*/
 
     /**
      * <a href="http://aidiary.hatenablog.com/entry/20061105/1275137770">Clip使い回し</a>
@@ -226,7 +244,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
      * @param b 音楽のバイト列です
      * @return 成功ならtrueを返します。失敗した場合、登録されません。
     */
-    public synchronized boolean openSE(String key, byte[] b) {
+    public synchronized boolean openSE(String key,byte[] b) {
         boolean ret = false;
         synchronized(this) {
             ret = addClips(key, b);
@@ -235,7 +253,9 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
     }
 
     //こいつが核です。
-    private boolean addClips(String key, byte[] data) {
+    private boolean addClips(final String key,byte[] data) {
+        //new Thread(new Runnable(){
+          //  public void run(){
         try {
             LimitedRing<Clip> clips = new LimitedRing<Clip>(RING_SIZE);
             for (int i=0;i<RING_SIZE;i++) {
@@ -264,10 +284,12 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
             e.printStackTrace();
             return false;
         }
+        //    }}
+        //).start();
     }
 
     /**
-     * ファイル名に紐付けされたClipを一つ再生します。
+     * キーに紐付けされたClipを一つ再生します。
      * 「一時的に」Clipの音量をvolに変更し、再生します。
      *
      * @param name 再生するSEの名前
@@ -280,13 +302,17 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
             playTempVol(clip, vol);
             return true;
         } else {
-            System.out.println("Before play, initialize() and Load it : " + name);
+            if (staticSE.containsKey(name)) {
+                openSE(name, new File(staticSE.get(name)));
+                play(name, vol);
+            }
+            //System.out.println("Before play, initialize() and Load it : " + name);
             return false;
         }
     }
 
     /**
-     * ファイル名に紐付けされたClipを一つ再生します。
+     * キーに紐付けされたClipを一つ再生します。
      *
      * @param name 再生するSEの名前
     */
@@ -297,7 +323,11 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
             clip.start();
             return true;
         } else {
-            System.out.println("Before play, initialize() and Load it : " + name);
+            if (staticSE.containsKey(name)) {
+                openSE(name, new File(staticSE.get(name)));
+                play(name);
+            }
+            //System.out.println("Before play, initialize() and Load it : " + name);
             return false;
         }
     }
