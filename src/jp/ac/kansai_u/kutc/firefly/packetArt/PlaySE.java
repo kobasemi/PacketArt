@@ -26,6 +26,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.util.LimitedRing;
+import jp.ac.kansai_u.kutc.firefly.packetArt.util.PrimitiveHolder;
 //import jp.ac.kansai_u.kutc.firefly.packetArt.util.LimitedQueue;
 
 
@@ -101,9 +102,6 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
     public static final int QUEUE_SIZE= 5;//5個の同時再生を許します。
     //このクラスの肝です。
 
-    //public static boolean inited;
-    //private LimitedQueue<Clip> clipHolder;
-
     /**
      * 何もしません。
     */
@@ -120,49 +118,22 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         staticSE.put(RDFSE2, RDFSE2_FILE);
         staticSE.put(RDFSE3, RDFSE3_FILE);
         staticSE.put(RDFSE4, RDFSE4_FILE);
-        //inited = false;
-        //clipHolder = new LimitedQueue<Clip>(QUEUE_SIZE);
     }
 
-/*
-    //
+    /**
      * すべての固定SEをファイルからロードします。
      * 数秒の時間がかかります。
-    //
+    */
     public synchronized void initialize() {
-        if (!inited) {
-            new Thread(new Runnable(){
-                public void run(){
-                    //openSE(MOVE, new File(MOVE_FILE));
-                    //System.out.println("Loading " + MOVE_FILE);
-                    //まだファイルが無い
-                    /*System.out.println("Loading " + HARDDROP_FILE);
-                    openSE(HARDDROP, new File(HARDDROP_FILE));
-                    System.out.println("Loading " + TURN_FILE);
-                    openSE(TURN, new File(TURN_FILE));
-                    System.out.println("Loading " + DEMISE_FILE);
-                    openSE(DEMISE, new File(DEMISE_FILE));
-                    System.out.println("Loading " + SELECT_FILE);
-                    openSE(SELECT, new File(SELECT_FILE));
-                    System.out.println("Loading " + SELECT2_FILE);
-                    openSE(SELECT2, new File(SELECT2_FILE));
-                    System.out.println("Loading " + CANCEL_FILE);
-                    openSE(CANCEL, new File(CANCEL_FILE));
-                    System.out.println("Loading " + OPEN_FILE);
-                    openSE(OPEN, new File(OPEN_FILE));
-                    System.out.println("Loading " + RDFSE1_FILE);
-                    openSE(RDFSE1, new File(RDFSE1_FILE));
-                    System.out.println("Loading " + RDFSE2_FILE);
-                    openSE(RDFSE2, new File(RDFSE2_FILE));
-                    System.out.println("Loading " + RDFSE3_FILE);
-                    openSE(RDFSE3, new File(RDFSE3_FILE));
-                    System.out.println("Loading " + RDFSE4_FILE);
-                    openSE(RDFSE4, new File(RDFSE4_FILE));
-                    System.out.println("PlaySE initialized! ");
-                    inited = true;
-                }}).start();
-        }
-    }*/
+        new Thread(new Runnable(){
+            public void run(){
+                for (String key : staticSE.keySet()) {
+                    if (!containsKey(key)) {
+                        openSE(key, new File(staticSE.get(key)));
+                    }
+                }
+            }}).start();
+    }
 
     /**
      * <a href="http://aidiary.hatenablog.com/entry/20061105/1275137770">Clip使い回し</a>
@@ -194,8 +165,9 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
             return false;
         }
         boolean ret = false;
+        PrimitiveHolder<byte[]> p = new PrimitiveHolder<byte[]>(data);
         synchronized(this) {
-            ret = addClips(key, data);
+            ret = addClips(key, p);
         }
         return ret;
     }
@@ -226,8 +198,9 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
             return false;
         }
         boolean ret = false;
+        PrimitiveHolder<byte[]> p = new PrimitiveHolder<byte[]>(data);
         synchronized(this) {
-            ret = addClips(key, data);
+            ret = addClips(key, p);
         }
         return ret;
     }
@@ -246,8 +219,9 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
     */
     public synchronized boolean openSE(String key,byte[] b) {
         boolean ret = false;
+        PrimitiveHolder<byte[]> p = new PrimitiveHolder<byte[]>(b);
         synchronized(this) {
-            ret = addClips(key, b);
+            ret = addClips(key, p);
         }
         return ret;
     }
@@ -261,6 +235,44 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
             LimitedRing<Clip> clips = new LimitedRing<Clip>(RING_SIZE);
             for (int i=0;i<RING_SIZE;i++) {
                 bais =  new ByteArrayInputStream(data);
+                AudioInputStream inputStream =  //バイト列から読み込み
+                        AudioSystem.getAudioInputStream(bais);
+                AudioFormat format = inputStream.getFormat();
+                DataLine.Info info = new DataLine.Info(Clip.class, format);
+                Clip clip = (Clip) AudioSystem.getLine(info);
+                clip.open(inputStream);
+                clip.addLineListener(this);
+                inputStream.close();
+                clips.add(clip);
+            }
+            put(key, clips);
+            return true;
+        } catch (UnsupportedAudioFileException e) {
+            //mp4とか、無理なファイルはこっち。
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            //そもそもファイルが存在しないとかいう場合はこっち
+            e.printStackTrace();
+            return false;
+        } catch (LineUnavailableException e) {
+            //PCが、音楽を再生できないPCでした。
+            e.printStackTrace();
+            return false;
+        }
+        //    }}
+        //).start();
+    }
+
+    //こいつが核です。
+    private boolean addClips(final String key,PrimitiveHolder<byte[]> p) {
+        //new Thread(new Runnable(){
+          //  public void run(){
+        ByteArrayInputStream bais = null;
+        try {
+            LimitedRing<Clip> clips = new LimitedRing<Clip>(RING_SIZE);
+            for (int i=0;i<RING_SIZE;i++) {
+                bais =  new ByteArrayInputStream(p.value);
                 AudioInputStream inputStream =  //バイト列から読み込み
                         AudioSystem.getAudioInputStream(bais);
                 AudioFormat format = inputStream.getFormat();
