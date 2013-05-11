@@ -256,11 +256,13 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
     private boolean addClips(final String key,byte[] data) {
         //new Thread(new Runnable(){
           //  public void run(){
+        ByteArrayInputStream bais = null;
         try {
             LimitedRing<Clip> clips = new LimitedRing<Clip>(RING_SIZE);
             for (int i=0;i<RING_SIZE;i++) {
+                bais =  new ByteArrayInputStream(data);
                 AudioInputStream inputStream =  //バイト列から読み込み
-                        AudioSystem.getAudioInputStream(getInputStream(data));
+                        AudioSystem.getAudioInputStream(bais);
                 AudioFormat format = inputStream.getFormat();
                 DataLine.Info info = new DataLine.Info(Clip.class, format);
                 Clip clip = (Clip) AudioSystem.getLine(info);
@@ -495,19 +497,19 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         }
         return b.toByteArray();
     }
-
-    /**
+/*
+    /
      * <a href="http://d.hatena.ne.jp/suusuke/20080127/1201417192">bytestream</a>
      * InputStreamをバイト配列に変換する
      * バイト列をInputStreamに変換する
      *
      * @param byteData InputStreamに変換したいbyte列
      * @return InputStream （エラーなら空）
-    */
+    /
     public static InputStream getInputStream(byte[] byteData) {
         return new ByteArrayInputStream(byteData);
     }
-
+*/
     public void debugMe(String header) {
         FloatControl ctrl = null;
         for (LimitedRing<Clip> clips : values()) {
