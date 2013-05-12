@@ -29,8 +29,8 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.setting.SettingForm;
  * @author hiyoko
  */
 public class TitleForm extends FormBase implements FocusListener {
-	MainPanel panel;
-	Thread titlemusic; // by Lisa
+	private PanelManager panelManager;
+	private Thread titlemusic; // by Lisa
 	
 	/**
 	 * タイトル画面のコンストラクタです。
@@ -41,22 +41,23 @@ public class TitleForm extends FormBase implements FocusListener {
 		new ConfigStatus();
 	}
 	
+	@Override
 	public void initialize() {
 		// パネルが存在しなければ生成する
-		if (panel == null ) {
-			panel = new MainPanel(getSize().width, getSize().height);
+		if (panelManager == null) {
+			panelManager = new PanelManager(getSize().width, getSize().height);
 		}
 		
-		for (JButton b:panel.getButtonArray()) {
-			b.addFocusListener(this);
-			b.addKeyListener(this);
-			b.addMouseListener(this);
+		for (JButton button : panelManager.getButtonArray()) {
+			button.addFocusListener(this);
+			button.addKeyListener(this);
+			button.addMouseListener(this);
 		}
 		
-		getContentPane().add(panel, 0);
+		panelManager.addToParent(getContentPane());
 		
 		// TODO: オプションから戻ってきた時にボタンがフォーカスを失うのをなんとかする
-		// panel.getButton(0).requestFocusInWindow();
+		// panelManager.getButton(0).requestFocusInWindow();
 		
 		// 遷移先のフォームが存在しなければ生成する
 		if(!FormUtil.getInstance().getForm().isExistForm("Playing")) {
@@ -89,8 +90,10 @@ public class TitleForm extends FormBase implements FocusListener {
 		titlemusic.start();
 	}
 	
+	@Override
 	public void paint(Graphics g) {}
 	
+	@Override
 	public void update() {}
 	
 	public void mouseClicked(MouseEvent e) {
@@ -98,10 +101,10 @@ public class TitleForm extends FormBase implements FocusListener {
 		
 		// クリックされたボタンに従って画面を変化させる
 		if (obj instanceof JButton) {
-			JButton b = (JButton) obj;
+			JButton source = (JButton) obj;
 			
-			System.out.println("Mouse Clicked : [" + b.getName() + "] Button");
-			buttonPressed(b);
+			System.out.println("Mouse Clicked : [" + source.getName() + "] Button");
+			buttonPressed(source);
 		}
 	}
     public void mouseEntered(MouseEvent e) {
@@ -109,7 +112,9 @@ public class TitleForm extends FormBase implements FocusListener {
     	
     	// マウスカーソルが乗っているボタンにフォーカスを取得させる
     	if (obj instanceof JButton) {
-    		((JButton) obj).requestFocusInWindow();
+    		JButton source = (JButton) obj;
+    		
+    		source.requestFocusInWindow();
     	}
     }
     public void mouseDragged(MouseEvent e) {}
@@ -123,11 +128,11 @@ public class TitleForm extends FormBase implements FocusListener {
 		
 		// エンターキーが押下されたボタンに従って画面を変化させる
 		if (obj instanceof JButton) {
-			JButton b = (JButton) obj;
+			JButton source = (JButton) obj;
 			
 			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-				System.out.println("[ENTER] Key Pressed : [" + b.getName() + "] Button");
-				buttonPressed(b);
+				System.out.println("[ENTER] Key Pressed : [" + source.getName() + "] Button");
+				buttonPressed(source);
 			}
 		}
     }
@@ -135,17 +140,18 @@ public class TitleForm extends FormBase implements FocusListener {
     public void keyTyped(KeyEvent e) {}
     
     public void focusGained(FocusEvent e) {
-    	panel.repaint();
+    	panelManager.repaint();
     	Object obj = e.getSource();
     	
     	// フォーカスを得たボタンの横にカーソルを移動させる
 		if (obj instanceof JButton) {
-			JButton b = (JButton) e.getSource();
+			JButton source = (JButton) e.getSource();
+			JButton[] button = panelManager.getButtonArray();
 			
-			for (int i = 0; i < panel.getButtonArray().length; i++) {
-				if (b == panel.getButton(i)) {
+			for (int i = 0; i < button.length; i++) {
+				if (source == button[i]) {
 					PlaySE.getInstance().play(PlaySE.SELECT2);
-					panel.moveCursor(i);
+					panelManager.moveCursor(i);
 					break;
 				}
 			}
@@ -153,25 +159,27 @@ public class TitleForm extends FormBase implements FocusListener {
     }
     public void focusLost(FocusEvent e) {}
     
+    @Override
     public void onFormChanged() {
-    	for(JButton b : panel.getButtonArray()){
-    		b.removeKeyListener(this);
-    		b.removeMouseListener(this);
-    		b.removeFocusListener(this);
+    	for(JButton button : panelManager.getButtonArray()){
+    		button.removeKeyListener(this);
+    		button.removeMouseListener(this);
+    		button.removeFocusListener(this);
     	}
     	
     	// フォームチェンジ時にはタイトルBGMを止める。 by Lisa
 		 ((MidiPlayer) titlemusic).stopMidi();
     }
     
+    @Override
     public void onClose() {}
     
     // ボタンをクリックするか、ボタン上でエンターキーを押下した時の動作
-    private void buttonPressed(JButton button) {
-    	panel.repaint();
+    private void buttonPressed(JButton source) {
+    	panelManager.repaint();
 		PlaySE.getInstance().play(PlaySE.SELECT);
     	
-		switch (panel.getButtonIndex(button)) {
+		switch (panelManager.getButtonIndex(source)) {
 		case 0: // Start
 			FormUtil.getInstance().changeForm("Playing");
 			break;
@@ -182,16 +190,17 @@ public class TitleForm extends FormBase implements FocusListener {
 			FormUtil.getInstance().changeForm("Option");
 			break;
 		case 3: // Exit
-			panel.changeButton();
-			panel.getButton(4).requestFocusInWindow();
+			panelManager.changeButton();
+			panelManager.getButton(4).requestFocusInWindow();
 			break;
 		case 4: // Exit - Yes
 			PcapManager.getInstance().kill();
+			
 			System.exit(0);
 			break;
 		case 5: // Exit - No
-			panel.changeButton();
-			panel.getButton(0).requestFocusInWindow();
+			panelManager.changeButton();
+			panelManager.getButton(0).requestFocusInWindow();
 			break;
 		}
     }

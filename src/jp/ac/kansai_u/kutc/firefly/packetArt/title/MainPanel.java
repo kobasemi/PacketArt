@@ -7,106 +7,78 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 class MainPanel extends JPanel {
-	private ButtonPanel buttonPanel;
+	private static final int CREDIT_MARGIN = 700;
+	private static final int TITLE_MARGIN = 50;
+	private static final String IMAGE_PATH = "resource/image/title/";
+	private static final String FILE_NAME_CURSOR = "cursor.png";
+	private static final String[] FILE_NAME = {"background.png", "title.png", "credit.png"}; // カーソル画像以外のファイル名
 	private JLabel labelCursor;
 	private Point[] posCursor;
 	
 	// コンストラクタ
-	MainPanel(final int windowWidth, final int windowHeight) {
-		final int buttonMargin = 350;
-		buttonPanel = new ButtonPanel(250, 250);
-		posCursor = new Point[buttonPanel.getButtonArray().length];
-		
-		buttonPanel.setLocation((windowWidth - buttonPanel.getWidth()) / 2, buttonMargin);
-		
+	MainPanel(final int width, final int height) {
 		setLayout(null);
-		setBounds(0, 0, windowWidth, windowHeight);
-		setMainPanel(windowWidth / 2);
+		setBounds(0, 0, width, height);
+		configureMainPanel(width / 2);
+	}
+	
+	// カーソルの描画に関する設定をする
+	void createCursor(Point point[]) {
+		posCursor = new Point[point.length];
+		BufferedImage image = null;
 		
-		add(buttonPanel, 0);
-	}
-	
-	// ボタンの配列を返す
-	JButton[] getButtonArray() {
-		return buttonPanel.getButtonArray();
-	}
-	
-	// 指定されたボタンを返す
-	JButton getButton(final int index) {
-		return buttonPanel.getButton(index);
-	}
-
-	// ボタン配列の添え字を返す
-	int getButtonIndex(JButton button) {
-		for (int i = 0; i < buttonPanel.getButtonArray().length; i++) {
-			if (button == buttonPanel.getButton(i)) {
-				return i;
-			}
+		try {
+			image = ImageIO.read(new File(IMAGE_PATH + FILE_NAME_CURSOR));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		
-		// 一致するボタンが見つからなかった場合
-		return -1;
+		for (int i = 0; i < posCursor.length; i++) {
+			// カーソルの中央とボタンの中央を合わせる
+			final int x = (int) (point[i].getX() - image.getWidth() * 1.5);
+			final int y = (int) (point[i].getY() - image.getHeight() / 2);
+			posCursor[i] = new Point(x, y);
+		}
+		labelCursor = new JLabel(new ImageIcon(image));
+		labelCursor.setBounds((int) posCursor[0].getX(), (int) posCursor[0].getY(), image.getWidth(), image.getHeight());
+		
+		add(labelCursor, 0);
 	}
 	
-	// ボタンを入れ替える
-	void changeButton() {
-		buttonPanel.changeCard();
-	}
-	
-	// カーソルを対応するボタンの横に移動させる
-	void moveCursor(int index) {
+	// インデックスで指定されたボタンの横にカーソルを移動させる
+	void moveCursor(final int index) {
 		if (0 <= index && index < posCursor.length) {
 			labelCursor.setLocation(posCursor[index]);
 		}
 	}
 	
-	// メインパネルの描画に関する設定をする
-	private void setMainPanel(final int center) {
-		final int creditMargin = 100;
-		final int titleMargin = 50;
-		final String imagePath = "resource/image/title/";
-		BufferedImage imgBackground = null;
-		BufferedImage imgCredit = null;
-		BufferedImage imgCursor = null;
-		BufferedImage imgTitle = null;
-		JLabel labelBackground = null;
-		JLabel labelCredit = null;
-		JLabel labelTitle = null;
+	// カーソル以外の描画に関する設定をする
+	private void configureMainPanel(final int center) {
+		BufferedImage[] image = new BufferedImage[FILE_NAME.length];
 		
 		try {
-			imgBackground = ImageIO.read(new File(imagePath + "background.png"));
-			imgTitle = ImageIO.read(new File(imagePath + "title.png"));
-			imgCursor = ImageIO.read(new File(imagePath + "cursor.png"));
-			imgCredit = ImageIO.read(new File(imagePath + "credit.png"));
+			for (int i = 0; i < image.length; i++) {
+				image[i] = ImageIO.read(new File(IMAGE_PATH + FILE_NAME[i]));
+			}
 		} catch (IOException e) {
-			System.err.println(e.getMessage());
+			e.printStackTrace();
 		}
 		
-		labelBackground = new JLabel(new ImageIcon(imgBackground));
-		labelBackground.setBounds(0, 0, imgBackground.getWidth(), imgBackground.getHeight());
+		JLabel labelBackground = new JLabel(new ImageIcon(image[0]));
+		labelBackground.setBounds(0, 0, image[0].getWidth(), image[0].getHeight());
 		
-		labelTitle = new JLabel(new ImageIcon(imgTitle));
-		labelTitle.setBounds(center - imgTitle.getWidth() / 2, titleMargin, imgTitle.getWidth(), imgTitle.getHeight());
+		JLabel labelTitle = new JLabel(new ImageIcon(image[1]));
+		labelTitle.setBounds(center - image[1].getWidth() / 2, TITLE_MARGIN, image[1].getWidth(), image[1].getHeight());
 		
-		labelCredit = new JLabel(new ImageIcon(imgCredit));
-		labelCredit.setBounds(center - imgCredit.getWidth() / 2, buttonPanel.getY() + buttonPanel.getHeight() + creditMargin, imgCredit.getWidth(), imgCredit.getHeight());
-		
-		for (int i = 0; i < posCursor.length; i++) {
-			// カーソルの中央とボタンの中央を合わせる
-			posCursor[i] = new Point((int) (buttonPanel.getX() - imgCursor.getWidth() * 1.5),
-											buttonPanel.getY() + buttonPanel.getButton(i).getY() + (buttonPanel.getButton(i).getHeight() - imgCursor.getHeight()) / 2);
-		}
-		labelCursor = new JLabel(new ImageIcon(imgCursor));
-		labelCursor.setBounds((int) posCursor[0].getX(), (int) posCursor[0].getY(), imgCursor.getWidth(), imgCursor.getHeight());
+		JLabel labelCredit = new JLabel(new ImageIcon(image[2]));
+		labelCredit.setBounds(center - image[2].getWidth() / 2, CREDIT_MARGIN, image[2].getWidth(), image[2].getHeight());
 		
 		add(labelBackground, 0);
 		add(labelTitle, 0);
 		add(labelCredit, 0);
-		add(labelCursor, 0);
 	}
 }
