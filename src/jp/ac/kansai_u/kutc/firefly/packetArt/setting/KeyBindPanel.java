@@ -40,7 +40,7 @@ public class KeyBindPanel extends JPanel implements ActionListener{
 		JPanel sectionPanel = new JPanel();
 		sectionPanel.setLayout(new FlowLayout(FlowLayout.LEFT, ConfigInfo.HGAP, 0));
 		sectionPanel.setOpaque(false);
-		JLabel labelSection = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "labelKeyConf.png"));
+		JLabel labelSection = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "labelKeyBind.png"));
 		sectionPanel.add(labelSection);
 		
 		JPanel btnKeyBindPanel = new JPanel();

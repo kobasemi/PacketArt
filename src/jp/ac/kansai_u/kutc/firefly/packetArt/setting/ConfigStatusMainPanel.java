@@ -21,9 +21,8 @@ public class ConfigStatusMainPanel extends JPanel{
 	 * コンストラクタ
 	 */
 	ConfigStatusMainPanel(){
-		setBounds(30, 140, 540, 450);
-		setOpaque(false);
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		setOpaque(false);
 		
 		panelViewLog     = new ViewLogPanel    (ConfigStatus.isViewLog());
 		panelMino        = new MinoPanel       (ConfigStatus.getMino());
