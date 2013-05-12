@@ -11,8 +11,12 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
  * @author akasaka
  */
 public class SettingForm extends FormBase {
+	SettingPanel mainPanel;
+	
 	public void initialize() {
-		getContentPane().add(new SettingPanel(), 0);
+		if(mainPanel == null)
+			mainPanel = new SettingPanel();
+		getContentPane().add(mainPanel, 0);
 	}
 	
 	// 描画関連のコードはここに

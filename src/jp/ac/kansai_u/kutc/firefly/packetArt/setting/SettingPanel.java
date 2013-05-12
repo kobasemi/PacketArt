@@ -67,6 +67,6 @@ public class SettingPanel extends JPanel implements ActionListener{
 		FormUtil.getInstance().changeForm("Title");
 	}
 	
-	 @Override
+	@Override
 	public void paintComponent(Graphics g) { g.drawImage(image, 0, 0, this); }
 }
