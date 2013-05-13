@@ -33,7 +33,7 @@ class ButtonPanel extends JPanel {
 		setCardPanel(secondCardPanel, DIVISION, button.length - 1);
 		
 		setLayout(cardLayout);
-		setBackground(new java.awt.Color(255, 255, 255, 128));
+		setBackground(new java.awt.Color(255, 255, 255, 64));
 		setSize(width, height);
 		add(firstCardPanel,"first");
 		add(secondCardPanel,"second");
@@ -85,7 +85,10 @@ class ButtonPanel extends JPanel {
 		
 		for (int i = firstIndex; i <= lastIndex; i++) {
 			final int imageIndex = i - firstIndex;
-			button[i] = new JButton(new ImageIcon(image[imageIndex]));
+			ImageIcon icon = new ImageIcon(image[imageIndex]);
+			button[i] = new JButton(icon);
+			
+			button[i].setDisabledIcon(icon);
 			setButtonView(i);
 			button[i].setName(BUTTON_NAME[firstIndex + imageIndex]);
 			

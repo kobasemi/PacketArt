@@ -48,13 +48,9 @@ public class TitleForm extends FormBase implements FocusListener {
 			panelManager = new PanelManager(getSize().width, getSize().height);
 		}
 		
-		for (JButton button : panelManager.getButtonArray()) {
-			button.addFocusListener(this);
-			button.addKeyListener(this);
-			button.addMouseListener(this);
-		}
-		
 		panelManager.addToParent(getContentPane());
+		enableButton();
+		enableKeyFocus();
 		
 		// TODO: オプションから戻ってきた時にボタンがフォーカスを失うのをなんとかする
 		// panelManager.getButton(0).requestFocusInWindow();
@@ -69,21 +65,6 @@ public class TitleForm extends FormBase implements FocusListener {
 		if(!FormUtil.getInstance().getForm().isExistForm("Option")) {
 			FormUtil.getInstance().createForm("Option", SettingForm.class);
 		}
-		
-		// カーソルキーとスペースキーでフォーカスを変えられるようにする
-		KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-		// 順送り
-		Set<AWTKeyStroke> forwardKeys = new HashSet<AWTKeyStroke>(focusManager.getDefaultFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS));
-		forwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_DOWN, 0));
-		forwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_UP, InputEvent.SHIFT_MASK));
-		forwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_SPACE, 0));
-		getContentPane().setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, forwardKeys);
-		// 逆送り
-		Set<AWTKeyStroke> backwardKeys = new HashSet<AWTKeyStroke>(focusManager.getDefaultFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS));
-		backwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_UP, 0));
-		backwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_DOWN, InputEvent.SHIFT_MASK));
-		backwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_SPACE, InputEvent.SHIFT_MASK));
-		getContentPane().setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, backwardKeys);
 		
 		// タイトルBGMを鳴らす。 by Lisa
 		titlemusic = new MidiPlayer(ConfigStatus.getVolMusic(), "TitleMusic.mid");
@@ -120,8 +101,20 @@ public class TitleForm extends FormBase implements FocusListener {
     public void mouseDragged(MouseEvent e) {}
     public void mouseExited(MouseEvent e) {}
     public void mouseMoved(MouseEvent e) {}
-    public void mousePressed(MouseEvent e) {}
-    public void mouseReleased(MouseEvent e) {}
+    public void mousePressed(MouseEvent e) {
+    	Object obj = e.getSource();
+    	
+    	if (obj instanceof JButton) {
+    		panelManager.repaint();
+    	}
+    }
+    public void mouseReleased(MouseEvent e) {
+    	Object obj = e.getSource();
+    	
+    	if (obj instanceof JButton) {
+    		panelManager.repaint();
+    	}
+    }
     
     public void keyPressed(KeyEvent e) {
     	Object obj = e.getSource();
@@ -140,7 +133,6 @@ public class TitleForm extends FormBase implements FocusListener {
     public void keyTyped(KeyEvent e) {}
     
     public void focusGained(FocusEvent e) {
-    	panelManager.repaint();
     	Object obj = e.getSource();
     	
     	// フォーカスを得たボタンの横にカーソルを移動させる
@@ -161,12 +153,6 @@ public class TitleForm extends FormBase implements FocusListener {
     
     @Override
     public void onFormChanged() {
-    	for(JButton button : panelManager.getButtonArray()){
-    		button.removeKeyListener(this);
-    		button.removeMouseListener(this);
-    		button.removeFocusListener(this);
-    	}
-    	
     	// フォームチェンジ時にはタイトルBGMを止める。 by Lisa
 		 ((MidiPlayer) titlemusic).stopMidi();
     }
@@ -181,12 +167,15 @@ public class TitleForm extends FormBase implements FocusListener {
     	
 		switch (panelManager.getButtonIndex(source)) {
 		case 0: // Start
+			disableButton();
 			FormUtil.getInstance().changeForm("Playing");
 			break;
 		case 1: // Load
+			disableButton();
 			FormUtil.getInstance().changeForm("ReadDump");
 			break;
 		case 2: // Option
+			disableButton();
 			FormUtil.getInstance().changeForm("Option");
 			break;
 		case 3: // Exit
@@ -203,5 +192,45 @@ public class TitleForm extends FormBase implements FocusListener {
 			panelManager.getButton(0).requestFocusInWindow();
 			break;
 		}
+    }
+    
+    // ボタンを無効化する
+    private void disableButton() {
+		for (JButton button : panelManager.getButtonArray()) {
+			button.setEnabled(false);
+    		button.removeKeyListener(this);
+    		button.removeMouseListener(this);
+    		button.removeFocusListener(this);
+    		panelManager.repaint();
+		}
+    }
+    
+    // ボタンを有効化する
+    private void enableButton() {
+		for (JButton button : panelManager.getButtonArray()) {
+			button.setEnabled(true);
+    		button.addKeyListener(this);
+    		button.addMouseListener(this);
+    		button.addFocusListener(this);
+		}
+    }
+    
+	// カーソルキーとスペースキーでフォーカスを変えられるようにする
+    private void enableKeyFocus() {
+		KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+		
+		// 順送り
+		Set<AWTKeyStroke> forwardKeys = new HashSet<AWTKeyStroke>(focusManager.getDefaultFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS));
+		forwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_DOWN, 0));
+		forwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_UP, InputEvent.SHIFT_MASK));
+		forwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_SPACE, 0));
+		getContentPane().setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, forwardKeys);
+		
+		// 逆送り
+		Set<AWTKeyStroke> backwardKeys = new HashSet<AWTKeyStroke>(focusManager.getDefaultFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS));
+		backwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_UP, 0));
+		backwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_DOWN, InputEvent.SHIFT_MASK));
+		backwardKeys.add(KeyStroke.getAWTKeyStroke(KeyEvent.VK_SPACE, InputEvent.SHIFT_MASK));
+		getContentPane().setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, backwardKeys);
     }
 }
