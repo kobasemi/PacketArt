@@ -1,4 +1,5 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,8 +8,8 @@ import java.util.List;
 
 /**
  * 1tick(約1/60秒)に1回、指定のメソッドを呼び出すためのクラスです。
- * @author midolin
  *
+ * @author midolin
  */
 public class TimerThread extends Thread {
 	boolean isTerminated = false;
@@ -19,40 +20,40 @@ public class TimerThread extends Thread {
 
 	/**
 	 * スレッドを作成します。
+	 *
 	 * @param threadName
 	 */
-	public  TimerThread(String threadName){
+	public TimerThread(String threadName) {
 		setName(threadName);
 		methods = Collections.synchronizedList(
-			new ArrayList<Tuple3<Object, Method, Object[]>>()
+				new ArrayList<Tuple3<Object, Method, Object[]>>()
 		);
 	}
 
 	// 60fpsで動作させる(秒間60回、指定のメソッドが実行される→だいたい16msに一回)
 	// 遅くなる場合は知らない
 	// 参考:http://javaappletgame.blog34.fc2.com/blog-entry-265.html
+
 	/**
 	 * メソッド呼び出しのスレッドを実行します。
 	 */
-	public void run(){
+	public void run() {
 		System.out.println("This thread is " + Thread.currentThread().getName());
 		long currentTime = System.currentTimeMillis();
 		long oldTime = currentTime;
 		long sleepTime = 32;
 
-		while(!isTerminated){
+		while (!isTerminated) {
 			// スレッドが止まることを要求されているなら止まる
 			//System.out.print(isWait ? ";" : ".");
-			if(isWait) {
+			if (isWait) {
 				System.out.println("Waiting...");
-				try{
-					synchronized(this){
-						notify();
-						while(isWaiting()){
-							sleep(sleepTime);
-						}
-						//wait();
+				try {
+					//notify();
+					while (isWaiting()) {
+						sleep(sleepTime);
 					}
+					notify();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -63,10 +64,10 @@ public class TimerThread extends Thread {
 			}
 
 			// 登録されたメソッドの実行
-			synchronized(methods){
-				for(Tuple3<Object, Method,Object[]> value : methods) {
-					try{
-						if(value.z == null)
+			synchronized (methods) {
+				for (Tuple3<Object, Method, Object[]> value : methods) {
+					try {
+						if (value.z == null)
 							value.y.invoke(value.x);
 						else
 							value.y.invoke(value.x, value.z);
@@ -79,18 +80,19 @@ public class TimerThread extends Thread {
 			// スレッドを一時停止させる時間の計算と停止
 			currentTime = System.currentTimeMillis();
 			sleepTime = sleepTime - currentTime - oldTime;
-			if(sleepTime < 2)
+			if (sleepTime < 2)
 				sleepTime = 2;
 
-			try{
+			try {
 				Thread.sleep(sleepTime);
-			} catch (Exception e){
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
 	// スレッドを止めることを試みる
+
 	/**
 	 * スレッドの停止を試みます。
 	 */
@@ -98,10 +100,11 @@ public class TimerThread extends Thread {
 		isTerminated = true;
 	}
 	// スレッドの中断を試みる
+
 	/**
 	 * スレッドの中断を試みます。
 	 */
-	public void tryWait(){
+	public void tryWait() {
 		//System.out.println(isWait);
 		isWait = true;
 		//System.out.println(isWait);
@@ -109,12 +112,13 @@ public class TimerThread extends Thread {
 
 	/**
 	 * スレッドが中断状態かどうかを取得します。
+	 *
 	 * @return 中断状態かどうか
 	 */
-	public boolean isWaiting(){
+	public boolean isWaiting() {
 		Thread.State state = getState();
-		if(state == Thread.State.WAITING
-			|| state == Thread.State.TIMED_WAITING)
+		if (state == Thread.State.WAITING
+				|| state == Thread.State.TIMED_WAITING)
 			return true;
 		else
 			return false;
@@ -123,9 +127,9 @@ public class TimerThread extends Thread {
 	/**
 	 * 一時的に中断しているスレッドを再開させます。
 	 */
-	public void restart(){
-		try{
-			if(isWaiting())
+	public void restart() {
+		try {
+			if (isWaiting())
 				notify();
 			else
 				System.out.println("restarting state... " + getState());
@@ -136,6 +140,7 @@ public class TimerThread extends Thread {
 
 	/**
 	 * 1回のループごとに実行されるメソッドを登録します。
+	 *
 	 * @param parent メソッドの呼び出し元とするオブジェクト
 	 * @param method 実行するメソッド
 	 */
@@ -145,6 +150,7 @@ public class TimerThread extends Thread {
 
 	/**
 	 * 1回のループごとに実行されるメソッドを登録します。
+	 *
 	 * @param parent メソッドの呼び出し元とするオブジェクト
 	 * @param method 実行するメソッド
 	 * @param params 実行時に付与される引数
@@ -154,8 +160,10 @@ public class TimerThread extends Thread {
 	}
 
 	// TODO:メソッドの削除を実装する
+
 	/**
 	 * 指定したメソッドを削除します。
+	 *
 	 * @param method 削除するメソッド
 	 */
 	public void removeInvokeMethodTick(Method method) {
@@ -165,14 +173,14 @@ public class TimerThread extends Thread {
 	/**
 	 * 登録されているすべてのメソッドを削除します。
 	 */
-	public void clearInvokeMethods(){
+	public void clearInvokeMethods() {
 		// methodsを使用している間に変なことをされないようにいったんスレッドを止めてから実行する
 		// タイミング調整も兼ねる
 		//while(isWaiting())
 		//	isWait = true;
 
 		System.out.print("registed methods removing is... ");
-		synchronized(methods){
+		synchronized (methods) {
 			methods.clear();
 		}
 		System.out.println(methods.size() == 0 ? "success." : "FAILED.");
@@ -181,8 +189,8 @@ public class TimerThread extends Thread {
 	/**
 	 * 現在登録されているメソッドをすべて表示します。
 	 */
-	public void showInvokeMethods(){
-		for(Tuple3<Object, Method, Object[]> value : methods)
+	public void showInvokeMethods() {
+		for (Tuple3<Object, Method, Object[]> value : methods)
 			System.out.println(value.x + "." + value.y.getName());
 	}
 }
