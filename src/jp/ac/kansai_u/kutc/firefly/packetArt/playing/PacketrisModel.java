@@ -16,6 +16,7 @@ public class PacketrisModel<T extends Block> {
 	final int column = 15;
 	boolean canReverse;
 	boolean isAsphyxia = false;
+	T instance;
 
 	/**
 	 * ミノ
@@ -37,6 +38,7 @@ public class PacketrisModel<T extends Block> {
 			}
 		}
 		currentMinos = new ArrayList<T>();
+		this.instance = instance;
 	}
 
 	/**
@@ -50,7 +52,7 @@ public class PacketrisModel<T extends Block> {
 		}
 		for (int i = 0; i < row; i++) {
 			board.get(i).get(0).setBlockType(BlockType.Wall);
-			board.get(i).get(0).setLocation(0, 1);
+			board.get(i).get(0).setLocation(0, i);
 			board.get(i).get(column - 1).setBlockType(BlockType.Wall);
 			board.get(i).get(column - 1).setLocation(column - 1, i);
 		}
@@ -178,9 +180,13 @@ public class PacketrisModel<T extends Block> {
 			i++;
 		}
 
+
 		// 配置できないとき
 		if (!canAllocate(parentLocation)) {
 			System.out.println("can't allocated.");
+			// 元に戻す(操作拒否)
+			for (i = 0; i < currentMinos.size(); i++)
+				currentMinos.get(i).location = stored[i];
 		}
 	}
 
@@ -192,6 +198,7 @@ public class PacketrisModel<T extends Block> {
 	public boolean fallDown() {
 		if (isGranded) {
 			fixMino();
+			isGranded = false;
 			return false;
 		}
 		if (canAllocate(parentLocation.add(0, 1))) {
@@ -202,7 +209,7 @@ public class PacketrisModel<T extends Block> {
 			return true;
 		} else {
 			// 窒息処理
-			if (parentLocation.getY() < 2)
+			if (parentLocation.getY() < 3)
 				isAsphyxia = true;
 		}
 		return false;
@@ -216,7 +223,7 @@ public class PacketrisModel<T extends Block> {
 			Location l = new Location(parentLocation.getX() + item.location.getX(),
 					parentLocation.getY() + item.location.getY());
 
-			board.get(l.getY()).set(l.getX(), item);
+			board.get(l.getY()).set(l.getX(), (T) item.clone());
 			getBlock(l).location = l;
 
 		}
@@ -281,11 +288,10 @@ public class PacketrisModel<T extends Block> {
 	 * ミノを生成します。
 	 *
 	 * @param mino       生成するミノの種類
-	 * @param instance   ミノの実体(これがコピーされます)
 	 * @param reversible ミノの生成時反転
 	 * @param x          座標
 	 */
-	public void generateMino(Mino mino, T instance, boolean reversible, int x) {
+	public void generateMino(Mino mino, boolean reversible, int x) {
 		// 入力チェック
 		if (x < 0 || x > column)
 			throw new InvalidParameterException("座標指定に問題があります");

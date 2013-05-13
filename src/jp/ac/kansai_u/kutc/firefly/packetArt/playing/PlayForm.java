@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author midolin
  */
-public class PlayForm extends FormBase {
+public class PlayForm extends FormBase implements ActionListener {
 	PacketrisModel<PacketBlock> model;
 
 	LinkedList<Integer> keyQueue;
@@ -35,6 +35,12 @@ public class PlayForm extends FormBase {
 	boolean isGranded = false;
 
 	Point topLeft;
+
+	final JButton[] buttons = new JButton[]{
+			new JButton("リトライ"),
+			new JButton("タイトルに戻る")
+	};
+
 
 	/**
 	 * キー入力に対する敏感さを取得します。この値は0から60までの値をとります。
@@ -79,6 +85,16 @@ public class PlayForm extends FormBase {
 			public void componentHidden(ComponentEvent e) {
 			}
 		});
+
+		// 各種ボタンの設定
+		for (int i = 0; i < buttons.length; i++) {
+			JButton item = buttons[i];
+			item.setName(i == 0 ? "Retry" : "Quit");
+			item.addActionListener(this);
+			item.setLocation(getSize().width / 3, (getSize().height / 4) * (i + 2));
+			item.setSize(getSize().width / 3, getSize().height / 10);
+			//getContentPane().add(item, 0);
+		}
 	}
 
 	@Override
@@ -99,6 +115,8 @@ public class PlayForm extends FormBase {
 		pm.openFile("src/jp/ac/kansai_u/kutc/firefly/PacketArt/test/10000.cap");
 		musicplayer = new MusicPlayer(ConfigStatus.getVolMusic(), 1000, ConfigStatus.isMelody());
 		musicplayer.start();
+
+		requestFocusInWindow();
 	}
 
 	@Override
@@ -179,49 +197,13 @@ public class PlayForm extends FormBase {
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-
-					final JButton[] buttons = new JButton[]{
-							new JButton("リトライ"),
-							new JButton("タイトルに戻る")
-					};
-
+					for (int i = 0; i < buttons.length; i++) {
+						buttons[i].setVisible(true);
+						buttons[i].setEnabled(true);
+					}
+					getContentPane().validate();
 					// ゲームオーバーになったときにBGMを止める。
 					((MusicPlayer) musicplayer).stopMusic();
-
-					ActionListener actionListener = new ActionListener() {
-
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							// JButtonの挙動を定義
-							if (e.getSource() instanceof JButton) {
-								if (((JButton) (e.getSource())).getName() == "Retry") {
-									// ボタンがRetryならボタンを消して再初期化
-									for (JButton item : buttons) {
-										getContentPane().remove(item);
-										item = null;
-										getContentPane().validate();
-
-									}
-									initialize();
-								} else {
-									// タイトルに帰る
-									FormUtil.getInstance().changeForm("Title");
-								}
-							}
-
-						}
-					};
-
-
-					// 各種ボタンの設定
-					for (int i = 0; i < buttons.length; i++) {
-						JButton item = buttons[i];
-						item.setName(i == 0 ? "Retry" : "Quit");
-						item.addActionListener(actionListener);
-						item.setLocation(getSize().width / 3, (getSize().height / 4) * (i + 2));
-						item.setSize(getSize().width / 3, getSize().height / 10);
-						getContentPane().add(item, 0);
-					}
 				}
 			}.run();
 			return;
@@ -235,25 +217,26 @@ public class PlayForm extends FormBase {
 			return;
 
 		// キー入力の処理
-		if (keys.contains(ConfigStatus.getKeyLeftSpin()))
-			model.rotate(Direction.Left);
-		if (keys.contains(ConfigStatus.getKeyRightSpin()))
-			model.rotate(Direction.Right);
-		if (keys.contains(ConfigStatus.getKeyLeft()))
-			model.translate(Direction.Left);
-		if (keys.contains(ConfigStatus.getKeyRight()))
-			model.translate(Direction.Right);
-		if (keys.contains(ConfigStatus.getKeyDown())) {
-			model.fallDown();
-			falldownTimer = 0;
-		}
-		if (keys.contains(ConfigStatus.getKeyUp())) {
-			while (model.fallDown()) {
+		for (int key : keys) {
+			if (key == ConfigStatus.getKeyLeftSpin())
+				model.rotate(Direction.Left);
+			if (key == ConfigStatus.getKeyRightSpin())
+				model.rotate(Direction.Right);
+			if (key == ConfigStatus.getKeyLeft())
+				model.translate(Direction.Left);
+			if (key == ConfigStatus.getKeyRight())
+				model.translate(Direction.Right);
+			if (key == ConfigStatus.getKeyDown()) {
+				model.fallDown();
+				falldownTimer = 0;
 			}
-			falldownTimer = 0;
-			generateNextBlockFromPacket();
+			if (key == ConfigStatus.getKeyUp()) {
+				while (model.fallDown()) {
+				}
+				falldownTimer = 0;
+				generateNextBlockFromPacket();
+			}
 		}
-
 
 		// もし指定のタイミングになったらfalldown
 		if (falldownTimer > falldownLimit) {
@@ -278,7 +261,7 @@ public class PlayForm extends FormBase {
 
 	private void generateNextBlockFromPacket() {
 		// TODO ミノの生成方法を決定する
-		model.generateMino(TetroMino.I, new PacketBlock(), false, model.column / 2);
+		model.generateMino(TetroMino.I, false, model.column / 2);
 		// パケットを与える
 	}
 
@@ -352,4 +335,33 @@ public class PlayForm extends FormBase {
 		removeKeyListener(this);
 	}
 
+	public void actionPerformed(ActionEvent e) {
+		// JButtonの挙動を定義
+		if (e.getSource() instanceof JButton) {
+			// タイトルに帰る
+			for (int i = 0; i < buttons.length; i++) {
+				buttons[i].setVisible(false);
+				buttons[i].setEnabled(false);
+			}
+			getContentPane().validate();
+
+			if (((JButton) (e.getSource())).getName() == "Retry") {
+				// ボタンがRetryならボタンを消して再初期化
+				initialize();
+			} else {
+				new Thread() {
+					@Override
+					public void run() {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e1) {
+							e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+						}
+						FormUtil.getInstance().changeForm("Title");
+					}
+				}.run();
+			}
+
+		}
+	}
 }
