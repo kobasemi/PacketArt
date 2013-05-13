@@ -78,6 +78,8 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if(e.getSource() == btnVolumeMute)
+			return;
 		PlaySE playSE = PlaySE.getInstance();
 		playSE.play("select" ,getStatus());
 	}

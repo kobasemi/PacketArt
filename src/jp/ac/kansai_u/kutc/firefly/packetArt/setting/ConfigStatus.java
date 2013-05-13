@@ -43,73 +43,73 @@ public class ConfigStatus {
 	
 	/**
 	 * ログ表示のオン・オフを設定する
-	 * @param viewLog
+	 * @param f ログの表示のON/OFF
 	 */
 	public static void setViewLog(boolean f){ viewLog = f; }
 	/**
 	 * ミノの出現個数を設定する
-	 * @param mino
+	 * @param b ミノの個数（4つ, 5つ, 両方）
 	 */
 	public static void setMino(byte b){ mino = b; }
 	/**
 	 * メロディ調を設定する
-	 * @param melody
+	 * @param f メロディ調（明るめ，暗め）
 	 */
 	public static void setMelody(boolean f) { melody = f; }
 	/**
 	 * 音楽の音量を設定する
-	 * @param volMusic
+	 * @param b 音楽の音量（Mute, Low, Medium, High）
 	 */
 	public static void setVolMusic(byte b){ volMusic = b; }
 	/**
 	 * 効果音の音量を設定する
-	 * @param volSound
+	 * @param b 効果音の音量（Mute, Low, Medium, High）
 	 */
 	public static void setVolSound(byte b){ volSound = b; }
 	/**
 	 * 難易度を設定する
-	 * @param difficulty
+	 * @param b 難易度（Static, Dynamic, Auto）
 	 */
 	public static void setDifficulty(byte b){ difficulty = b; }
 	/**
 	 * キーバインドを設定する
-	 * @param keybind
+	 * @param b キーバインド（Default, Gamer, Vim）
 	 */
 	public static void setKeyBind(byte b){ keybind = b; }
 	/**
 	 * 上キーを設定する
-	 * @param up
+	 * @param d 上キーコード
 	 */
 	public static void setKeyUp(int d){ up = d;}
 	/**
 	 * 下キーを設定する
-	 * @param down
+	 * @param d 下キーコード
 	 */
 	public static void setKeyDown(int d){ down = d; }
 	/**
 	 * 左キーを設定する
-	 * @param left
+	 * @param d 左キーコード
 	 */
 	public static void setKeyLeft(int d){ left = d; }
 	/**
 	 * 右キーを設定する
-	 * @param right
+	 * @param d 右キーコード
 	 */
 	public static void setKeyRight(int d){ right = d; }
 	/**
 	 * 左回転キーを設定する
-	 * @param leftSpin
+	 * @param d 左回転キーコード
 	 */
 	public static void setKeyLeftSpin(int d){ leftSpin = d; }
 	/**
 	 * 右回転キーを設定する
-	 * @param rightSpin
+	 * @param d 右回転キーコード
 	 */
 	public static void setKeyRightSpin(int d){ rightSpin = d; }
 	
 	/**
 	 * ログの表示設定を取得する
-	 * @return ログの表示のオン・オフ（true, false）
+	 * @return ログの表示のON/OFF
 	 */
 	public static boolean isViewLog(){ return viewLog; }
 	/**
@@ -144,32 +144,32 @@ public class ConfigStatus {
 	public static byte getKeyBind(){ return keybind; }
 	/**
 	 * 上キーの設定を取得する
-	 * @return 上キー
+	 * @return 上キーコード
 	 */
 	public static int getKeyUp(){ return up; }
 	/**
 	 * 下キーの設定を取得する
-	 * @return 下キー
+	 * @return 下キーコード
 	 */
 	public static int getKeyDown(){ return down; }
 	/**
 	 * 左キーの設定を取得する
-	 * @return 左キー
+	 * @return 左キーコード
 	 */
 	public static int getKeyLeft(){ return left; }
 	/**
 	 * 右キーの設定を取得する
-	 * @return 右キー
+	 * @return 右キーコード
 	 */
 	public static int getKeyRight(){ return right; }
 	/**
 	 * 左回転キーの設定を取得する
-	 * @return 左回転キー
+	 * @return 左回転キーコード
 	 */
 	public static int getKeyLeftSpin(){ return leftSpin; }
 	/**
 	 * 右回転キーの設定を取得する
-	 * @return 右回転キー
+	 * @return 右回転キーコード
 	 */
 	public static int getKeyRightSpin(){ return rightSpin; }
 

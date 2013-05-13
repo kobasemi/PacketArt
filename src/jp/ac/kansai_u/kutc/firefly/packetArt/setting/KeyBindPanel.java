@@ -95,7 +95,7 @@ public class KeyBindPanel extends JPanel implements ActionListener{
 		for(int i=0; i<labelKeyCodeArray.length; i++){
 			labelKeyCodeArray[i].setPreferredSize(new Dimension(80, 30));
 			labelKeyCodeArray[i].setHorizontalAlignment(JLabel.CENTER);
-			labelKeyCodeArray[i].setFont(new Font("Self", Font.PLAIN, 24));
+			labelKeyCodeArray[i].setFont(new Font("Self", Font.PLAIN, 18));
 			labelKeyCodeArray[i].setForeground(Color.white);
 			labelKeyPanel.add(labelKeyCodeArray[i]);
 		}
