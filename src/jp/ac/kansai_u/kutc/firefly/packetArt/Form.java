@@ -1,21 +1,16 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt;
-import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.Dimension;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLayeredPane;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-
 /**
  * 利用者に表示される画面です。
+ *
  * @author midolin
  */
-public class Form extends JFrame{
+public class Form extends JFrame {
 	String currentFormInstanceName = "";
 	// 各フォームのインスタンスはDictionaryを用いて名前で管理される
 	// Form(JFrame) > JComponent > FormBase extended　object の構造
@@ -29,11 +24,12 @@ public class Form extends JFrame{
 
 	/**
 	 * フォームのコンストラクタです。
+	 *
 	 * @param startupFormName スタートアップするときに表示されるフォームの名前
-	 * @param startupForm スタートアップするときに表示されるフォームのクラス
+	 * @param startupForm     スタートアップするときに表示されるフォームのクラス
 	 */
-	public Form(String startupFormName, Class<? extends FormBase> startupForm){
-		timer  = new TimerThread("TimerThread");
+	public Form(String startupFormName, Class<? extends FormBase> startupForm) {
+		timer = new TimerThread("TimerThread");
 		FormUtil.setForm(this);
 
 		// CardLayout
@@ -45,10 +41,10 @@ public class Form extends JFrame{
 		getContentPane().setPreferredSize(new Dimension(600, 800));
 		pack();
 		getRootPane().setDoubleBuffered(true);
-		((JComponent)getContentPane()).setDoubleBuffered(true);
-		try{
+		((JComponent) getContentPane()).setDoubleBuffered(true);
+		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		SwingUtilities.updateComponentTreeUI(this);
@@ -68,24 +64,26 @@ public class Form extends JFrame{
 		// 実行するメソッドの登録
 		registerInvokeMethodsToTimer(getCurrentForm());
 
- 		//timer.start();
- 		System.out.println("Thread: " + timer.toString());
- 		System.out.println("Thread: " + Thread.currentThread().toString());
- 		timer.showInvokeMethods();
+		//timer.start();
+		System.out.println("Thread: " + timer.toString());
+		System.out.println("Thread: " + Thread.currentThread().toString());
+		timer.showInvokeMethods();
 
- 		try{
-	 		//SwingUtilities.invokeLater(new Runnable(){public void run(){timer.start();}});
-	 		timer.start();
-	 	} catch(Exception e){
-	 		e.printStackTrace();
-	 	}
- 		
- 	}
+		try {
+			//SwingUtilities.invokeLater(new Runnable(){public void run(){timer.start();}});
+			timer.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
 
 	// インスタンスを追加
+
 	/**
 	 * フォームを追加します。
-	 * @param name フォーム名
+	 *
+	 * @param name     フォーム名
 	 * @param instance フォーム
 	 */
 	public void addForm(String name, FormBase instance) {
@@ -93,8 +91,10 @@ public class Form extends JFrame{
 	}
 
 	// インスタンスを削除
+
 	/**
 	 * フォームを削除します。
+	 *
 	 * @param name 削除するフォーム名
 	 */
 	public void removeCurrentInstance(String name) {
@@ -102,8 +102,10 @@ public class Form extends JFrame{
 	}
 
 	// 現在見えているインスタンスを取得
+
 	/**
 	 * 現在表示されているフォームを取得します。
+	 *
 	 * @return 表示されているフォーム
 	 */
 	public FormBase getCurrentForm() {
@@ -112,6 +114,7 @@ public class Form extends JFrame{
 
 	/**
 	 * 現在表示されているフォームを含むコンポーネントを取得します。
+	 *
 	 * @return 表示されているフォームを含むコンポーネント
 	 */
 	public JComponent getCurrentComponent() {
@@ -120,15 +123,16 @@ public class Form extends JFrame{
 
 	/**
 	 * nameに指定されたフォームに切り替えます。
+	 *
 	 * @param formName 切り替える対象のフォームの名前。
 	 */
-	public synchronized void changeForm(String formName) throws IllegalArgumentException{
+	public synchronized void changeForm(String formName) throws IllegalArgumentException {
 		// キーがおかしい場合例外を投げつける
-		if(formName == null || formName.equals("") || !instances.containsKey(formName))
+		if (formName == null || formName.equals("") || !instances.containsKey(formName))
 			throw new IllegalArgumentException("Invalid argument:"
-				+ formName == null ? "Argument is null." :
-					formName.equals("") ? "Please specify argument." : "Argument \"" + formName  + "\" is not existed.");
-		
+					+ formName == null ? "Argument is null." :
+					formName.equals("") ? "Please specify argument." : "Argument \"" + formName + "\" is not existed.");
+
 		// フォーム変更イベントを発行する
 		getCurrentForm().onFormChanged();
 
@@ -138,18 +142,18 @@ public class Form extends JFrame{
 		System.out.println("isWaiting:" + (timer.isWaiting() ? "true" : "false"));
 		//System.out.println(Thread.currentThread().getName() + " to sleep...");
 		//synchronized(timer) {
-			while(!timer.isWaiting()){
-				try{
-					synchronized(timer){
-						timer.wait();
-					}
-					//SwingUtilities.invokeLater(timer.tryWait());
-					//Thread.currentThread().sleep(1);
-					System.out.println(timer.isWaiting());
-				} catch (Exception e) {
-					e.printStackTrace();
+		while (!timer.isWaiting()) {
+			try {
+				synchronized (timer) {
+					timer.wait(10);
 				}
+				//SwingUtilities.invokeLater(timer.tryWait());
+				//Thread.currentThread().sleep(1);
+				System.out.println(timer.isWaiting());
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+		}
 		//}
 		System.out.println("isWaiting:" + (timer.isWaiting() ? "true" : "false"));
 		timer.clearInvokeMethods();
@@ -157,16 +161,16 @@ public class Form extends JFrame{
 		// currentFormInstanceを変える
 		currentFormInstanceName = formName;
 		System.out.println(getCurrentForm());
-		
+
 		getCurrentForm().initialize();
-		
+
 		registerInvokeMethodsToTimer(getCurrentForm());
 		timer.showInvokeMethods();
 
 		getCurrentForm().setVisible(true);
 
 		// タイマー再開
-		synchronized(timer){
+		synchronized (timer) {
 			timer.notifyAll();
 		}
 		System.out.println(currentFormInstanceName);
@@ -177,14 +181,15 @@ public class Form extends JFrame{
 	/**
 	 * 指定されたフォームを生成します。
 	 * 作成結果を反映させるには、ChangeFormInstanceメソッドを実行します。
+	 *
 	 * @param name フォームの名前。この名前は一意に定まっている必要があります。
 	 * @param form FormBaseクラスを継承したフォーム
 	 */
-	public void generateForm(String name, Class<? extends FormBase> form) throws IllegalArgumentException{
-		if(instances.containsKey(name))
+	public void generateForm(String name, Class<? extends FormBase> form) throws IllegalArgumentException {
+		if (instances.containsKey(name))
 			throw new IllegalArgumentException("Specified argument is already existed.");
 
-		try{
+		try {
 			addForm(name, form.newInstance());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -196,20 +201,20 @@ public class Form extends JFrame{
 		System.out.println();
 
 		inst.setBounds(0, 0, getSize().width, getSize().height);
-		inst.setParentFrame((JFrame)this);
+		inst.setParentFrame((JFrame) this);
 		//getContentPane().setBounds(0, 0, getSize().width, getSize().height);
 		comp.setLayout(null);
 		comp.setVisible(true);
 		//comp.show();
 		System.out.println(inst);
 		System.out.println(comp);
-		comp.add(inst, -1);	// -1指定で常に最背面
+		comp.add(inst, -1);    // -1指定で常に最背面
 		System.out.println("\r\nbefore:");
-		for(Component item : getContentPane().getComponents())
+		for (Component item : getContentPane().getComponents())
 			System.out.println(item);
 		getContentPane().add(comp, name);
 		System.out.println("\r\nafter:");
-		for(Component item : getContentPane().getComponents())
+		for (Component item : getContentPane().getComponents())
 			System.out.println(item);
 		System.out.println(getContentPane().getLayout());
 		showForms();
@@ -218,6 +223,7 @@ public class Form extends JFrame{
 
 	/**
 	 * 指定された名前のフォームが存在しているかどうかを確認します。
+	 *
 	 * @param formName フォームの名前
 	 * @return フォームの存在の可否
 	 */
@@ -227,22 +233,25 @@ public class Form extends JFrame{
 
 	/**
 	 * 指定された名前のフォームを取得します。指定されたフォームが存在しない場合、nullを返します。
+	 *
 	 * @param formName フォーム名
 	 */
 	public FormBase getFormFromName(String formName) {
-		if(isExistForm(formName))
+		if (isExistForm(formName))
 			return instances.get(formName).x;
 		else
 			return null;
 	}
 
 	// updateとrepaintをtimerに登録
+
 	/**
 	 * タイマーにupdateおよびrepaintメソッドを登録します。
+	 *
 	 * @param form updateとpaintメソッドを含むフォーム
 	 */
-	void registerInvokeMethodsToTimer(FormBase form){
-		try{
+	void registerInvokeMethodsToTimer(FormBase form) {
+		try {
 			timer.addInvokeMethodForTick(form, form.getClass().getMethod("update"));
 			timer.addInvokeMethodForTick(form, form.getClass().getMethod("repaint"));
 		} catch (Exception e) {
@@ -254,9 +263,9 @@ public class Form extends JFrame{
 	/**
 	 * このクラスが持っているフォームをすべて表示します。
 	 */
-	public void showForms(){
+	public void showForms() {
 		System.out.println("Form has instances:");
-		for(Tuple<FormBase, JComponent> item : instances.values())
+		for (Tuple<FormBase, JComponent> item : instances.values())
 			System.out.println(item.x + " are contained by " + item.y);
 	}
 	

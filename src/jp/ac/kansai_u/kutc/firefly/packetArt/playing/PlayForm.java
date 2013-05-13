@@ -1,35 +1,27 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.playing;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.swing.JButton;
-
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
 import jp.ac.kansai_u.kutc.firefly.packetArt.music.MusicPlayer;
 import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
 import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigStatus;
+import org.jnetpcap.packet.PcapPacket;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * パケットを利用したテトリスを表示、処理するフォームです。
- * 
+ *
  * @author midolin
  */
-public class PlayForm extends FormBase {
-	PacketrisModel model;
+public class PlayForm extends FormBase implements ActionListener {
+	PacketrisModel<PacketBlock> model;
 
 	LinkedList<Integer> keyQueue;
 	HashMap<Integer, Long> keyPressedTime;
@@ -41,12 +33,18 @@ public class PlayForm extends FormBase {
 	Thread musicplayer; // ゲームBGM用のスレッドを用意。
 	boolean isPaused = false;
 	boolean isGranded = false;
-	
+
 	Point topLeft;
+
+	final JButton[] buttons = new JButton[]{
+			new JButton("リトライ"),
+			new JButton("タイトルに戻る")
+	};
+
 
 	/**
 	 * キー入力に対する敏感さを取得します。この値は0から60までの値をとります。
-	 * 
+	 *
 	 * @return キー入力に対する敏感さ
 	 */
 	public int getKeySensitivity() {
@@ -57,9 +55,8 @@ public class PlayForm extends FormBase {
 	 * キー入力の敏感さを設定します。<br>
 	 * キー入力の敏感さとは、キーが押しっぱなしにされていた時に、どのくらいの時間押しっぱなしにされていた場合、 連続入力とみなすかを設定する値です。<br>
 	 * 0から60までの値を取り、それ以外の値が入力されると、その範囲に収まるように補正されます。
-	 * 
-	 * @param keySensitivity
-	 *            敏感さ。0から60(フレーム)。デフォルトで10f;
+	 *
+	 * @param keySensitivity 敏感さ。0から60(フレーム)。デフォルトで10f;
 	 */
 	public void setKeySensitivity(int keySensitivity) {
 		// 範囲外なら補正する
@@ -72,16 +69,32 @@ public class PlayForm extends FormBase {
 	}
 
 	public PlayForm() {
-		model = new PacketrisModel();
+		model = new PacketrisModel<PacketBlock>(new PacketBlock());
 		falldownLimit = 60;
 		addComponentListener(new ComponentListener() {
 			public void componentShown(ComponentEvent e) {
 				requestFocusInWindow();
 			}
-			public void componentResized(ComponentEvent e) { }
-			public void componentMoved(ComponentEvent e) { }
-			public void componentHidden(ComponentEvent e) { }
+
+			public void componentResized(ComponentEvent e) {
+			}
+
+			public void componentMoved(ComponentEvent e) {
+			}
+
+			public void componentHidden(ComponentEvent e) {
+			}
 		});
+
+		// 各種ボタンの設定
+		for (int i = 0; i < buttons.length; i++) {
+			JButton item = buttons[i];
+			item.setName(i == 0 ? "Retry" : "Quit");
+			item.addActionListener(this);
+			item.setLocation(getSize().width / 3, (getSize().height / 4) * (i + 2));
+			item.setSize(getSize().width / 3, getSize().height / 10);
+			//getContentPane().add(item, 0);
+		}
 	}
 
 	@Override
@@ -91,43 +104,47 @@ public class PlayForm extends FormBase {
 		model.initialize();
 		generateNextBlockFromPacket();
 		addKeyListener(this);
-		minoSize = (int)(Math.min(getPreferredSize().width / model.column, getPreferredSize().height / model.row) * 0.9);
+		minoSize = (int) (Math.min(getPreferredSize().width / model.column, getPreferredSize().height / model.row) * 0.9);
 		topLeft = new Point(
-				(getSize().width - (minoSize * model.column)) / 2, 
+				(getSize().width - (minoSize * model.column)) / 2,
 				(getSize().height - (minoSize * model.row)) / 2);
-		
+
 		// ゲームBGMの音楽を鳴らす。
 		// TODO: パケットをファイルからではなく他の形で読む。
 		PcapManager pm = PcapManager.getInstance();
 		pm.openFile("src/jp/ac/kansai_u/kutc/firefly/PacketArt/test/10000.cap");
 		musicplayer = new MusicPlayer(ConfigStatus.getVolMusic(), 1000, ConfigStatus.isMelody());
 		musicplayer.start();
+
+		requestFocusInWindow();
 	}
 
 	@Override
 	public void paint(Graphics g) {
 		// TODO: backgrownd
-		
-		if(!isPaused){
-			for(PacketBlock item : model.currentMinos) 
+
+		if (!isPaused) {
+
+			for (PacketBlock item : model.getCurrentMinos()) {
 				paintMino(g, item,
-						topLeft.x + ((model.parentLocation.getX() + item.location.getX()) * minoSize), 
+						topLeft.x + ((model.parentLocation.getX() + item.location.getX()) * minoSize),
 						topLeft.y + ((model.parentLocation.getY() + item.location.getY()) * minoSize));
-			for (PacketBlock[] column : model.getBoard()) {
-				for(PacketBlock item : column){
+			}
+			for (ArrayList<PacketBlock> column : model.getBoard()) {
+				for (PacketBlock item : column) {
 					paintMino(g, item,
-							topLeft.x + item.location.getX() * minoSize, 
+							topLeft.x + item.location.getX() * minoSize,
 							topLeft.y + item.location.getY() * minoSize);
 				}
 			}
 		}
-		if(model.isGameOverd()){
+		if (model.isGameOver()) {
 			String over = "Game Over";
-			
+
 			g.setFont(new Font(null, Font.PLAIN, 45));
 			int x = getSize().width / 2 - g.getFontMetrics().stringWidth(over) / 2;
 			int y = getSize().height / 4;
-			
+
 			// ドロップシャドウのような効果
 			g.setColor(Color.BLACK);
 
@@ -135,21 +152,21 @@ public class PlayForm extends FormBase {
 			g.drawString(over, x + 3, y);
 			g.drawString(over, x, y - 3);
 			g.drawString(over, x, y + 3);
-			
+
 			g.setColor(Color.getHSBColor(0.0f, 0.85f, 0.7f));
 			g.drawString(over, x, y);
 		}
 	}
-	
+
 	// TODO: painting PacketBlocks using packet data.
-	void paintMino(Graphics g, PacketBlock block, int x, int y){
-		if(block.blockType == BlockType.Wall)
+	void paintMino(Graphics g, PacketBlock block, int x, int y) {
+		if (block.blockType == BlockType.Wall)
 			g.setColor(Color.blue);
-		else if(block.blockType == BlockType.Mino)
+		else if (block.blockType == BlockType.Mino)
 			g.setColor(Color.getHSBColor(model.parentLocation.getX() % 360.0f, 0.7f, 0.7f));
 		else
-			g.setColor(new Color(0,0,0,0));
-		
+			g.setColor(new Color(0, 0, 0, 0));
+
 		g.drawRect(x, y, minoSize - 2, minoSize - 2);
 	}
 
@@ -161,15 +178,15 @@ public class PlayForm extends FormBase {
 			// 未来の話なら抜ける(そんなことあり得るのか)
 			// 中断したら落ちる
 			int tgt = keyQueue.get(0);
-			if(keyPressedTime.containsKey(tgt))
+			if (keyPressedTime.containsKey(tgt))
 				if (keyPressedTime.get(tgt) > tick)
 					break;
 			//if (keyPressedTime.get(keyQueue.get(0)) < tick)
 			keys.add(keyQueue.pop());
 		}
-		
+
 		// ゲームオーバー判定
-		if(model.isGameOverd()){
+		if (model.isGameOver()) {
 			// JDK 8のラムダ式が利用できればこんなコードにはならなかった(はず)
 			new Thread() {
 				@Override
@@ -180,99 +197,59 @@ public class PlayForm extends FormBase {
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-					
-					final JButton[] buttons = new JButton[]{
-						new JButton("リトライ"),
-						new JButton("タイトルに戻る")
-					};
-					
+					for (int i = 0; i < buttons.length; i++) {
+						buttons[i].setVisible(true);
+						buttons[i].setEnabled(true);
+					}
+					getContentPane().validate();
 					// ゲームオーバーになったときにBGMを止める。
 					((MusicPlayer) musicplayer).stopMusic();
-
-					ActionListener actionListener = new ActionListener() {
-						
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							// JButtonの挙動を定義
-							if(e.getSource() instanceof JButton){
-								if(((JButton) (e.getSource())).getName() == "Retry"){
-									// ボタンがRetryならボタンを消して再初期化
-									for(JButton item : buttons){
-										getContentPane().remove(item);
-										item = null;
-										getContentPane().validate();
-										
-									}
-									initialize();
-								} else {
-									// タイトルに帰る
-									FormUtil.getInstance().changeForm("Title");
-								}
-							}
-								
-						}
-					};
-
-					
-					// 各種ボタンの設定
-					for(int i = 0; i < buttons.length; i++){
-						JButton item = buttons[i];
-						item.setName(i == 0 ? "Retry" : "Quit");
-						item.addActionListener(actionListener);
-						item.setLocation(getSize().width / 3, (getSize().height / 4) * (i + 2));
-						item.setSize(getSize().width / 3, getSize().height / 10);
-						getContentPane().add(item, 0);
-					}
 				}
 			}.run();
 			return;
 		}
 
-		if (keys.contains(KeyEvent.VK_ESCAPE)){
+		if (keys.contains(KeyEvent.VK_ESCAPE)) {
 			isPaused = !isPaused;
 			System.out.print(isPaused);
 		}
-		if(isPaused)
+		if (isPaused)
 			return;
-		
+
 		// キー入力の処理
-		if (keys.contains(ConfigStatus.getKeyLeftSpin()))
-			model.rotate(Direction.Left);
-		if(keys.contains(ConfigStatus.getKeyRightSpin()))
-			model.rotate(Direction.Right);
-		if(keys.contains(ConfigStatus.getKeyLeft()))
-			model.translate(Direction.Left);
-		if(keys.contains(ConfigStatus.getKeyRight()))
-			model.translate(Direction.Right);
-		if (keys.contains(ConfigStatus.getKeyDown())){
-			model.fallDown();
-			falldownTimer = 0;
-		}
-		if (keys.contains(ConfigStatus.getKeyUp())) {
-			while (model.fallDown()) { }
-			falldownTimer = 0;
+		for (int key : keys) {
+			if (key == ConfigStatus.getKeyLeftSpin())
+				model.rotate(Direction.Left);
+			if (key == ConfigStatus.getKeyRightSpin())
+				model.rotate(Direction.Right);
+			if (key == ConfigStatus.getKeyLeft())
+				model.translate(Direction.Left);
+			if (key == ConfigStatus.getKeyRight())
+				model.translate(Direction.Right);
+			if (key == ConfigStatus.getKeyDown()) {
+				model.fallDown();
+				falldownTimer = 0;
+			}
+			if (key == ConfigStatus.getKeyUp()) {
+				while (model.fallDown()) {
+				}
+				falldownTimer = 0;
+				generateNextBlockFromPacket();
+			}
 		}
 
-		
 		// もし指定のタイミングになったらfalldown
 		if (falldownTimer > falldownLimit) {
 			//System.out.println("falling - " + model.parentLocation.toString());
 			falldownTimer = 0;
-			
+
 			// 接地済みなら新しく生成
-			if (isGranded){
-				isGranded = false;
-				if(!model.fallDown()){
-					model.fixMino();
-					generateNextBlockFromPacket();
-					System.out.println("generate - " + model.parentLocation);
-				}
-			}
-			
-			// 落下に失敗したら、Next生成
 			if (!model.fallDown()) {
-				isGranded = true;
+				generateNextBlockFromPacket();
+				System.out.println(model);
+				System.out.println("generate - " + model.parentLocation);
 			}
+
 
 			model.deleteLines();
 		} else {
@@ -285,6 +262,11 @@ public class PlayForm extends FormBase {
 	private void generateNextBlockFromPacket() {
 		// TODO ミノの生成方法を決定する
 		model.generateMino(TetroMino.I, false, model.column / 2);
+		// パケットを与える
+	}
+
+	private void presentPacket(PacketBlock packetBlock, PcapPacket pkt) {
+		packetBlock.packet = pkt;
 	}
 
 	@Override
@@ -315,14 +297,14 @@ public class PlayForm extends FormBase {
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
 		long time = tick;
-		
+
 		System.out.println("input key:" + key);
-		
+
 		if (!keyPressedTime.containsKey(key)) {
 			keyPressedTime.put(key, time);
 			keyQueue.push(key);
 		}
-		
+
 		if (keyPressedTime.get(key) - time > keySensitivity)
 			keyQueue.push(key);
 	}
@@ -353,4 +335,33 @@ public class PlayForm extends FormBase {
 		removeKeyListener(this);
 	}
 
+	public void actionPerformed(ActionEvent e) {
+		// JButtonの挙動を定義
+		if (e.getSource() instanceof JButton) {
+			// タイトルに帰る
+			for (int i = 0; i < buttons.length; i++) {
+				buttons[i].setVisible(false);
+				buttons[i].setEnabled(false);
+			}
+			getContentPane().validate();
+
+			if (((JButton) (e.getSource())).getName() == "Retry") {
+				// ボタンがRetryならボタンを消して再初期化
+				initialize();
+			} else {
+				new Thread() {
+					@Override
+					public void run() {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e1) {
+							e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+						}
+						FormUtil.getInstance().changeForm("Title");
+					}
+				}.run();
+			}
+
+		}
+	}
 }

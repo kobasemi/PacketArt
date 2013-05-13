@@ -1,82 +1,92 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.playing;
 
+import jp.ac.kansai_u.kutc.firefly.packetArt.Location;
+
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import jp.ac.kansai_u.kutc.firefly.packetArt.Location;
 
 /**
  * パケリスのモデルです。
- * @author midolin
  *
+ * @author midolin
  */
-public class PacketrisModel {
-	PacketBlock[][] board;
+public class PacketrisModel<T extends Block> {
+	ArrayList<ArrayList<T>> board;
 	final int row = 30;
 	final int column = 15;
 	boolean canReverse;
 	boolean isAsphyxia = false;
-	
+	T instance;
+
 	/**
 	 * ミノ
 	 */
-	ArrayList<PacketBlock> currentMinos;
+	ArrayList<T> currentMinos;
 	int currentMinoRotationPattern = 0;
 	/**
 	 * 現在操作対象のミノの親(0,0)の位置
 	 */
 	Location parentLocation;
+	private boolean isGranded;
 
-	public PacketrisModel(){
-		board = new PacketBlock[row][column];
-		generateMino(TetroMino.T, false, column / 2);
+	public PacketrisModel(T instance) {
+		board = new ArrayList<ArrayList<T>>();
+		for (int i = 0; i < row; i++) {
+			board.add(new ArrayList<T>(column));
+			for (int j = 0; j < column; j++) {
+				board.get(i).add((T) instance.clone());
+			}
+		}
+		currentMinos = new ArrayList<T>();
+		this.instance = instance;
 	}
 
 	/**
 	 * 初期化を行います。
 	 */
-	public void initialize(){
-		for (int i = 0; i < board.length; i++){
-			for (int j = 0; j < board[i].length; j++) {
-				board[i][j] = new PacketBlock();
+	public void initialize() {
+		for (int i = 0; i < row; i++) {
+			for (int j = 0; j < column; j++) {
+				board.get(i).get(j).setBlockType(BlockType.Void);
 			}
 		}
-		for (int i = 0; i < board.length; i++) {
-			board[i][0].setBlockType(BlockType.Wall);
-			board[i][0].setLocation(0,i);
-			board[i][column - 1].setBlockType(BlockType.Wall);
-			board[i][column - 1].setLocation(column - 1, i);	
+		for (int i = 0; i < row; i++) {
+			board.get(i).get(0).setBlockType(BlockType.Wall);
+			board.get(i).get(0).setLocation(0, i);
+			board.get(i).get(column - 1).setBlockType(BlockType.Wall);
+			board.get(i).get(column - 1).setLocation(column - 1, i);
 		}
-		for (int i = 0; i < board[row - 1].length; i++) {
-			board[row - 1][i].setBlockType(BlockType.Wall);
-			board[row - 1][i].setLocation(i, row - 1);
+		for (int i = 0; i < column; i++) {
+			board.get(row - 1).get(i).setBlockType(BlockType.Wall);
+			board.get(row - 1).get(i).setLocation(i, row - 1);
 		}
-		
+
+		currentMinos.clear();
 		isAsphyxia = false;
 	}
 
 	/**
 	 * 指定座標のブロックを返します。
+	 *
 	 * @param x
 	 * @param y
 	 * @return その座標に設定されているブロック
 	 */
-	public PacketBlock getBlock(int x, int y) {
-		if(x < 0 || y < 0 || x >= column || y >= row)
+	public T getBlock(int x, int y) {
+		if (x < 0 || y < 0 || x >= column || y >= row)
 			throw new InvalidParameterException("Specified parameter is [" + x + ", " + y + "] is out of range.");
 		else
-			return board[y][x];
+			return board.get(y).get(x);
 	}
-	
+
 	/**
 	 * 指定座標のブロックを返します。
+	 *
 	 * @param location 座標
 	 * @return その座標に設定されているブロック
 	 */
-	public PacketBlock getBlock(Location location){
-		if(location == null)
+	public T getBlock(Location location) {
+		if (location == null)
 			throw new NullPointerException();
 		else
 			return getBlock(location.getX(), location.getY());
@@ -84,38 +94,41 @@ public class PacketrisModel {
 
 	/**
 	 * 盤面を取得します。
+	 *
 	 * @return 盤面
 	 */
-	public PacketBlock[][] getBoard(){
+	public ArrayList<ArrayList<T>> getBoard() {
 		return board;
 	}
 
 	/**
 	 * 現在操作対象に設定されているミノが反転可能かどうかを取得します。
+	 *
 	 * @return 反転の可否
 	 */
 	public boolean canReverse() {
 		return canReverse;
 	}
-	
-	
+
+
 	/**
 	 * ミノが配置可能かどうかを返します。
+	 *
 	 * @param location ミノを配置する位置
 	 * @return 配置結果
 	 */
-	boolean canAllocate(Location location){
-		if(location == null)
+	boolean canAllocate(Location location) {
+		if (location == null)
 			throw new NullPointerException();
-		
-		if(location.getX() >= column || location.getY() >= row || location.getX() < 0 || location.getY() < 0)
+
+		if (location.getX() >= column || location.getY() >= row || location.getX() < 0 || location.getY() < 0)
 			return false;
-		
-		for(Block item : currentMinos){
-			Location lo = new Location(item.location.getX() + location.getX(), item.location.getY()+ location.getY());
-			if(lo.getX() >= column || lo.getY() >= row || lo.getX() < 0 || lo.getY() < 0)
+
+		for (Block item : currentMinos) {
+			Location lo = new Location(item.location.getX() + location.getX(), item.location.getY() + location.getY());
+			if (lo.getX() >= column || lo.getY() >= row || lo.getX() < 0 || lo.getY() < 0)
 				return false;
-			if(getBlock(lo) != null&& getBlock(lo).blockType != BlockType.Void)
+			if (getBlock(lo) != null && getBlock(lo).blockType != BlockType.Void)
 				return false;
 		}
 		return true;
@@ -123,16 +136,17 @@ public class PacketrisModel {
 
 	/**
 	 * 現在操作対象となっているミノの反転の可否を設定します。
+	 *
 	 * @param canReverse 反転の可否
 	 */
 	public void setCanReverse(boolean canReverse) {
 		this.canReverse = canReverse;
 	}
-	
-	public void translate(Direction direction){
-		if(direction == null)
+
+	public void translate(Direction direction) {
+		if (direction == null)
 			return;
-		if(canAllocate(parentLocation.add(direction == Direction.Left ? -1 : 1, 0))) {
+		if (canAllocate(parentLocation.add(direction == Direction.Left ? -1 : 1, 0))) {
 			parentLocation.setX(parentLocation.getX() + (direction == Direction.Left ? -1 : 1));
 		}
 	}
@@ -140,20 +154,21 @@ public class PacketrisModel {
 
 	/**
 	 * ミノを回転させます。
+	 *
 	 * @param direction 回転方向
 	 */
-	public void rotate(Direction direction){
+	public void rotate(Direction direction) {
 		Location[] rotated = new Location[5];
 		Location[] stored = new Location[5];
 		int i = 0;
-		
+
 		for (Block item : currentMinos) {
 			stored[i] = currentMinos.get(i).location;
 			int x = item.location.getX();
 			int y = item.location.getY();
-			
+
 			// 回転行列を利用
-			if(direction == Direction.Right){
+			if (direction == Direction.Right) {
 				x = item.location.getY();
 				y = -1 * item.location.getX();
 			} else {
@@ -164,92 +179,106 @@ public class PacketrisModel {
 			currentMinos.get(i).location = rotated[i];
 			i++;
 		}
-		
+
+
 		// 配置できないとき
-		if(!canAllocate(parentLocation)){
+		if (!canAllocate(parentLocation)) {
 			System.out.println("can't allocated.");
+			// 元に戻す(操作拒否)
+			for (i = 0; i < currentMinos.size(); i++)
+				currentMinos.get(i).location = stored[i];
 		}
 	}
 
 	/**
 	 * ミノを降下させます。
+	 *
 	 * @return もしミノがこれ以上落下できない場合、falseを返し、落下が成功した場合、trueを返します。
 	 */
-	public boolean fallDown(){
-		if(canAllocate(parentLocation.add(0, 1))){
-			parentLocation.setY(parentLocation.getY() + 1);
-			return true;
-		} else {
+	public boolean fallDown() {
+		if (isGranded) {
+			fixMino();
+			isGranded = false;
 			return false;
 		}
-		
+		if (canAllocate(parentLocation.add(0, 1))) {
+			parentLocation = parentLocation.add(0, 1);
+
+			if (!canAllocate(parentLocation.add(0, 1)))
+				isGranded = true;
+			return true;
+		} else {
+			// 窒息処理
+			if (parentLocation.getY() < 3)
+				isAsphyxia = true;
+		}
+		return false;
 	}
-	
+
 	/**
 	 * 移動可能状態にあるミノを移動不可能状態にして、盤面に固定します。
 	 */
-	public void fixMino(){
-		for(PacketBlock item: currentMinos){
-			board[parentLocation.getY() + item.location.getY()][parentLocation.getX() + item.location.getX()] = item;
-			item.location = new Location(parentLocation.getX() + item.location.getX(), parentLocation.getY()+ item.location.getY());
-		}
-		
-		// stdoutで見えるミノ
-		for(PacketBlock[] column : board){
-			for(Block item : column)
-				System.out.print(item.blockType == BlockType.Wall ? "W" : item.blockType == BlockType.Void ? "_": "o");
-			System.out.println();
+	public void fixMino() {
+		for (T item : currentMinos) {
+			Location l = new Location(parentLocation.getX() + item.location.getX(),
+					parentLocation.getY() + item.location.getY());
+
+			board.get(l.getY()).set(l.getX(), (T) item.clone());
+			getBlock(l).location = l;
+
 		}
 	}
-	
+
 	/**
 	 * ゲームが継続不可能かどうかを返します。
+	 *
 	 * @return ゲームの継続不可能性
 	 */
-	public boolean isGameOverd(){
+	public boolean isGameOverd() {
 		return isAsphyxia;
 	}
 
 	/**
 	 * ミノの反転を行います。
 	 */
-	public void reverse(){
-		if(canReverse)
-			for(Block item : currentMinos)
+	public void reverse() {
+		if (canReverse)
+			for (Block item : currentMinos)
 				item.location.setX(item.location.getX() * -1);
 	}
-	
+
 	/**
 	 * 行の削除を行います。
+	 *
 	 * @return 削除された行数
 	 */
-	public void deleteLines(){
+	public void deleteLines() {
 		ArrayList<Integer> deletedLines = new ArrayList<Integer>(5);
-		
+
 		// 調べる処理
-		for(int i = row - 2; i > 0; i--){
+		for (int i = row - 2; i > 0; i--) {
 			boolean canDeleteFlag = true;
-			for (int j = 0; j < board[i].length; j++)
-				if(board[i][j].blockType == BlockType.Void)
+			for (int j = 0; j < column; j++)
+				if (getBlock(j, i).blockType == BlockType.Void)
 					canDeleteFlag = false;
-			
+
 			// 消す処理
-			if(canDeleteFlag){
+			if (canDeleteFlag) {
 				deletedLines.add(i);
-				for(int j = 1; j < board[i].length - 1; j++)
-					board[i][j]  = new PacketBlock();
+				/*for(int j = 1; j < column - 1; j++)   {}
+					//board[i][j]  = new PacketBlock();*/
 			}
 		}
-		
+
 		// 落とす処理
-		if(deletedLines.size() > 0){
+		if (deletedLines.size() > 0) {
 			int offset = 0;
-			for(int i = deletedLines.get(deletedLines.size() - 1); i > 0; i--){
-				if(deletedLines.contains(i))
+			for (int i = deletedLines.get(deletedLines.size() - 1); i > 0; i--) {
+				if (deletedLines.contains(i))
 					offset++;
-				for(int j = 1; j < board[i].length - 1; j++){
-					board[i][j] = board[i - offset][j];
-					board[i][j].location.set(j, i);
+				for (int j = 1; j < column - 1; j++) {
+					board.get(i).set(j, board.get(i - offset).get(j));
+					getBlock(j, i).location.set(j, i);
 				}
 			}
 		}
@@ -257,207 +286,62 @@ public class PacketrisModel {
 
 	/**
 	 * ミノを生成します。
-	 * @param mino 生成するミノの種類
-	 * @param isReversed ミノの生成時反転
-	 * @param x 座標
+	 *
+	 * @param mino       生成するミノの種類
+	 * @param reversible ミノの生成時反転
+	 * @param x          座標
 	 */
-	public void generateMino(Mino mino, boolean isReversed, int x){
+	public void generateMino(Mino mino, boolean reversible, int x) {
 		// 入力チェック
-		if(x < 0 || x > column)
+		if (x < 0 || x > column)
 			throw new InvalidParameterException("座標指定に問題があります");
-		if(mino == null)
+		if (mino == null)
 			throw new NullPointerException();
-		
-		//setCanReverse(isReversed);
-		currentMinos = new ArrayList<PacketBlock>();
-		parentLocation = new Location(x, 1);
+		parentLocation = new Location(x, 2);
+		currentMinos.clear();
 
-		// TODO: ミノを作る(相対座標)
-		if(mino instanceof TetroMino){
-			switch ((TetroMino)mino) {
-			case I:
-				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
-					 new PacketBlock( 1,0,mino),
-					 new PacketBlock( 0,0,mino),
-					 new PacketBlock(-1,0,mino),
-					 new PacketBlock(-2,0,mino)
-				 }));
-				break;
-			case O:
-				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
-					 new PacketBlock( 1,0,mino),
-					 new PacketBlock( 0,0,mino),
-					 new PacketBlock( 1,1,mino),
-					 new PacketBlock( 0,1,mino)
-				 }));
-				break;
-			case S:
-				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
-					 new PacketBlock(-1,1,mino),
-					 new PacketBlock( 0,1,mino),
-					 new PacketBlock( 0,0,mino),
-					 new PacketBlock( 1,0,mino)
-				 }));
-				break;
-			case Two:
-				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
-					 new PacketBlock( 1,1,mino),
-					 new PacketBlock( 0,1,mino),
-					 new PacketBlock( 0,0,mino),
-					 new PacketBlock(-1,0,mino)
-				 }));
-				break;
-			case L:
-				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
-					 new PacketBlock( 0,2,mino),
-					 new PacketBlock( 0,1,mino),
-					 new PacketBlock( 0,0,mino),
-					 new PacketBlock( 1,0,mino)
-				 }));
-				break;
-			case LReverse:
-				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
-					 new PacketBlock( 0,2,mino),
-					 new PacketBlock( 0,1,mino),
-					 new PacketBlock( 0,0,mino),
-					 new PacketBlock(-1,0,mino)
-				 }));
-				break;
-			case T:
-				List<PacketBlock> ar = Arrays.asList(new PacketBlock[] {
-					 new PacketBlock(-1,0,mino),
-					 new PacketBlock( 0,0,mino),
-					 new PacketBlock( 1,0,mino),
-					 new PacketBlock( 0,-1,mino)
-				 });
-				currentMinos.addAll(ar);
-				break;
-			default:
-				assert(false);
-			}
-		} else if(mino instanceof PentoMino){
-			switch((PentoMino)mino){
-			case F:
-				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
-					 new PacketBlock(-1, 1,mino),
-					 new PacketBlock(-1, 0,mino),
-					 new PacketBlock( 0, 0,mino),
-					 new PacketBlock( 1, 0,mino),
-					 new PacketBlock( 0,-1,mino)
-				 }));
-				break;
-			case I:
-				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
-					 new PacketBlock( 2,0,mino),
-					 new PacketBlock( 1,0,mino),
-					 new PacketBlock( 0,0,mino),
-					 new PacketBlock(-1,0,mino),
-					 new PacketBlock(-2,0,mino)
-				 }));
-				break;
-			case L:
-				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
-					 new PacketBlock( 0,3,mino),
-					 new PacketBlock( 0,2,mino),
-					 new PacketBlock( 0,1,mino),
-					 new PacketBlock( 0,0,mino),
-					 new PacketBlock( 1,0,mino)
-				 }));
-				break;
-			case N:
-				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
-					 new PacketBlock(-2, 0,mino),
-					 new PacketBlock(-1, 0,mino),
-					 new PacketBlock( 0, 0,mino),
-					 new PacketBlock( 0,-1,mino),
-					 new PacketBlock(-1,-1,mino)
-				 }));
-				break;
-			case P:
-				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
-					 new PacketBlock( 1, 1,mino),
-					 new PacketBlock( 0, 1,mino),
-					 new PacketBlock( 1, 0,mino),
-					 new PacketBlock( 0, 0,mino),
-					 new PacketBlock( 0,-1,mino)
-				 }));
-				break;
-			case T:
-				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
-					 new PacketBlock( 1, 0,mino),
-					 new PacketBlock( 0, 0,mino),
-					 new PacketBlock(-1, 0,mino),
-					 new PacketBlock( 0,-1,mino),
-					 new PacketBlock( 0,-2,mino)
-				 }));
-				break;
-			case U:
-				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
-					 new PacketBlock(-1,1,mino),
-					 new PacketBlock(-1,0,mino),
-					 new PacketBlock( 0,0,mino),
-					 new PacketBlock( 1,0,mino),
-					 new PacketBlock( 1,1,mino)
-				 }));
-				break;
-			case V:
-				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
-					 new PacketBlock( 0,2,mino),
-					 new PacketBlock( 0,1,mino),
-					 new PacketBlock( 0,0,mino),
-					 new PacketBlock( 1,0,mino),
-					 new PacketBlock( 2,0,mino)
-				 }));
-				break;
-			case W:
-				currentMinos.addAll(Arrays.asList(new PacketBlock[] { 
-					 new PacketBlock(-1, 1,mino),
-					 new PacketBlock(-1, 0,mino),
-					 new PacketBlock( 0, 0,mino),
-					 new PacketBlock( 0,-1,mino),
-					 new PacketBlock( 1,-1,mino)
-				 }));
-				break;
-			case X:
-				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
-					new PacketBlock( 0,-1,mino),
-					new PacketBlock( 0, 1,mino),
-					new PacketBlock( 0, 0,mino),
-					new PacketBlock( 1, 0,mino),
-					new PacketBlock(-1, 0,mino)
-				 }));
-				break;
-			case Y:
-				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
-					 new PacketBlock( 0,1,mino),
-					 new PacketBlock( 1,0,mino),
-					 new PacketBlock( 0,0,mino),
-					 new PacketBlock(-1,0,mino),
-					 new PacketBlock(-2,0,mino)
-				 }));
-				break;
-			case Z:
-				currentMinos.addAll(Arrays.asList(new PacketBlock[] {
-					 new PacketBlock(-1,-1,mino),
-					 new PacketBlock( 0,-1,mino),
-					 new PacketBlock( 0, 0,mino),
-					 new PacketBlock( 0, 1,mino),
-					 new PacketBlock( 1, 1,mino)
-				 }));
-				break;
-			default:
-				assert(false);
-				break;
+		currentMinos.add((T) instance.clone());
+		currentMinos.get(0).setBlockType(BlockType.Mino);
 
+		for (int j = 0; j < 4; j++) {
+			if (mino instanceof TetroMino && j >= 3)
+				break;
+			else {
+				currentMinos.add((T) instance.clone());
+				currentMinos.get(j + 1).setBlockType(BlockType.Mino);
+				currentMinos.get(j + 1).setLocation(mino.value()[j][0], mino.value()[j][1]);
 			}
 		}
-		
+
 		// 窒息死
-		if(!canAllocate(parentLocation))
+		if (!canAllocate(parentLocation))
 			isAsphyxia = true;
-		
-		// 反転 
-		if(isReversed)
+
+		// 反転
+		if (reversible)
 			reverse();
+	}
+
+	public boolean isGameOver() {
+		return isAsphyxia;
+	}
+
+	public ArrayList<T> getCurrentMinos() {
+		return currentMinos;
+	}
+
+	public boolean isGranded() {
+		return isGranded;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		for (ArrayList<T> column : board) {
+			for (Block item : column)
+				stringBuilder.append(item.blockType == BlockType.Wall ? "W" : item.blockType == BlockType.Void ? "_" : "o");
+			stringBuilder.append("\n");
+		}
+		return stringBuilder.toString();
 	}
 }
