@@ -24,7 +24,7 @@ class MainPanel extends JPanel {
 	MainPanel(final int width, final int height) {
 		setLayout(null);
 		setBounds(0, 0, width, height);
-		configureMainPanel(width / 2);
+		configureMainPanel(width);
 	}
 	
 	// カーソルの描画に関する設定をする
@@ -65,32 +65,27 @@ class MainPanel extends JPanel {
 	}
 	
 	// カーソル以外の描画に関する設定をする
-	private void configureMainPanel(final int center) {
+	private void configureMainPanel(final int width) {
 		BufferedImage[] image = new BufferedImage[FILE_NAME.length];
+		JLabel[] label = new JLabel[image.length];
 		
 		try {
 			for (int i = 0; i < image.length; i++) {
 				image[i] = ImageIO.read(new File(IMAGE_PATH + FILE_NAME[i]));
+				label[i] = new JLabel(new ImageIcon(image[i]));
+				label[i].setSize(image[i].getWidth(), image[i].getHeight());
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		JLabel labelBackground = new JLabel(new ImageIcon(image[0]));
-		labelBackground.setBounds(0, 0, image[0].getWidth(), image[0].getHeight());
+		label[0].setLocation(0, 0);
+		label[1].setLocation((width - image[1].getWidth()) / 2, TITLE_MARGIN);
+		label[2].setLocation((width - image[2].getWidth()) / 2, FRAME_MARGIN);
+		label[3].setLocation((width - image[3].getWidth()) / 2, CREDIT_MARGIN);
 		
-		JLabel labelTitle = new JLabel(new ImageIcon(image[1]));
-		labelTitle.setBounds(center - image[1].getWidth() / 2, TITLE_MARGIN, image[1].getWidth(), image[1].getHeight());
-		
-		JLabel labelFrame = new JLabel(new ImageIcon(image[2]));
-		labelFrame.setBounds(center - image[2].getWidth() / 2, FRAME_MARGIN, image[2].getWidth(), image[2].getHeight());
-		
-		JLabel labelCredit = new JLabel(new ImageIcon(image[3]));
-		labelCredit.setBounds(center - image[3].getWidth() / 2, CREDIT_MARGIN, image[3].getWidth(), image[3].getHeight());
-		
-		add(labelBackground, 0);
-		add(labelTitle, 0);
-		add(labelFrame, 0);
-		add(labelCredit, 0);
+		for (JLabel lbl : label) {
+			add(lbl, 0);
+		}
 	}
 }
