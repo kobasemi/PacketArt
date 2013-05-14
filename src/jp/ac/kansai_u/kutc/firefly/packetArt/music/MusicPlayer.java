@@ -14,7 +14,7 @@ import javax.sound.midi.Sequencer;
  * @author Lisa
  */
 public class MusicPlayer extends Thread{
-    private Sequencer sequencer;
+    private static Sequencer sequencer;
     private Sequence sequence;
     private int velocity;
     private int length;
@@ -89,5 +89,10 @@ public class MusicPlayer extends Thread{
         if (sequencer.isRunning() == true)
             sequencer.stop();
     }
+    
+	
+	public static Sequencer getSequencer(){
+		return sequencer;
+	}
 }
 

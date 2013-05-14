@@ -131,5 +131,4 @@ public class MidiPlayer extends Thread {
 		}
 		return sequence;
 	}
-
 }
