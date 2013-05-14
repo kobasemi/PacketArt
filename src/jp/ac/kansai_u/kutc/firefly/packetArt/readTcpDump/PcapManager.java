@@ -483,7 +483,13 @@ public final class PcapManager extends Thread{
      * @return PcapPacketを返します。非常食が空の場合はnullが返ります。
     */
     public PcapPacket nextPacketFromQueue() {
-        return packetQueue.poll();
+    	PcapPacket pkt = packetQueue.poll();
+    	if (pkt == null && fromFile == true) {
+    		readyRun = false;
+    		//デバイスからロードの場合、まだ来る可能性がある。
+    		//よって、その時は常にreadyRun = true。
+    	}
+    	return pkt;
     }
 
     /*

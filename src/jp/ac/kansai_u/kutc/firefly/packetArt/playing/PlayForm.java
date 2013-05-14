@@ -19,8 +19,21 @@ import javax.swing.JButton;
 
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
+import jp.ac.kansai_u.kutc.firefly.packetArt.PlaySE;
+import jp.ac.kansai_u.kutc.firefly.packetArt.music.MidiPlayer;
 import jp.ac.kansai_u.kutc.firefly.packetArt.music.MusicPlayer;
 import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigStatus;
+<<<<<<< Updated upstream
+=======
+import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketHolder;
+import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketUtil;
+
+import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.PacketHandler;
+import jp.ac.kansai_u.kutc.firefly.packetArt.PlaySE;
+import org.jnetpcap.packet.PcapPacket;
+import org.jnetpcap.protocol.network.Ip4;
+import org.jnetpcap.util.PcapPacketArrayList;
+>>>>>>> Stashed changes
 
 import org.jnetpcap.packet.PcapPacket;
 
@@ -45,7 +58,9 @@ public class PlayForm extends FormBase implements ActionListener {
 
     Point topLeft;
     Point scoreTopLeft;
-
+    PcapManager pcapManager = PcapManager.getInstance();
+    PacketHolder packetHolder = new PacketHolder();
+    
     JButton[] buttons = new JButton[]{
             new JButton("リトライ"),
             new JButton("タイトルに戻る")
@@ -121,6 +136,10 @@ public class PlayForm extends FormBase implements ActionListener {
         scoreTopLeft = new Point((int) (getSize().width * 0.05), (int) (getSize().height * 0.5));
 
         // ゲームBGMの音楽を鳴らす。
+<<<<<<< Updated upstream
+=======
+        // TODO: パケットをファイルからではなく他の形で読む。
+>>>>>>> Stashed changes
         musicplayer = new MusicPlayer(ConfigStatus.getVolMusic(), 1000, ConfigStatus.isMelody());
         musicplayer.start();
 
@@ -228,9 +247,14 @@ public class PlayForm extends FormBase implements ActionListener {
                     getContentPane().validate();
                     
                     // ゲームオーバーになったときにBGMを止める。
+<<<<<<< Updated upstream
                     if(MusicPlayer.getSequencer() != null){
                     	((MusicPlayer) musicplayer).stopMusic();
                     }
+=======
+                    if(MusicPlayer.getSequencer() != null)
+                    ((MusicPlayer) musicplayer).stopMusic();
+>>>>>>> Stashed changes
                 }
             }.run();
             return;
@@ -245,19 +269,28 @@ public class PlayForm extends FormBase implements ActionListener {
 
         // キー入力の処理
         for (int key : keys) {
-            if (key == ConfigStatus.getKeyLeftSpin())
+            if (key == ConfigStatus.getKeyLeftSpin()) {
                 model.rotate(Direction.Left);
-            if (key == ConfigStatus.getKeyRightSpin())
+                PlaySE.getInstance().play(PlaySE.TURN);
+            }
+            if (key == ConfigStatus.getKeyRightSpin()) {
                 model.rotate(Direction.Right);
-            if (key == ConfigStatus.getKeyLeft())
+                PlaySE.getInstance().play(PlaySE.TURN);
+            }
+            if (key == ConfigStatus.getKeyLeft()) {
                 model.translate(Direction.Left);
-            if (key == ConfigStatus.getKeyRight())
+                PlaySE.getInstance().play(PlaySE.MOVE);
+            }
+            if (key == ConfigStatus.getKeyRight()) {
                 model.translate(Direction.Right);
+                PlaySE.getInstance().play(PlaySE.MOVE);
+            }
             if (key == ConfigStatus.getKeyDown()) {
                 model.fallDown();
                 falldownTimer = 0;
             }
             if (key == ConfigStatus.getKeyUp()) {
+                PlaySE.getInstance().play(PlaySE.HARDDROP);
                 while (model.fallDown()) {
                 }
                 falldownTimer = 0;
@@ -277,8 +310,10 @@ public class PlayForm extends FormBase implements ActionListener {
                 System.out.println("generate - " + model.parentLocation);
             }
 
-
             model.deleteLines();
+            //if (model.deleteLines() > 0) {
+            //	PlaySE.getInstance().play(PlaySE.DEMISE);
+            //}
         } else {
             falldownTimer++;
         }
@@ -287,13 +322,47 @@ public class PlayForm extends FormBase implements ActionListener {
     }
 
     private void generateNextBlockFromPacket() {
-        // TODO ミノの生成方法を決定する
-        model.generateMino(TetroMino.I, false, model.column / 2);
-        // パケットを与える
+    	PcapPacket pkt = pcapManager.nextPacketFromQueue();
+    	packetHolder.setPacket(pkt);
+    	Ip4 ip4 = packetHolder.getIp4();
+		int sum = 0;
+		if (ip4 != null) {
+    		int[] dstip = PacketUtil.bytes2ints(ip4.destination());
+
+    		for (int i=0; i<dstip.length; i++) {
+    			sum += dstip[i];
+    		}
+    	}
+    	//if (sum % ConfigStatus.MT)
+		switch(ConfigStatus.MinoType){
+		case TetroMino:
+			model.generateMino(TetroMino.values()[sum % ConfigStatus.MinoType], false, 4);break;
+		case PentoMino:
+			model.generateMino(PentoMino.values()[sum % ConfigStatus.MinoType], false, 4);break;
+		case Both:
+			int buf = sum % ConfigStatus.MinoType;
+			if (buf >= ConfigStatus.MinoType.TetroMino) {
+				model.generateMino(TetroMino.values()[sum % ConfigStatus.MinoType], false, 4);
+			} else { //７以下
+				model.generateMino(PentoMino.values()[sum % ConfigStatus.MinoType], false, 4);
+			}
+		}
+		
+        ArrayList<PacketBlock> mino = model.getCurrentMinos();
+		for(int i = 0; i < mino.size(); i++){
+			if(i == 0)
+				presentPacket(mino.get(i), pkt);
+			else
+				presentPacket(mino.get(i));
+		}
     }
 
     private void presentPacket(PacketBlock packetBlock, PcapPacket pkt) {
-        packetBlock.packet = pkt;
+		packetBlock.packet = pkt;
+	}
+
+	private void presentPacket(PacketBlock packetBlock) {
+        packetBlock.packet = pcapManager.nextPacketFromQueue();
     }
 
     @Override

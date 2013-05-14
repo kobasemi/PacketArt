@@ -21,6 +21,7 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import jp.ac.kansai_u.kutc.firefly.packetArt.PlaySE;
 import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.OnPcapClosedHandler;
 import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.OnNoPacketsLeftHandler;
 
@@ -83,9 +84,11 @@ class FileFlow extends JPanel {
         button1.addActionListener(
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
+                	PlaySE.getInstance().play(PlaySE.SELECT);
                     int selected = fileChooser.showOpenDialog(parent);
                     if (selected == JFileChooser.APPROVE_OPTION){
-                        File file = fileChooser.getSelectedFile();
+                    	PlaySE.getInstance().play(PlaySE.SELECT);
+                    	File file = fileChooser.getSelectedFile();
                         if (file != null) {
                             textField.setText(file.getAbsolutePath());
                         }
@@ -97,6 +100,7 @@ class FileFlow extends JPanel {
         button2.addActionListener(
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
+                	PlaySE.getInstance().play(PlaySE.SELECT);
                     if ( PcapManager.getInstance().openFile(textField.getText()) ) {
                         button2.setText("OK");
                         (new Thread(new Runnable(){
@@ -143,6 +147,7 @@ class DeviceFlow extends JPanel {
         button1.addActionListener(
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
+                	PlaySE.getInstance().play(PlaySE.SELECT);
                     String buf = (String)comboBox1.getSelectedItem();
                     if ( PcapManager.getInstance().openDev(
                                 comboBox1.getSelectedDevName()) ) {
@@ -188,7 +193,7 @@ class DeviceSelector extends JComboBox implements ItemListener{
         devUtil = new DevUtil();
         String[] informations = devUtil.getGoodInformations();
         if (informations == null || informations.length < 1) {
-            addItem("jnetpcapが利用可能なデバイスがありません！");
+        	addItem("jnetpcapが利用可能なデバイスがありません！");
             setEnabled(false);
             return;
         }
@@ -229,7 +234,8 @@ class BpfFlow extends JPanel {
         button1.addActionListener(
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    textField.setEditable(false);
+                	PlaySE.getInstance().play(PlaySE.SELECT);
+                	textField.setEditable(false);
                     if ( PcapManager.getInstance().setBPFfilter(
                                 textField.getText()) ) {
                         button1.setText("OK");

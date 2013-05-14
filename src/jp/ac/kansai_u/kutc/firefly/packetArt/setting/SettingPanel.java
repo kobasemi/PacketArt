@@ -60,9 +60,12 @@ public class SettingPanel extends JPanel implements ActionListener{
 			//スレッドが動いているかも．動いていればストップ
 			((MidiPlayer) setStatusPanel.panelMusicVolume.testBGM).stopMidi();
 		if(e.getSource() == btnSetting){
+			PlaySE.getInstance().play(PlaySE.SELECT);
 			setStatusPanel.setStatus();  // 各項目の状態をセットする
 			PlaySE.getInstance().setVolumeAll((double)ConfigStatus.getVolSound());  //SEのボリュームを設定
 			ConfigStatus.printStatus();//TODO 後々削除
+		} else {
+			PlaySE.getInstance().play(PlaySE.CANCEL);
 		}
 		FormUtil.getInstance().changeForm("Title");
 	}

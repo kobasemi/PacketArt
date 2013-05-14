@@ -152,29 +152,40 @@ public class TitleForm extends FormBase implements FocusListener {
     
     // ボタンをクリックするか、ボタン上でエンターキーを押下した時の動作
     private void buttonPressed(JButton source) {
-		PlaySE.getInstance().play(PlaySE.SELECT);
-    	
+		
 		switch (panelManager.getButtonIndex(source)) {
 		case 0: // Start
-			FormUtil.getInstance().changeForm("Playing");
+			PlaySE.getInstance().play(PlaySE.SELECT);
+	    	FormUtil.getInstance().changeForm("Playing");
 			break;
 		case 1: // Load
-			FormUtil.getInstance().changeForm("ReadDump");
+			PlaySE.getInstance().play(PlaySE.SELECT);
+	    	FormUtil.getInstance().changeForm("ReadDump");
 			break;
 		case 2: // Option
-			FormUtil.getInstance().changeForm("Option");
+			PlaySE.getInstance().play(PlaySE.SELECT);
+	    	FormUtil.getInstance().changeForm("Option");
 			break;
 		case 3: // Exit
-			panelManager.changeButton();
+			PlaySE.getInstance().play(PlaySE.SELECT);
+	    	panelManager.changeButton();
 			panelManager.getButton(4).requestFocusInWindow();
 			break;
 		case 4: // Exit - Yes
+			PlaySE.getInstance().play(PlaySE.CANCEL);
 			PcapManager.getInstance().kill();
-			
+			PcapManager.getInstance().close();
+			try {
+				Thread.sleep(450);
+			} catch (InterruptedException e) {
+				// TODO 自動生成された catch ブロック
+				e.printStackTrace();
+			}
 			System.exit(0);
 			break;
 		case 5: // Exit - No
 			panelManager.changeButton();
+			PlaySE.getInstance().play(PlaySE.CANCEL);
 			panelManager.getButton(0).requestFocusInWindow();
 			break;
 		}
