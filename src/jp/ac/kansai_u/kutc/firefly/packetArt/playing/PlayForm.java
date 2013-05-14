@@ -189,7 +189,7 @@ public class PlayForm extends FormBase implements ActionListener {
 			g.fillRect(x, y, minoSize - 1, minoSize - 1);
 		} else if (block.blockType == BlockType.Mino) {
 			// 色の計算
-			hue = block.getMino().ordinal() * (block.getMino() instanceof TetroMino ? 30.0f : 5.4f) % 360.0f;
+			hue = 360 / (block.getMino().ordinal() * (block.getMino() instanceof TetroMino ? 30.0f : 5.4f));
 
 			// 色の決定
 			Color mino = Color.getHSBColor(hue, saturation, brightness);
