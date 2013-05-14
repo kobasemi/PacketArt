@@ -133,6 +133,7 @@ public class TitleForm extends FormBase implements FocusListener {
     public void keyTyped(KeyEvent e) {}
     
     public void focusGained(FocusEvent e) {
+    	panelManager.repaint();
     	Object obj = e.getSource();
     	
     	// フォーカスを得たボタンの横にカーソルを移動させる
