@@ -18,25 +18,25 @@ class ButtonPanel extends JPanel {
 	private static final String MESSAGE = "message.png";
 	private static final String[] BUTTON_NAME = {"Start", "Load", "Option", "Exit", "Yes", "No"};
 	private static final String[] FILE_NAME = {"start.png", "load.png", "option.png", "exit.png", "yes.png", "no.png"};
-	private JButton[] button;
+	private JButton[] buttonArray;
 	private CardLayout cardLayout;
 	
 	// コンストラクタ
 	ButtonPanel(final int width, final int height) {
-		button = new JButton[FIRST_NUM + SECOND_NUM];
+		buttonArray = new JButton[FIRST_NUM + SECOND_NUM];
 		cardLayout = new CardLayout();
 		
 		setLayout(cardLayout);
 		setOpaque(false);
 		setSize(width, height);
-		add(createCardPanel(width, height, FIRST_NUM), "first");
-		add(createCardPanel(width, height, SECOND_NUM), "second");
+		add(createCardPanel(width, height, new JButton[FIRST_NUM]), "first");
+		add(createCardPanel(width, height, new JButton[SECOND_NUM]), "second");
 	}
 	
 	// インデックスで指定されたボタンを返す
 	JButton getButton(final int index) {
-		if (0 <= index && index < button.length) {
-			return button[index];
+		if (0 <= index && index < buttonArray.length) {
+			return buttonArray[index];
 		} else {
 			return null;
 		}
@@ -44,8 +44,8 @@ class ButtonPanel extends JPanel {
 	
 	// ボタンの配列を返す
 	JButton[] getButtonArray() {
-		if (button != null) {
-			return button;
+		if (buttonArray != null) {
+			return buttonArray;
 		} else {
 			return new JButton[0];
 		}
@@ -57,43 +57,43 @@ class ButtonPanel extends JPanel {
 	}
 	
 	// カードパネルを生成する
-	private JPanel createCardPanel(final int width, final int height, int number) {
+	private JPanel createCardPanel(final int width, final int height, JButton[] button) {
+		int index = 0;
 		int interval = 0;
 		int margin = 0;
-		int plusIndex = 0;
 		JPanel panel = new JPanel(null);
-		BufferedImage[] image = createImageArray(number);
+		BufferedImage[] image = createImageArray(button.length);
 		
-		switch (number) {
+		switch (button.length) {
 		case FIRST_NUM:
 			interval = (height - plusHeights(image)) / (FIRST_NUM + 1);
 			margin = interval;
 			break;
 		case SECOND_NUM:
+			index = FIRST_NUM;
 			JLabel labelMessage = createLabel();
 			
 			interval = (height - plusHeights(image) - labelMessage.getHeight()) / (SECOND_NUM + 1);
 			labelMessage.setLocation((width - labelMessage.getWidth()) / 2, interval / 2);
-			plusIndex = FIRST_NUM;
 			margin = labelMessage.getY() + (int) (interval * 1.5);
 			
 			panel.add(labelMessage);
 			break;
 		}
 		
-		for (int i = 0; i < number; i++) {
-			final int index = i + plusIndex;
-			
-			configureButton(index, image[i]);
+		for (int i = 0; i < button.length; i++) {
+			button[i] = new JButton();
+			configureButton(i, button[i], image[i]);
 			
 			if (i == 0) {
-					button[index].setLocation((width - image[i].getWidth()) / 2, margin);
+					button[i].setLocation((width - image[i].getWidth()) / 2, margin);
 			} else {
-				button[index].setLocation((width - image[i].getWidth()) / 2, button[index - 1].getY() + button[index - 1].getHeight() + interval);
+				button[i].setLocation((width - image[i].getWidth()) / 2, button[i - 1].getY() + button[i - 1].getHeight() + interval);
 			}
 			
-			panel.add(button[index]);
+			panel.add(button[i]);
 		}
+		System.arraycopy(button, 0, buttonArray, index, button.length);
 		
 		panel.setOpaque(false);
 		panel.setSize(width, height);
@@ -102,15 +102,15 @@ class ButtonPanel extends JPanel {
 	}
 	
 	// ボタンに関する設定をする
-	private void configureButton(final int index, BufferedImage image) {
+	private void configureButton(final int index, JButton button, BufferedImage image) {
 		ImageIcon icon = new ImageIcon(image);
-		button[index] = new JButton(icon);
 		
-		button[index].setContentAreaFilled(false);
-		button[index].setDisabledIcon(icon);
-		button[index].setFocusPainted(false);
-		button[index].setName(BUTTON_NAME[index]);
-		button[index].setSize(image.getWidth(), image.getHeight());
+		button.setContentAreaFilled(false);
+		button.setDisabledIcon(icon);
+		button.setIcon(icon);
+		button.setFocusPainted(false);
+		button.setName(BUTTON_NAME[index]);
+		button.setSize(image.getWidth(), image.getHeight());
 	}
 	
 	// ボタンの画像を読み込む
@@ -155,7 +155,6 @@ class ButtonPanel extends JPanel {
 	}
 	
 	// 画像の高さの合計を返す
-	
 	private int plusHeights(BufferedImage[] image) {
 		int total = 0;
 		
