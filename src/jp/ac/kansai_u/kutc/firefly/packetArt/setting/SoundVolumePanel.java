@@ -18,6 +18,9 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.PlaySE;
  */
 public class SoundVolumePanel extends JPanel implements ActionListener{
 	private JRadioButton btnVolumeMute, btnVolumeLow, btnVolumeMed, btnVolumeHigh;
+	private JRadioButton selectedObject;
+	
+	PlaySE playSE;
 	
 	/**
 	 * コンストラクタ
@@ -58,10 +61,12 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
 		add(btnVolumeMed);
 		add(btnVolumeHigh);
 		
-		if     (b == ConfigInfo.MUTE)      btnVolumeMute.setSelected(true);
+		if     (b == ConfigInfo.MUTE)        btnVolumeMute.setSelected(true);
 		else if(b == ConfigInfo.VOLSELOW)    btnVolumeLow .setSelected(true);
 		else if(b == ConfigInfo.VOLSEMEDIUM) btnVolumeMed .setSelected(true);
 		else if(b == ConfigInfo.VOLSEHIGH)   btnVolumeHigh.setSelected(true);
+		
+		selectedObject = getSelectedObject();
 	}
 	
 	/**
@@ -76,11 +81,32 @@ public class SoundVolumePanel extends JPanel implements ActionListener{
 		return -1;
 	}
 
+	/**
+	 * 選択されたオブジェクトを取得する
+	 * @return 選択されたオブジェクト
+	 */
+	public JRadioButton getSelectedObject(){
+		if     (btnVolumeMute.isSelected()) return btnVolumeMute;
+	    else if(btnVolumeLow .isSelected()) return btnVolumeLow;
+	    else if(btnVolumeMed .isSelected()) return btnVolumeMed;
+	    else if(btnVolumeHigh.isSelected()) return btnVolumeHigh;
+		return null;
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == btnVolumeMute)
+//		 連打防止用
+		if(e.getSource() == selectedObject)
+			// 選択されたボタンと同じボタンが押されたら無視．
 			return;
-		PlaySE playSE = PlaySE.getInstance();
-		playSE.play("select" ,getStatus());
+		selectedObject = getSelectedObject();  // 選択されたオブジェクトを更新する
+		
+		if(e.getSource() == btnVolumeMute)
+//			Muteなら無視
+			return;
+		
+		System.out.println(getStatus());
+		playSE = PlaySE.getInstance();
+		playSE.play("select" , getStatus());
 	}
 }

@@ -17,8 +17,9 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.music.MidiPlayer;
  * @author akasaka
  */
 public class MusicVolumePanel extends JPanel implements ActionListener{
-	final private String FILE = "BGMTestSound.mid";
 	private JRadioButton btnVolumeMute, btnVolumeLow, btnVolumeMed, btnVolumeHigh;
+	private JRadioButton selectedObject;
+	
 	Thread testBGM = null;
 	
 	/**
@@ -60,10 +61,12 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 		add(btnVolumeMed);
 		add(btnVolumeHigh);
 		
-		if     (b == ConfigInfo.MUTE)      btnVolumeMute.setSelected(true);
+		if     (b == ConfigInfo.MUTE)         btnVolumeMute.setSelected(true);
 		else if(b == ConfigInfo.VOLBGMLOW)    btnVolumeLow .setSelected(true);
 		else if(b == ConfigInfo.VOLBGMMEDIUM) btnVolumeMed .setSelected(true);
 		else if(b == ConfigInfo.VOLBGMHIGH)   btnVolumeHigh.setSelected(true);
+		
+		selectedObject = getSelectedObject();
 	}
 	
 	/**
@@ -77,13 +80,32 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 	    else if(btnVolumeHigh.isSelected()) return ConfigInfo.VOLBGMHIGH;
 		return -1;
 	}
+	
+	/**
+	 * 選択されたオブジェクトを取得する
+	 * @return 選択されたオブジェクト
+	 */
+	public JRadioButton getSelectedObject(){
+		if     (btnVolumeMute.isSelected()) return btnVolumeMute;
+	    else if(btnVolumeLow .isSelected()) return btnVolumeLow;
+	    else if(btnVolumeMed .isSelected()) return btnVolumeMed;
+	    else if(btnVolumeHigh.isSelected()) return btnVolumeHigh;
+		return null;
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+//		 連打防止
+		if(e.getSource() == selectedObject)
+//			選択されたオブジェクトと同様のボタンが押されたら，無視する
+			return;
+		selectedObject = getSelectedObject();
+		
 		if(testBGM != null)
 			((MidiPlayer) testBGM).stopMidi();
-//		testBGM = null;
-		testBGM = new MidiPlayer(getStatus(), FILE);
+//		TODO nullいるの？どうなの．
+		//		testBGM = null;
+		testBGM = new MidiPlayer(getStatus(), ConfigInfo.BGMTESTSOUND);
 		testBGM.start();
 	}
 }

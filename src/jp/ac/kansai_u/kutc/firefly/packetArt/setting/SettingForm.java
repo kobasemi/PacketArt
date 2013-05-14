@@ -14,8 +14,8 @@ public class SettingForm extends FormBase {
 	SettingPanel mainPanel;
 	
 	public void initialize() {
-		if(mainPanel == null)
-			mainPanel = new SettingPanel();
+		
+		mainPanel = new SettingPanel();
 		getContentPane().add(mainPanel, 0);
 	}
 	
