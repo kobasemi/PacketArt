@@ -12,10 +12,11 @@ import javax.swing.JPanel;
 
 class MainPanel extends JPanel {
 	private static final int CREDIT_MARGIN = 700;
-	private static final int TITLE_MARGIN = 50;
+	private static final int FRAME_MARGIN = 350;
+	private static final int TITLE_MARGIN = 100;
 	private static final String IMAGE_PATH = "resource/image/title/";
 	private static final String FILE_NAME_CURSOR = "cursor.png";
-	private static final String[] FILE_NAME = {"background.png", "title.png", "credit.png"}; // カーソル画像以外のファイル名
+	private static final String[] FILE_NAME = {"background.png", "title.png", "frame.png", "credit.png"}; // カーソル画像以外のファイル名
 	private JLabel labelCursor;
 	private Point[] posCursor;
 	
@@ -81,11 +82,15 @@ class MainPanel extends JPanel {
 		JLabel labelTitle = new JLabel(new ImageIcon(image[1]));
 		labelTitle.setBounds(center - image[1].getWidth() / 2, TITLE_MARGIN, image[1].getWidth(), image[1].getHeight());
 		
-		JLabel labelCredit = new JLabel(new ImageIcon(image[2]));
-		labelCredit.setBounds(center - image[2].getWidth() / 2, CREDIT_MARGIN, image[2].getWidth(), image[2].getHeight());
+		JLabel labelFrame = new JLabel(new ImageIcon(image[2]));
+		labelFrame.setBounds(center - image[2].getWidth() / 2, FRAME_MARGIN, image[2].getWidth(), image[2].getHeight());
+		
+		JLabel labelCredit = new JLabel(new ImageIcon(image[3]));
+		labelCredit.setBounds(center - image[3].getWidth() / 2, CREDIT_MARGIN, image[3].getWidth(), image[3].getHeight());
 		
 		add(labelBackground, 0);
 		add(labelTitle, 0);
+		add(labelFrame, 0);
 		add(labelCredit, 0);
 	}
 }

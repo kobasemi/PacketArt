@@ -33,7 +33,7 @@ class ButtonPanel extends JPanel {
 		setCardPanel(secondCardPanel, DIVISION, button.length - 1);
 		
 		setLayout(cardLayout);
-		setBackground(new java.awt.Color(255, 255, 255, 64));
+		setOpaque(false);
 		setSize(width, height);
 		add(firstCardPanel,"first");
 		add(secondCardPanel,"second");
@@ -108,6 +108,5 @@ class ButtonPanel extends JPanel {
 	private void setButtonView(final int index) {
 		button[index].setContentAreaFilled(false);
 		button[index].setFocusPainted(false);
-		button[index].setRolloverEnabled(false);
 	}
 }

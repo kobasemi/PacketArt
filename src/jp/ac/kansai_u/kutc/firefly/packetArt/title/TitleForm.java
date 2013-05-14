@@ -101,20 +101,8 @@ public class TitleForm extends FormBase implements FocusListener {
     public void mouseDragged(MouseEvent e) {}
     public void mouseExited(MouseEvent e) {}
     public void mouseMoved(MouseEvent e) {}
-    public void mousePressed(MouseEvent e) {
-    	Object obj = e.getSource();
-    	
-    	if (obj instanceof JButton) {
-    		panelManager.repaint();
-    	}
-    }
-    public void mouseReleased(MouseEvent e) {
-    	Object obj = e.getSource();
-    	
-    	if (obj instanceof JButton) {
-    		panelManager.repaint();
-    	}
-    }
+    public void mousePressed(MouseEvent e) {}
+    public void mouseReleased(MouseEvent e) {}
     
     public void keyPressed(KeyEvent e) {
     	Object obj = e.getSource();
@@ -133,7 +121,6 @@ public class TitleForm extends FormBase implements FocusListener {
     public void keyTyped(KeyEvent e) {}
     
     public void focusGained(FocusEvent e) {
-    	panelManager.repaint();
     	Object obj = e.getSource();
     	
     	// フォーカスを得たボタンの横にカーソルを移動させる
@@ -154,6 +141,8 @@ public class TitleForm extends FormBase implements FocusListener {
     
     @Override
     public void onFormChanged() {
+    	disableButton();
+    	
     	// フォームチェンジ時にはタイトルBGMを止める。 by Lisa
 		 ((MidiPlayer) titlemusic).stopMidi();
     }
@@ -163,20 +152,16 @@ public class TitleForm extends FormBase implements FocusListener {
     
     // ボタンをクリックするか、ボタン上でエンターキーを押下した時の動作
     private void buttonPressed(JButton source) {
-    	panelManager.repaint();
 		PlaySE.getInstance().play(PlaySE.SELECT);
     	
 		switch (panelManager.getButtonIndex(source)) {
 		case 0: // Start
-			disableButton();
 			FormUtil.getInstance().changeForm("Playing");
 			break;
 		case 1: // Load
-			disableButton();
 			FormUtil.getInstance().changeForm("ReadDump");
 			break;
 		case 2: // Option
-			disableButton();
 			FormUtil.getInstance().changeForm("Option");
 			break;
 		case 3: // Exit
@@ -202,7 +187,6 @@ public class TitleForm extends FormBase implements FocusListener {
     		button.removeKeyListener(this);
     		button.removeMouseListener(this);
     		button.removeFocusListener(this);
-    		panelManager.repaint();
 		}
     }
     

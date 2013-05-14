@@ -7,8 +7,8 @@ import javax.swing.JButton;
 
 class PanelManager {
 	private static final int BUTTON_MARGIN = 350;
-	private static final int BUTTON_PANEL_WIDTH = 250;
-	private static final int BUTTON_PANEL_HEIGHT = 250;
+	private static final int BUTTON_PANEL_WIDTH = 300;
+	private static final int BUTTON_PANEL_HEIGHT = 300;
 	private MainPanel mainPanel;
 	private ButtonPanel buttonPanel;
 	
@@ -26,11 +26,6 @@ class PanelManager {
 	// 引数で渡されたコンテナにパネルを追加する
 	void addToParent(Container parent) {
 		parent.add(mainPanel, 0);
-	}
-	
-	// パネルを再描画する
-	void repaint() {
-		mainPanel.repaint();
 	}
 	
 	// インデックスで指定されたボタンの横にカーソルを移動させる
