@@ -28,6 +28,13 @@ class MainPanel extends JPanel {
 	
 	// カーソルの描画に関する設定をする
 	void createCursor(Point point[]) {
+		// 引数がヌルの場合はカーソルを描画しない
+		if (point == null) {
+			System.err.println("argument is null : Method [createCusor] : MainPanel.java");
+			posCursor = new Point[0];
+			return;
+		}
+		
 		posCursor = new Point[point.length];
 		BufferedImage image = null;
 		
