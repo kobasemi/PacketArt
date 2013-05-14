@@ -226,8 +226,11 @@ public class PlayForm extends FormBase implements ActionListener {
                         buttons[i].setEnabled(true);
                     }
                     getContentPane().validate();
+                    
                     // ゲームオーバーになったときにBGMを止める。
-                    ((MusicPlayer) musicplayer).stopMusic();
+                    if(MusicPlayer.getSequencer() != null){
+                    	((MusicPlayer) musicplayer).stopMusic();
+                    }
                 }
             }.run();
             return;

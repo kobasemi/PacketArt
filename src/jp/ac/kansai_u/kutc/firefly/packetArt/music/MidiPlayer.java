@@ -10,21 +10,17 @@ import javax.sound.midi.Sequencer;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 
+/**
+ * 外部Midiファイルを再生するクラスです。
+ * 一度Midiファイルを開き、指定された音量のMidiファイルを再出力して再生します。ｌ
+ * @author Lisa
+ */
 public class MidiPlayer extends Thread {
 	private int coefficient;
 	private String filename;
-	private static boolean killps;
 	private static Sequencer sequencer;
-
-	/**
-	 * タイトルのBGMを鳴らすメソッドです。
-	 * getVolMusic()で数字が取ってこれるようになってから
-	 * playTitleMusic()を呼び出してもらえたら
-	 * 要求が実現できると思います
-	 * 
-	 * @throws Exception
-	 */
-
+	private static boolean killps;
+	
 	public MidiPlayer(int _coefficient, String _filename) {
 		coefficient = _coefficient;
 		filename = _filename;
@@ -32,15 +28,11 @@ public class MidiPlayer extends Thread {
 	}
 
 	public void run() {
-//		killps = false;
-//		while(killps == false){
-			try {
-				playMidiMusic(coefficient, filename);
-			} catch (Exception e) {
-				// TODO 自動生成された catch ブロック
-				e.printStackTrace();
-			}
-//		}
+		try{
+			playMidiMusic(coefficient, filename);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 	
 	public void stopMidi(){
@@ -50,8 +42,6 @@ public class MidiPlayer extends Thread {
 		}
 	}
 
-	//TODO: Config系統からの音量情報の受け取り
-	//		int velo = XXXX.getVolMusic();
 	public static void playMidiMusic(int coefficient, String filename) throws Exception {
 		Sequence sequence = setNewSequence(coefficient, filename);
 		try {
@@ -76,7 +66,6 @@ public class MidiPlayer extends Thread {
 	 * @return sequence
 	 * @throws Exception
 	 */
-
 	public static Sequence getSequenceData(String filename) throws Exception {
 		Sequence sequence0 = MidiSystem.getSequence(new File("resource/se/" + filename));
 		float division = sequence0.getDivisionType();
@@ -93,9 +82,7 @@ public class MidiPlayer extends Thread {
 	 * @return sequence
 	 * @throws Exception
 	 */
-
 	public static Sequence setNewSequence(int coefficient, String filename) throws Exception {
-
 		Sequence sequence0 = MidiSystem.getSequence(new File("resource/se/" + filename));
 		Sequence sequence = getSequenceData(filename);
 		Track track1 = sequence.createTrack();
@@ -131,5 +118,4 @@ public class MidiPlayer extends Thread {
 		}
 		return sequence;
 	}
-
 }
