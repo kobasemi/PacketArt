@@ -15,7 +15,7 @@ class ButtonPanel extends JPanel {
 	private static final int FIRST_NUM = 4;  // 1枚目のパネルに配置するボタンの数
 	private static final int SECOND_NUM = 2; // 2枚目のパネルに配置するボタンの数
 	private static final String IMAGE_PATH = "resource/image/title/";
-	private static final String MESSAGE = "question.png";
+	private static final String MESSAGE = "message.png";
 	private static final String[] BUTTON_NAME = {"Start", "Load", "Option", "Exit", "Yes", "No"};
 	private static final String[] FILE_NAME = {"start.png", "load.png", "option.png", "exit.png", "yes.png", "no.png"};
 	private JButton[] button;
