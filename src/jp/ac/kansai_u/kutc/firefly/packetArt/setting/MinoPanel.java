@@ -19,7 +19,7 @@ public class MinoPanel extends JPanel{
 	 * コンストラクタ
 	 * @param 初期化前のミノ個数の設定
 	 */
-	MinoPanel(byte b){
+	MinoPanel(MinoType m){
 		setLayout(new FlowLayout(FlowLayout.LEFT, ConfigInfo.HGAP, 0));
 		setOpaque(false);
 		
@@ -44,19 +44,19 @@ public class MinoPanel extends JPanel{
 		add(btnMino5);
 		add(btnMinoBoth);
 		
-		if     (b == ConfigInfo.MINO4)    btnMino4   .setSelected(true);
-		else if(b == ConfigInfo.MINO5)    btnMino5   .setSelected(true);
-		else if(b == ConfigInfo.MINOBOTH) btnMinoBoth.setSelected(true);
+		if     (m == MinoType.values()[ConfigInfo.MINO4]   ) btnMino4   .setSelected(true);
+		else if(m == MinoType.values()[ConfigInfo.MINO5]   ) btnMino5   .setSelected(true);
+		else if(m == MinoType.values()[ConfigInfo.MINOBOTH]) btnMinoBoth.setSelected(true);
 	}
 	
 	/**
 	 * ミノの出現個数の設定を取得する
 	 * @return ミノの出現個数（4つ, 5つ, 両方）
 	 */
-	public byte getStatus(){
-		if     (btnMino4   .isSelected()) return ConfigInfo.MINO4;
-		else if(btnMino5   .isSelected()) return ConfigInfo.MINO5;
-		else if(btnMinoBoth.isSelected()) return ConfigInfo.MINOBOTH;
-		return -1;
+	public MinoType getStatus(){
+		if     (btnMino4   .isSelected()) return MinoType.values()[ConfigInfo.MINO4];
+		else if(btnMino5   .isSelected()) return MinoType.values()[ConfigInfo.MINO5];
+		else if(btnMinoBoth.isSelected()) return MinoType.values()[ConfigInfo.MINOBOTH];
+		return null;
 	}
 }

@@ -7,14 +7,14 @@ import java.awt.event.KeyEvent;
  * @author akasaka
  */
 public class ConfigStatus {
-	private static boolean viewLog;		// ビューの表示のオン・オフ
-	private static byte    mino;		// ミノの設定（4つ，5つ，両方）
-	private static boolean melody;		// メロディ（明るめ，暗め）
-	private static byte    volMusic;	// 音楽の音量の設定（Mute, Low, Medium, High）
-	private static byte    volSound;	// 効果音の音量の設定（Mute, Low, Medium, High）
-	private static byte    difficulty;	// 難易度（静的，動的，自動）
-	private static byte    keybind;		// キーバインド（Default, Gamer, Vim）
-	private static int     up, down, left, right, leftSpin, rightSpin;	// キー
+	private static boolean  viewLog;	// ビューの表示のオン・オフ
+	private static MinoType mino;		// ミノの種類（4つ，5つ，両方）
+	private static boolean  melody;		// メロディ（明るめ，暗め）
+	private static byte     volMusic;	// 音楽の音量の設定（Mute, Low, Medium, High）
+	private static byte     volSound;	// 効果音の音量の設定（Mute, Low, Medium, High）
+	private static byte     difficulty;	// 難易度（静的，動的，自動）
+	private static byte     keybind;		// キーバインド（Default, Gamer, Vim）
+	private static int      up, down, left, right, leftSpin, rightSpin;	// キー
 	
 	//各キーバインドの中身
 	final static int DEFAULTKEYCODE[] =
@@ -30,9 +30,9 @@ public class ConfigStatus {
 	 */
 	public ConfigStatus(){
 		viewLog = false;
-		mino = ConfigInfo.MINO4;
+		mino = MinoType.values()[ConfigInfo.MINO4];
 		melody = true;
-		volMusic = ConfigInfo.MUTE; //TODO :実装時，MEDIUMに．
+		volMusic = ConfigInfo.VOLBGMMEDIUM;
 		volSound = ConfigInfo.VOLSEMEDIUM;
 		difficulty = ConfigInfo.AUTO;
 		keybind = ConfigInfo.KEYDEFAULT;
@@ -50,7 +50,7 @@ public class ConfigStatus {
 	 * ミノの出現個数を設定する
 	 * @param b ミノの個数（4つ, 5つ, 両方）
 	 */
-	public static void setMino(byte b){ mino = b; }
+	public static void setMino(MinoType m){ mino = m; }
 	/**
 	 * メロディ調を設定する
 	 * @param f メロディ調（明るめ，暗め）
@@ -116,7 +116,7 @@ public class ConfigStatus {
 	 * ミノの出現個数設定を取得する
 	 * @return ミノの個数（4つ, 5つ, 両方）
 	 */
-	public static byte getMino(){ return mino; }
+	public static MinoType getMino(){ return mino; }
 	/**
 	 * メロディ調を取得する
 	 * @return メロディ調（明るめ，暗め）
@@ -173,7 +173,7 @@ public class ConfigStatus {
 	 */
 	public static int getKeyRightSpin(){ return rightSpin; }
 
-//	最終的には消すけど，今は変数確認用に使う
+//	TODO 最終的には消すけど，今は変数確認用に使う
 	/**
 	 * 各項目の設定を標準出力する
 	 */
