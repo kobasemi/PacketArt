@@ -1,19 +1,28 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.playing;
 
-import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
-import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
-import jp.ac.kansai_u.kutc.firefly.packetArt.music.MusicPlayer;
-import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
-import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigStatus;
-import org.jnetpcap.packet.PcapPacket;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.swing.JButton;
+
+import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
+import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
+import jp.ac.kansai_u.kutc.firefly.packetArt.music.MusicPlayer;
+import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigStatus;
+
+import org.jnetpcap.packet.PcapPacket;
 
 /**
  * パケットを利用したテトリスを表示、処理するフォームです。
@@ -112,9 +121,6 @@ public class PlayForm extends FormBase implements ActionListener {
         scoreTopLeft = new Point((int) (getSize().width * 0.05), (int) (getSize().height * 0.5));
 
         // ゲームBGMの音楽を鳴らす。
-        // TODO: パケットをファイルからではなく他の形で読む。
-        PcapManager pm = PcapManager.getInstance();
-        pm.openFile("src/jp/ac/kansai_u/kutc/firefly/PacketArt/test/10000.cap");
         musicplayer = new MusicPlayer(ConfigStatus.getVolMusic(), 1000, ConfigStatus.isMelody());
         musicplayer.start();
 
@@ -220,8 +226,11 @@ public class PlayForm extends FormBase implements ActionListener {
                         buttons[i].setEnabled(true);
                     }
                     getContentPane().validate();
+                    
                     // ゲームオーバーになったときにBGMを止める。
-                    ((MusicPlayer) musicplayer).stopMusic();
+                    if(MusicPlayer.getSequencer() != null){
+                    	((MusicPlayer) musicplayer).stopMusic();
+                    }
                 }
             }.run();
             return;
