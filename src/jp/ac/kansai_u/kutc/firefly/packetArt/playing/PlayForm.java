@@ -22,19 +22,19 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
 import jp.ac.kansai_u.kutc.firefly.packetArt.PlaySE;
 import jp.ac.kansai_u.kutc.firefly.packetArt.music.MidiPlayer;
 import jp.ac.kansai_u.kutc.firefly.packetArt.music.MusicPlayer;
+import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
 import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigStatus;
-<<<<<<< Updated upstream
-=======
 import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketHolder;
 import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketUtil;
-
 import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.PacketHandler;
-import jp.ac.kansai_u.kutc.firefly.packetArt.PlaySE;
+
 import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.protocol.network.Ip4;
+import org.jnetpcap.protocol.tcpip.Tcp;
+import org.jnetpcap.protocol.tcpip.Udp;
 import org.jnetpcap.util.PcapPacketArrayList;
->>>>>>> Stashed changes
 
+import jp.ac.kansai_u.kutc.firefly.packetArt.setting.MinoType;
 import org.jnetpcap.packet.PcapPacket;
 
 /**
@@ -59,8 +59,8 @@ public class PlayForm extends FormBase implements ActionListener {
     Point topLeft;
     Point scoreTopLeft;
     PcapManager pcapManager = PcapManager.getInstance();
-    PacketHolder packetHolder = new PacketHolder();
-    
+    PlaySE playSE = PlaySE.getInstance();
+
     JButton[] buttons = new JButton[]{
             new JButton("リトライ"),
             new JButton("タイトルに戻る")
@@ -136,10 +136,6 @@ public class PlayForm extends FormBase implements ActionListener {
         scoreTopLeft = new Point((int) (getSize().width * 0.05), (int) (getSize().height * 0.5));
 
         // ゲームBGMの音楽を鳴らす。
-<<<<<<< Updated upstream
-=======
-        // TODO: パケットをファイルからではなく他の形で読む。
->>>>>>> Stashed changes
         musicplayer = new MusicPlayer(ConfigStatus.getVolMusic(), 1000, ConfigStatus.isMelody());
         musicplayer.start();
 
@@ -247,14 +243,9 @@ public class PlayForm extends FormBase implements ActionListener {
                     getContentPane().validate();
                     
                     // ゲームオーバーになったときにBGMを止める。
-<<<<<<< Updated upstream
                     if(MusicPlayer.getSequencer() != null){
                     	((MusicPlayer) musicplayer).stopMusic();
                     }
-=======
-                    if(MusicPlayer.getSequencer() != null)
-                    ((MusicPlayer) musicplayer).stopMusic();
->>>>>>> Stashed changes
                 }
             }.run();
             return;
@@ -271,26 +262,26 @@ public class PlayForm extends FormBase implements ActionListener {
         for (int key : keys) {
             if (key == ConfigStatus.getKeyLeftSpin()) {
                 model.rotate(Direction.Left);
-                PlaySE.getInstance().play(PlaySE.TURN);
+                playSE.play(PlaySE.TURN);
             }
             if (key == ConfigStatus.getKeyRightSpin()) {
                 model.rotate(Direction.Right);
-                PlaySE.getInstance().play(PlaySE.TURN);
+                playSE.play(PlaySE.TURN);
             }
             if (key == ConfigStatus.getKeyLeft()) {
                 model.translate(Direction.Left);
-                PlaySE.getInstance().play(PlaySE.MOVE);
+                playSE.play(PlaySE.MOVE);
             }
             if (key == ConfigStatus.getKeyRight()) {
                 model.translate(Direction.Right);
-                PlaySE.getInstance().play(PlaySE.MOVE);
+                playSE.play(PlaySE.MOVE);
             }
             if (key == ConfigStatus.getKeyDown()) {
                 model.fallDown();
                 falldownTimer = 0;
             }
             if (key == ConfigStatus.getKeyUp()) {
-                PlaySE.getInstance().play(PlaySE.HARDDROP);
+                playSE.play(PlaySE.HARDDROP);
                 while (model.fallDown()) {
                 }
                 falldownTimer = 0;
@@ -322,30 +313,84 @@ public class PlayForm extends FormBase implements ActionListener {
     }
 
     private void generateNextBlockFromPacket() {
-    	PcapPacket pkt = pcapManager.nextPacketFromQueue();
-    	packetHolder.setPacket(pkt);
-    	Ip4 ip4 = packetHolder.getIp4();
-		int sum = 0;
-		if (ip4 != null) {
-    		int[] dstip = PacketUtil.bytes2ints(ip4.destination());
+    	PcapPacket pkt;
+    	int tetroNum = -1;
+    	int pentoNum = -1;
+    	//int cols = 0:
 
-    		for (int i=0; i<dstip.length; i++) {
-    			sum += dstip[i];
+    	do {
+        	pkt = pcapManager.nextPacketFromQueue();
+//        	//TODO
+        	//今はpktが来るまでぶん回しているが、空になった時点でchangeFormを呼び出しreadDumpFormへうつらせる。
+        	//
+        	//if (pcapManager.isReadyRun() == false) {
+        		//FormUtil.getInstance().changeForm("ReadDump");
+        	//}
+    	} while(pkt == null);
+    	PacketHolder packetHolder = new PacketHolder(pkt);//パケットが到着。パケットをパケホルダーへ。
+    	if (packetHolder.hasIp4()) {//このパケットはIPv4を含む
+        	//System.out.println("IPv4 has come");
+    		if (packetHolder.hasTcp()) {
+            	//System.out.println("TCP has come");
+            	tetroNum = (int)packetHolder.getTcp().seq() & 0x00007fff;
+            	pentoNum = (int)packetHolder.getTcp().checksum() & 0x00007fff;
+            	//ほどよくバラけたTCP のシーケンス、チェックサムを使う。
+    		} else if (packetHolder.hasUdp()) {
+            	//System.out.println("UDP has come");
+            	tetroNum = packetHolder.getUdp().source();
+            	pentoNum = packetHolder.getUdp().destination();
+            	//少し偏ったUDPの送信先、宛先ポートを使う
+    		} else {
+//    			System.out.println("NO TCP & UDP!?  then, IPID SEQ NUMBER!!");
+    			tetroNum = packetHolder.getIp4().id();
+    			pentoNum = packetHolder.getIp4().checksum();
+    			//少し偏ったIP ID シーケンス、適当にチェックサムを使う。
+			}
+    	} else if (packetHolder.hasIp6()){//このパケットはIPv6を含むパケットである。
+        	//System.out.println("IPv6 has come");
+        	if (packetHolder.hasTcp()) {
+            	//System.out.println("TCP has come");
+            	tetroNum = (int)packetHolder.getTcp().seq() & 0x00007fff;
+            	pentoNum = packetHolder.getTcp().flags();
+            	//ほどよくバラけたTCP のシーケンス、適当にフラグセットを使う。
+    		} else if (packetHolder.hasUdp()) {
+            	//System.out.println("UDP has come");
+            	tetroNum = packetHolder.getUdp().checksum();
+            	pentoNum = packetHolder.getUdp().destination();
+            	//バラけたチェックサム、なんとなくまとまった宛先ポートを使う。
+    		} else {
+    			//System.out.println("NO TCP & UDP!? using IPv6 ");
+    			tetroNum = packetHolder.getIp6().flowLabel();
+    			pentoNum = packetHolder.getIp6().length();
+    			//ほどよくまとまったフローラベルセット、データ長を使う。
     		}
     	}
+    	if (tetroNum < 0) {
+    		//IPv4,IPv6ではないパケット。デバイスからロードでもない限り非常に稀である。
+    		//謎のプロトコルを探るくらいなら、絶対に使える値をとる。
+    		tetroNum = (int)PacketUtil.getCaplen(pkt) & 0x00007fff;
+    	}
+    	if (pentoNum < 0) {
+    		//同上
+    		pentoNum = (int)PacketUtil.getMilliTimeStamp(pkt) & 0x00007fff;
+    	}
+
     	//if (sum % ConfigStatus.MT)
-		switch(ConfigStatus.MinoType){
-		case TetroMino:
-			model.generateMino(TetroMino.values()[sum % ConfigStatus.MinoType], false, 4);break;
-		case PentoMino:
-			model.generateMino(PentoMino.values()[sum % ConfigStatus.MinoType], false, 4);break;
+		//System.out.println("sum = " + sum);
+    	switch(ConfigStatus.getMino()){
+		case Tetro:
+			model.generateMino(TetroMino.values()[tetroNum % 7], false, model.column / 2);
+			break;
+		case Pento:
+			model.generateMino(PentoMino.values()[pentoNum % 12], false, model.column / 2);
+			break;
 		case Both:
-			int buf = sum % ConfigStatus.MinoType;
-			if (buf >= ConfigStatus.MinoType.TetroMino) {
-				model.generateMino(TetroMino.values()[sum % ConfigStatus.MinoType], false, 4);
-			} else { //７以下
-				model.generateMino(PentoMino.values()[sum % ConfigStatus.MinoType], false, 4);
+			if (packetHolder.hasIp4() && packetHolder.hasUdp()) {//IPv4でTCPなら４ブロックのミノ
+				model.generateMino(TetroMino.values()[tetroNum % 7], false, model.column / 2);
+			} else {//それ以外なら5ブロックのミノ
+				model.generateMino(PentoMino.values()[pentoNum % 12], false, model.column / 2);
 			}
+			break;
 		}
 		
         ArrayList<PacketBlock> mino = model.getCurrentMinos();
@@ -356,7 +401,7 @@ public class PlayForm extends FormBase implements ActionListener {
 				presentPacket(mino.get(i));
 		}
     }
-
+    
     private void presentPacket(PacketBlock packetBlock, PcapPacket pkt) {
 		packetBlock.packet = pkt;
 	}
@@ -394,7 +439,7 @@ public class PlayForm extends FormBase implements ActionListener {
         int key = e.getKeyCode();
         long time = tick;
 
-        System.out.println("input key:" + key);
+    //    System.out.println("input key:" + key);
 
         if (!keyPressedTime.containsKey(key)) {
             keyPressedTime.put(key, time);

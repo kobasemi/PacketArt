@@ -434,7 +434,10 @@ public final class PcapManager extends Thread{
      * @return 成功ならtrueを返します。
     */
     public void savePacket(PcapPacket pkt) {
-        packetQueue.add(pkt);
+    	if (pkt == null) {
+    		return;
+    	}
+        packetQueue.add(new PcapPacket(pkt));
     }
 
     /**

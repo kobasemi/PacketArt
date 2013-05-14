@@ -1,5 +1,6 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.util;
 import org.jnetpcap.packet.PcapPacket;
+import org.jnetpcap.protocol.JProtocol;
 import org.jnetpcap.protocol.lan.Ethernet;
 import org.jnetpcap.protocol.network.Arp;
 import org.jnetpcap.protocol.network.Icmp;
@@ -175,5 +176,77 @@ public class PacketHolder {
         } else {
             return null;
         }
+    }
+
+    /**
+     * パケットにプロトコルが含まれているかを判定します。
+     * @return プロトコルがあるか否か。
+    */
+    public boolean hasTcp() {
+        return  pkt != null & pkt.hasHeader(JProtocol.TCP_ID);
+    }
+
+    /**
+     * パケットにプロトコルが含まれているかを判定します。
+     * @return プロトコルがあるか否か。
+    */
+    public boolean hasUdp() {
+        return  pkt != null & pkt.hasHeader(JProtocol.UDP_ID);
+    }
+
+    /**
+     * パケットにプロトコルが含まれているかを判定します。
+     * @return プロトコルがあるか否か。
+    */
+    public boolean hasIp6() {
+        return  pkt != null & pkt.hasHeader(JProtocol.IP6_ID);
+    }
+
+    /**
+     * パケットにプロトコルが含まれているかを判定します。
+     * @return プロトコルがあるか否か。
+    */
+    public boolean hasIp4() {
+        return  pkt != null & pkt.hasHeader(JProtocol.IP4_ID);
+    }
+
+    /**
+     * パケットにプロトコルが含まれているかを判定します。
+     * @return プロトコルがあるか否か。
+    */
+    public boolean hasPPP() {
+        return  pkt != null & pkt.hasHeader(JProtocol.PPP_ID);
+    }
+
+    /**
+     * パケットにプロトコルが含まれているかを判定します。
+     * @return プロトコルがあるか否か。
+    */
+    public boolean hasL2TP() {
+        return  pkt != null & pkt.hasHeader(JProtocol.L2TP_ID);
+    }
+
+    /**
+     * パケットにプロトコルが含まれているかを判定します。
+     * @return プロトコルがあるか否か。
+    */
+    public boolean hasICMP() {
+        return  pkt != null & pkt.hasHeader(JProtocol.ICMP_ID);
+    }
+
+    /**
+     * パケットにプロトコルが含まれているかを判定します。
+     * @return プロトコルがあるか否か。
+    */
+    public boolean hasARP() {
+        return  pkt != null & pkt.hasHeader(JProtocol.ARP_ID);
+    }
+
+    /**
+     * パケットにプロトコルが含まれているかを判定します。
+     * @return プロトコルがあるか否か。
+    */
+    public boolean hasEthernet() {
+        return  pkt != null & pkt.hasHeader(JProtocol.ETHERNET_ID);
     }
 }
