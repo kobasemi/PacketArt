@@ -7,4 +7,6 @@ package jp.ac.kansai_u.kutc.firefly.packetArt.playing;
  */
 public interface Mino {
 	public int[][] value();
+
+	public int ordinal();
 }
