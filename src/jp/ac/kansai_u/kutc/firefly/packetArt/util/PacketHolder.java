@@ -230,7 +230,7 @@ public class PacketHolder {
      * パケットにプロトコルが含まれているかを判定します。
      * @return プロトコルがあるか否か。
     */
-    public boolean hasICMP() {
+    public boolean hasIcmp() {
         return  pkt != null & pkt.hasHeader(JProtocol.ICMP_ID);
     }
 
@@ -238,7 +238,7 @@ public class PacketHolder {
      * パケットにプロトコルが含まれているかを判定します。
      * @return プロトコルがあるか否か。
     */
-    public boolean hasARP() {
+    public boolean hasArp() {
         return  pkt != null & pkt.hasHeader(JProtocol.ARP_ID);
     }
 

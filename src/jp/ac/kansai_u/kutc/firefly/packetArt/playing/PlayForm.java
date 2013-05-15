@@ -13,6 +13,7 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketUtil;
 import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.PacketHandler;
 
 import org.jnetpcap.packet.PcapPacket;
+import org.jnetpcap.protocol.JProtocol;
 import org.jnetpcap.protocol.network.Ip4;
 import org.jnetpcap.protocol.tcpip.Tcp;
 import org.jnetpcap.protocol.tcpip.Udp;
@@ -192,25 +193,72 @@ public class PlayForm extends FormBase implements ActionListener {
 
 	// TODO: painting PacketBlocks using packet data.
 	void paintMino(Graphics g, PacketBlock block, int x, int y) {
-		float hue, saturation, brightness;
-
-		saturation = brightness = 0.7f;
-/*
-		if (block.getPacket() != null) {
-			// 仮
-			saturation = 1 / block.getPacket().size();
-			brightness = 1 / block.getPacket().size();
-		}*/
-
+		/*
+		  static Color 	getHSBColor(float h, float s, float b)
+          HSB カラーモデルに指定された値に基づいて Color オブジェクトを生成します。
+		 */
+		float pos,saturation, brightness;
+		saturation = 1.0f;//鮮やかさ。固定。
+		brightness = 0.7f;//明るさのデフォルト値
+		pos = 0.0f;
+		float delim = 0.142f;
 		if (block.blockType == BlockType.Wall) {
-			g.setColor(Color.blue);
+			g.setColor(Color.blue);//壁ブロックたちなら青でベタ塗り
 			g.fillRect(x, y, minoSize - 1, minoSize - 1);
-		} else if (block.blockType == BlockType.Mino) {
-			// 色の計算
-			hue = 360 / (block.getMino().ordinal() * (block.getMino() instanceof TetroMino ? 30.0f : 5.4f));
+		} else if (block.blockType == BlockType.Mino) { //ミノたちなら
+			if (block.getMino() instanceof PentoMino) {
+				delim = 0.083f;
+			}
+			pos = delim / 2;
+			PcapPacket pkt = null;
+			if ((pkt = block.getPacket()) != null) {//ブロックがぱけっとを含む場合
+				packetHolder.setPacket(pkt);//パケットをパケホルダーに装填し
+				//tetroMinoは7種類、pentoMinoは12種類。
+				//明示的な順番はないので、TetroMino.values()[tetroNum % 7]を使う。
+				//hue,sat,bri共にfloatで1.0～0.0の値なので、
+				//tetroMinoは0.142区切り、
+				//pentoMinoは0.0833区切りとする。
+				//なお、hueについては一周が可能なため、あふれは気にしないことにする。
+				//デフォルトで中間のhueに行くように設定
+				//パケットの最上階レイヤのデータサイズ（つまりは合計ヘッダサイズ）が大きいミノほど
+				//HUEの色が回転しより次の色に近い色になります。
+				//パケットの最上階レイヤがOSI参照モデル的に低い層は、レイヤ層が低いほど
+				//色の明るさが暗くなります。
+				
+				//なお、プログラムの仕様上、上級ユーザほど
+				//レイヤの高いテトリミノを駆使してゲームをしなければなりません。
+				//この場合の上級テトリミノとは、「ペントミノ」のことです。
+				if (packetHolder.hasTcp()) {
+					pos = packetHolder.getTcp().checksum() % delim * 0.001f;
+					brightness = 1.0f;
+				} else if (packetHolder.hasUdp()) {
+					pos = packetHolder.getUdp().checksum() % delim * 0.001f;
+					brightness = 0.9f;
+				} else if (packetHolder.hasIcmp()) {
+					pos = packetHolder.getIcmp().checksum() % delim * 0.001f;
+					brightness = 0.8f;
+				} else if (packetHolder.hasIp6()) {
+					pos = packetHolder.getIp6().length() % delim * 0.001f;
+					brightness = 0.7f;
+				} else if (packetHolder.hasIp4()) {
+					pos = packetHolder.getIp4().checksum() % delim * 0.001f;
+					brightness = 0.6f;
+				} else if (packetHolder.hasEthernet()) {
+					pos = packetHolder.getEthernet().checksumOffset() % delim * 0.001f;
+					brightness = 0.2f;
+				} else {
+					pos = PacketUtil.getCaplen(packetHolder.getPacket()) % delim * 0.001f;
+					brightness = 0.1f;
+				}
+				//System.out.println("hue => " + pos + block.getMino().ordinal() * delim + ", br => " + brightness + ", sat => " + saturation);
+				// 色の決定
+				//hue = 3.6f / (block.getMino().ordinal() * (block.getMino() instanceof TetroMino ? 30.0f : 51.4f));
 
-			System.out.println("hue => " + hue + ", br => " + brightness + ", sat => " + saturation);
-			// 色の決定
+			} else {
+				//ブロックがパケットを含まない場合
+				//デフォルトの値が使われる。
+			}
+			float hue = pos + block.getMino().ordinal() * delim;
 			Color mino = Color.getHSBColor(hue, saturation, brightness);
 			g.setColor(mino);
 			g.fillRoundRect(x, y, minoSize - 2, minoSize - 2, 2, 2);    // 外枠
@@ -218,7 +266,82 @@ public class PlayForm extends FormBase implements ActionListener {
 			g.setColor(Color.getHSBColor(hue, saturation, brightness)); // 内枠
 			g.fillRoundRect(x + 2, y + 2, minoSize - 4, minoSize - 4, 2, 2);
 			g.setColor(new Color(Color.white.getRed(), Color.white.getGreen(), Color.white.getBlue(), 200));
-			g.fillOval(x + 5, y + 5, minoSize / 10, minoSize / 10);     // ハイライト
+			g.fillOval(x + 5, y + 5, minoSize / 10, minoSize / 10); // ハイライト
+			int posX = 9;
+			int posY = 19;
+			if (ConfigStatus.isViewLog()) {//もしログフラグが立っていたら
+				Graphics2D g2 = (Graphics2D)g;
+				Font font = new Font("MONOSCAPE", Font.BOLD, 16);
+				g2.setFont(font);
+				if (packetHolder.hasTcp()) {
+					if (packetHolder.hasIp4()) {
+						g.setColor(Color.YELLOW);//IPv4が下の時の文字色
+					} else if (packetHolder.hasIp6()) {
+						g.setColor(Color.BLUE);//IPv6が下の時の文字色
+					} else {
+						g.setColor(Color.RED);//それ以外が下の時の文字色
+					}
+					g2.drawString("T", x + posX, y + posY);
+				} else if (packetHolder.hasUdp()) {
+					if (packetHolder.hasIp4()) {
+						g.setColor(Color.GREEN);//IPv4が下の時の文字色
+					} else if (packetHolder.hasIp6()) {
+						g.setColor(Color.BLUE);//IPv6が下の時の文字色
+					} else {
+						g.setColor(Color.RED);//それ以外が下の時の文字色
+					}
+					g2.drawString("U", x + posX, y + posY);
+	            //OSI参照モデルにおいて。ICMPはL3だが、
+	            //一般に、ICMPの上にTCPやUDPが来ることは少ないのでここで処理。
+	            } else if (packetHolder.hasIcmp()) {
+	                if (packetHolder.hasEthernet()) {
+	                    g.setColor(Color.CYAN);//IPv4が下の時の文字色
+	                } else if (packetHolder.hasPPP()) {
+	                    g.setColor(Color.BLUE);//PPPが下の時の文字色
+	                } else {
+	                    g.setColor(Color.WHITE);//それ以外が下の時の文字色
+	                }
+					g.drawString("I", x + posX, y + posY);
+	            } else {
+	            	//TCP,UDP,ICMPを含まないパケットはこちら
+	                if (packetHolder.hasIp6()) {
+	                    if (packetHolder.hasEthernet()) {
+	                        g.setColor(Color.RED);//Ethernetが下の時の文字色
+	                    } else if (packetHolder.hasPPP()) {
+	                        g.setColor(Color.BLUE);//PPPが下の時の文字色
+	                    } else {
+	                        g.setColor(Color.WHITE);//それ以外が下の時の文字色
+	                    }
+						g.drawString("6", x + posX, y + posY);
+	                } else if (packetHolder.hasIp4()) {
+	                    if (packetHolder.hasEthernet()) {
+	                        g.setColor(Color.MAGENTA);//Ethernetが下の時の文字色
+	                    } else if (packetHolder.hasPPP()) {
+	                        g.setColor(Color.BLUE);//PPPが下の時の文字色
+	                    } else {
+	                        g.setColor(Color.WHITE);//それ以外が下の時の文字色
+	                    }
+						g.drawString("4", x + posX, y + posY);
+	                } else {
+	                    //ここ、L3調査がメインなWIDEで来ること無いと思う。
+	                    //「デバイスからロード」の場合のみ見られるであろう。珍しいプロトコル。
+	                	//レアだぜ
+                      g.setColor(new Color(239, 69, 74));
+	                    if (packetHolder.hasL2TP()) {
+							g.drawString("L", x + posX, y + posY);
+	                    } else if (packetHolder.hasPPP()) {
+							g.drawString("P", x + posX, y + posY);
+	                    } else if (packetHolder.hasArp()) {
+							g.drawString("A", x + posX, y + posY);
+	                    } else if (packetHolder.hasEthernet()) {
+							g.drawString("E", x + posX, y + posY);
+	                    } else {
+	                        g.drawString("!", x + posX, y + posY);
+	                        //ここにきたプロトコルはすごく気持ち悪いぞ！
+	                    }
+	                }
+				}
+			}
 		}
 	}
 
@@ -397,7 +520,7 @@ public class PlayForm extends FormBase implements ActionListener {
 			model.generateMino(PentoMino.values()[pentoNum % 12], false, model.column / 2);
 			break;
 		case Both:
-			if (packetHolder.hasIp4() && packetHolder.hasUdp()) {//IPv4でTCPなら４ブロックのミノ
+			if (packetHolder.hasIp4()) {//IPv4なら４ブロックのミノ
 				model.generateMino(TetroMino.values()[tetroNum % 7], false, model.column / 2);
 			} else {//それ以外なら5ブロックのミノ
 				model.generateMino(PentoMino.values()[pentoNum % 12], false, model.column / 2);
