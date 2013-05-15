@@ -25,12 +25,15 @@ public class SettingPanel extends JPanel implements ActionListener{
 		setBounds(0, 0, ConfigInfo.WIDTH, ConfigInfo.HEIGHT);
 		setLayout(null);
 		
-		try{ image = ImageIO.read(new File(ConfigInfo.IMGPATH + "background3.png")); }
+		try{ image = ImageIO.read(new File(ConfigInfo.IMGPATH + "background.png")); }
 		catch(IOException e){ System.err.println(e.getMessage()); }
 		
 		JLabel formTitle = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "formTitle.png"));
 		formTitle.setBounds(ConfigInfo.WMARGIN, ConfigInfo.HMARGIN, 540, 100);
 		formTitle.setOpaque(false);
+		
+		JLabel frame = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "frame.png"));
+		frame.setBounds(17, 30, 566, 740);
 		
 		setStatusPanel= new ConfigStatusMainPanel();
 		setStatusPanel.setBounds(ConfigInfo.WMARGIN, 140, 540, 450);
@@ -49,9 +52,10 @@ public class SettingPanel extends JPanel implements ActionListener{
 		btnCombPanel.add(btnSetting);
 		btnCombPanel.add(btnCancel);
 		
-		add(formTitle);
-		add(setStatusPanel);
-		add(btnCombPanel);
+		add(frame, 0);
+		add(formTitle, 0);
+		add(setStatusPanel, 0);
+		add(btnCombPanel, 0);
 	}
 	
 	@Override
