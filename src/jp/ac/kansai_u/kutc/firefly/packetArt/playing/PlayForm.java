@@ -51,6 +51,7 @@ public class PlayForm extends FormBase implements ActionListener {
     Point topLeft;
     Point scoreTopLeft;
     PcapManager pcapManager = PcapManager.getInstance();
+    PacketHolder packetHolder = new PacketHolder();//メモリを考え、一個しか使いません。
     PlaySE playSE = PlaySE.getInstance();
 
 	JButton[] buttons = new JButton[]{
@@ -194,12 +195,12 @@ public class PlayForm extends FormBase implements ActionListener {
 		float hue, saturation, brightness;
 
 		saturation = brightness = 0.7f;
-
+/*
 		if (block.getPacket() != null) {
 			// 仮
 			saturation = 1 / block.getPacket().size();
 			brightness = 1 / block.getPacket().size();
-		}
+		}*/
 
 		if (block.blockType == BlockType.Wall) {
 			g.setColor(Color.blue);
@@ -208,6 +209,7 @@ public class PlayForm extends FormBase implements ActionListener {
 			// 色の計算
 			hue = 360 / (block.getMino().ordinal() * (block.getMino() instanceof TetroMino ? 30.0f : 5.4f));
 
+			System.out.println("hue => " + hue + ", br => " + brightness + ", sat => " + saturation);
 			// 色の決定
 			Color mino = Color.getHSBColor(hue, saturation, brightness);
 			g.setColor(mino);
@@ -299,28 +301,6 @@ public class PlayForm extends FormBase implements ActionListener {
                 generateNextBlockFromPacket();
             }
         }
-        /*
-		// キー入力の処理
-		for (int key : keys) {
-			if (key == ConfigStatus.getKeyLeftSpin())
-				model.rotate(Direction.Left);
-			if (key == ConfigStatus.getKeyRightSpin())
-				model.rotate(Direction.Right);
-			if (key == ConfigStatus.getKeyLeft())
-				model.translate(Direction.Left);
-			if (key == ConfigStatus.getKeyRight())
-				model.translate(Direction.Right);
-			if (key == ConfigStatus.getKeyDown()) {
-				model.fallDown();
-				falldownTimer = 0;
-			}
-			if (key == ConfigStatus.getKeyUp()) {
-				while (model.fallDown()) {
-				}
-				falldownTimer = 0;
-				generateNextBlockFromPacket();
-			}
-		}*/
 
 		// もし指定のタイミングになったらfalldown
 		if (falldownTimer > falldownLimit) {
@@ -359,7 +339,7 @@ public class PlayForm extends FormBase implements ActionListener {
         		//FormUtil.getInstance().changeForm("ReadDump");
         	//}
     	} while(pkt == null);
-    	PacketHolder packetHolder = new PacketHolder(pkt);//パケットが到着。パケットをパケホルダーへ。
+    	packetHolder.setPacket(pkt);//パケットが到着。パケットをパケホルダーへ。
     	if (packetHolder.hasIp4()) {//このパケットはIPv4を含む
         	//System.out.println("IPv4 has come");
     		if (packetHolder.hasTcp()) {
