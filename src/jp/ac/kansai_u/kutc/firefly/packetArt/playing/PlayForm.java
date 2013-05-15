@@ -8,18 +8,9 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
 import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigStatus;
 import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketHolder;
 import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketUtil;
-import org.jnetpcap.packet.PcapPacket;
-<<<<<<< HEAD
-import org.jnetpcap.protocol.JProtocol;
-import org.jnetpcap.protocol.network.Ip4;
-import org.jnetpcap.protocol.tcpip.Tcp;
-import org.jnetpcap.protocol.tcpip.Udp;
-import org.jnetpcap.util.PcapPacketArrayList;
-
 import jp.ac.kansai_u.kutc.firefly.packetArt.setting.MinoType;
-import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigStatus;
-=======
->>>>>>> 176f091fc318ccbe9800047badc304e2775d762a
+
+import org.jnetpcap.packet.PcapPacket;
 
 import javax.swing.*;
 import java.awt.*;
@@ -124,8 +115,10 @@ public class PlayForm extends FormBase implements ActionListener {
         keyPressedTime = new HashMap<Integer, Long>();
         model.initialize();
         // CurrentとNextを生成(ネクネク以上が必要なら、これを繰り返し呼ぶ)
-        generateNextBlockFromPacket();
-        generateNextBlockFromPacket();
+        for(int i = 0; i < 10; i++)
+        	generateNextBlockFromPacket();
+        
+        model.popNextQueue();
         addKeyListener(this);
         minoSize = (int) (Math.min(getPreferredSize().width / model.column, getPreferredSize().height / model.row) * 0.9);
         topLeft = new Point(
@@ -176,9 +169,9 @@ public class PlayForm extends FormBase implements ActionListener {
         g.setColor(Color.getHSBColor(0, 0, 0.8f));
         g.drawRoundRect(nextTopLeft.x, nextTopLeft.y,
                 (int) (getSize().width * 0.25), (int) (getSize().height * 0.3), 5, 5);
-        g.drawString("NEXT:", scoreTopLeft.x + 20, scoreTopLeft.y + 20);
+        g.drawString("NEXT:", nextTopLeft.x + 20, nextTopLeft.y + 20);
         for (PacketBlock item : model.getNextMinos()) {
-            paintMino(g, item, scoreTopLeft.x + 30, scoreTopLeft.y + 30);
+            paintMino(g, item, nextTopLeft.x + 30, nextTopLeft.y + 30);
         }
 
 
@@ -207,8 +200,6 @@ public class PlayForm extends FormBase implements ActionListener {
         g.fillRoundRect(topLeft.x, topLeft.y + minoSize * 3, model.column * minoSize, 5, 2, 2);
     }
 
-<<<<<<< HEAD
-	// TODO: painting PacketBlocks using packet data.
 	void paintMino(Graphics g, PacketBlock block, int x, int y) {
 		/*
 		  static Color 	getHSBColor(float h, float s, float b)
@@ -410,89 +401,6 @@ public class PlayForm extends FormBase implements ActionListener {
 		}
 		if (isPaused)
 			return;
-=======
-    // TODO: painting PacketBlocks using packet data.
-    void paintMino(Graphics g, PacketBlock block, int x, int y) {
-        float hue, saturation, brightness;
-
-        saturation = brightness = 0.7f;
-/*
-        if (block.getPacket() != null) {
-			// 仮
-			saturation = 1 / block.getPacket().size();
-			brightness = 1 / block.getPacket().size();
-		}*/
-
-        if (block.blockType == BlockType.Wall) {
-            g.setColor(Color.blue);
-            g.fillRect(x, y, minoSize - 1, minoSize - 1);
-        } else if (block.blockType == BlockType.Mino) {
-            // 色の計算
-            hue = 360 / (block.getMino().ordinal() * (block.getMino() instanceof TetroMino ? 30.0f : 51.42857f));
-
-            System.out.println("hue => " + hue + ", br => " + brightness + ", sat => " + saturation);
-            // 色の決定
-            Color mino = Color.getHSBColor(hue, saturation, brightness);
-            g.setColor(mino);
-            g.fillRoundRect(x, y, minoSize - 2, minoSize - 2, 2, 2);    // 外枠
-            brightness *= 1.3;
-            g.setColor(Color.getHSBColor(hue, saturation, brightness)); // 内枠
-            g.fillRoundRect(x + 2, y + 2, minoSize - 4, minoSize - 4, 2, 2);
-            g.setColor(new Color(Color.white.getRed(), Color.white.getGreen(), Color.white.getBlue(), 200));
-            g.fillOval(x + 5, y + 5, minoSize / 10, minoSize / 10);     // ハイライト
-        }
-    }
-
-    @Override
-    public void update() {
-        // 入力されたキーを配列へ
-        List<Integer> keys = new ArrayList<Integer>();
-        while (keyQueue.size() != 0 && keyPressedTime.size() != 0) {
-            // 未来の話なら抜ける(そんなことあり得るのか)
-            // 中断したら落ちる
-            int tgt = keyQueue.get(0);
-            if (keyPressedTime.containsKey(tgt))
-                if (keyPressedTime.get(tgt) > tick)
-                    break;
-            //if (keyPressedTime.get(keyQueue.get(0)) < tick)
-            keys.add(keyQueue.pop());
-        }
-
-        // ゲームオーバー判定
-        if (model.isGameOver()) {
-            // JDK 8のラムダ式が利用できればこんなコードにはならなかった(はず)
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        // ボタン表示待ち
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    for (int i = 0; i < buttons.length; i++) {
-                        buttons[i].setVisible(true);
-                        buttons[i].setEnabled(true);
-                    }
-                    getContentPane().validate();
-
-                    // ゲームオーバーになったときにBGMを止める。
-                    if (MusicPlayer.getSequencer() != null) {
-                        ((MusicPlayer) musicplayer).stopMusic();
-                    }
-                }
-            }.run();
-            return;
-        }
-
-        if (keys.contains(KeyEvent.VK_ESCAPE)) {
-            isPaused = !isPaused;
-            System.out.print(isPaused);
-        }
-        if (isPaused)
-            return;
->>>>>>> 176f091fc318ccbe9800047badc304e2775d762a
-
         // キー入力の処理
         for (int key : keys) {
             if (key == ConfigStatus.getKeyLeftSpin()) {
@@ -579,8 +487,6 @@ public class PlayForm extends FormBase implements ActionListener {
                 pentoNum = packetHolder.getUdp().destination();
                 //少し偏ったUDPの送信先、宛先ポートを使う
             } else {
-//    			System.out.println("NO TCP & UDP!?  then, IPID SEQ NUMBER!!");
-<<<<<<< HEAD
     			tetroNum = packetHolder.getIp4().id();
     			pentoNum = packetHolder.getIp4().checksum();
     			//少し偏ったIP ID シーケンス、適当にチェックサムを使う。
@@ -631,61 +537,10 @@ public class PlayForm extends FormBase implements ActionListener {
 			}
 			break;
 		}
-		
-=======
-                tetroNum = packetHolder.getIp4().id();
-                pentoNum = packetHolder.getIp4().checksum();
-                //少し偏ったIP ID シーケンス、適当にチェックサムを使う。
-            }
-        } else if (packetHolder.hasIp6()) {//このパケットはIPv6を含むパケットである。
-            //System.out.println("IPv6 has come");
-            if (packetHolder.hasTcp()) {
-                //System.out.println("TCP has come");
-                tetroNum = (int) packetHolder.getTcp().seq() & 0x00007fff;
-                pentoNum = packetHolder.getTcp().flags();
-                //ほどよくバラけたTCP のシーケンス、適当にフラグセットを使う。
-            } else if (packetHolder.hasUdp()) {
-                //System.out.println("UDP has come");
-                tetroNum = packetHolder.getUdp().checksum();
-                pentoNum = packetHolder.getUdp().destination();
-                //バラけたチェックサム、なんとなくまとまった宛先ポートを使う。
-            } else {
-                //System.out.println("NO TCP & UDP!? using IPv6 ");
-                tetroNum = packetHolder.getIp6().flowLabel();
-                pentoNum = packetHolder.getIp6().length();
-                //ほどよくまとまったフローラベルセット、データ長を使う。
-            }
-        }
-        if (tetroNum < 0) {
-            //IPv4,IPv6ではないパケット。デバイスからロードでもない限り非常に稀である。
-            //謎のプロトコルを探るくらいなら、絶対に使える値をとる。
-            tetroNum = (int) PacketUtil.getCaplen(pkt) & 0x00007fff;
-        }
-        if (pentoNum < 0) {
-            //同上
-            pentoNum = (int) PacketUtil.getMilliTimeStamp(pkt) & 0x00007fff;
-        }
-
-        //if (sum % ConfigStatus.MT)
-        //System.out.println("sum = " + sum);
-        switch (ConfigStatus.getMino()) {
-            case Tetro:
-                model.generateMino(TetroMino.values()[tetroNum % 7], false, model.column / 2);
-                break;
-            case Pento:
-                model.generateMino(PentoMino.values()[pentoNum % 12], false, model.column / 2);
-                break;
-            case Both:
-                if (packetHolder.hasIp4() && packetHolder.hasUdp()) {//IPv4でTCPなら４ブロックのミノ
-                    model.generateMino(TetroMino.values()[tetroNum % 7], false, model.column / 2);
-                } else {//それ以外なら5ブロックのミノ
-                    model.generateMino(PentoMino.values()[pentoNum % 12], false, model.column / 2);
-                }
-                break;
-        }
-
->>>>>>> 176f091fc318ccbe9800047badc304e2775d762a
-        ArrayList<PacketBlock> mino = model.getCurrentMinos();
+    	if(model.nextQueue.size() > 10)
+    		model.popNextQueue();
+    	
+    	ArrayList<PacketBlock> mino = model.getCurrentMinos();
         for (int i = 0; i < mino.size(); i++) {
             if (i == 0)
                 presentPacket(mino.get(i), pkt);

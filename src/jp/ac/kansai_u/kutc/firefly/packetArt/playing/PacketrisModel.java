@@ -325,16 +325,16 @@ public class PacketrisModel<T extends Block> {
                 list.get(j + 1).setMino(mino);
             }
         }
-        nextQueue.push(list);
+        nextQueue.addLast(list);
 
         // 反転
         if (reversible)
             reverse();
     }
 
-    public void pushNextQueue() {
+    public void popNextQueue() {
         currentMinos.clear();
-        currentMinos = nextQueue.pop();
+        currentMinos = nextQueue.poll();
 
         // 窒息死
         if (!canAllocate(parentLocation))
@@ -350,7 +350,7 @@ public class PacketrisModel<T extends Block> {
     }
 
     public ArrayList<T> getNextMinos() {
-        return nextQueue.get(0);
+        return nextQueue.getFirst();
     }
 
     public boolean isGranded() {
