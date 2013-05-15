@@ -565,7 +565,7 @@ public final class PcapManager extends Thread{
     }
 
     /**
-     * アロケートしたメモリや開いたファイルをガベコレの前に閉じます。<br>
+     * アロケートしたメモリや開いたファイルを閉じます。<br>
      * この関数では自分（シングルトンinstance）を解放しません。<br>
      * ここで注意してほしいことは、BPFフィルタ構造体も開放しているところです。
     */
@@ -577,8 +577,8 @@ public final class PcapManager extends Thread{
             Pcap.freecode(bpfFilter);
             //bpfText = null;
         }
-        pcap = null;
-        readyRun = false;
+        //pcap = null;
+        //readyRun = false;
         fromFile = false;
         fromDev = false;
         filtered = false;

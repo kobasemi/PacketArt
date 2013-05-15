@@ -128,10 +128,45 @@ class FileFlow extends JPanel {
                 }
             }
         );
+
+        final JButton button3 = new JButton("止める");
+        button3.addActionListener(
+            new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                	PlaySE.getInstance().play(PlaySE.SELECT);
+                	PcapManager pm = PcapManager.getInstance();
+                	pm.close();
+                	if (!pm.isFromFile() && !pm.isFromDev()) {
+                    	button3.setText("OK");
+                        (new Thread(new Runnable(){
+                            public void run() {
+                                try {
+                                    Thread.sleep(2000);
+                                } catch(InterruptedException e) {
+                                }
+                                button3.setText("止める");
+                            }
+                        })).start();
+                    } else {
+                        button3.setText("ERROR");
+                        (new Thread(new Runnable() {
+                            public void run() {
+                                try {
+                                    Thread.sleep(2000);
+                                } catch(InterruptedException e) {
+                                }
+                                button3.setText("止める");
+                            }
+                        })).start();
+                    }
+                }
+            }
+        );
         add(label);
         add(textField);
         add(button1);
         add(button2);
+        add(button3);
         //TODO: OK画像,running画像
     }
 }
