@@ -4,6 +4,7 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.Location;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * パケリスのモデルです。
@@ -18,6 +19,7 @@ public class PacketrisModel<T extends Block> {
     boolean isAsphyxia = false;
     T instance;
     private int elaseLines;
+    LinkedList<ArrayList<T>> nextQueue;
 
     /**
      * ミノ
@@ -65,6 +67,8 @@ public class PacketrisModel<T extends Block> {
         currentMinos.clear();
         isAsphyxia = false;
         elaseLines = 0;
+
+        nextQueue = new LinkedList<ArrayList<T>>();
     }
 
     /**
@@ -301,32 +305,40 @@ public class PacketrisModel<T extends Block> {
             throw new InvalidParameterException("座標指定に問題があります");
         if (mino == null)
             throw new NullPointerException();
-        parentLocation = new Location(x, 2);
-        currentMinos.clear();
 
-        currentMinos.add((T) instance.clone());
-        currentMinos.get(0).setBlockType(BlockType.Mino);
-        currentMinos.get(0).setLocation(0, 0);
-        currentMinos.get(0).setMino(mino);
+        parentLocation = new Location(x, 2);
+
+        ArrayList<T> list = new ArrayList<T>();
+
+        list.add((T) instance.clone());
+        list.get(0).setBlockType(BlockType.Mino);
+        list.get(0).setLocation(0, 0);
+        list.get(0).setMino(mino);
 
         for (int j = 0; j < 4; j++) {
             if (mino instanceof TetroMino && j >= 3)
                 break;
             else {
-                currentMinos.add((T) instance.clone());
-                currentMinos.get(j + 1).setBlockType(BlockType.Mino);
-                currentMinos.get(j + 1).setLocation(mino.value()[j][0], mino.value()[j][1]);
-                currentMinos.get(j + 1).setMino(mino);
+                list.add((T) instance.clone());
+                list.get(j + 1).setBlockType(BlockType.Mino);
+                list.get(j + 1).setLocation(mino.value()[j][0], mino.value()[j][1]);
+                list.get(j + 1).setMino(mino);
             }
         }
-
-        // 窒息死
-        if (!canAllocate(parentLocation))
-            isAsphyxia = true;
+        nextQueue.push(list);
 
         // 反転
         if (reversible)
             reverse();
+    }
+
+    public void pushNextQueue() {
+        currentMinos.clear();
+        currentMinos = nextQueue.pop();
+
+        // 窒息死
+        if (!canAllocate(parentLocation))
+            isAsphyxia = true;
     }
 
     public boolean isGameOver() {
@@ -335,6 +347,10 @@ public class PacketrisModel<T extends Block> {
 
     public ArrayList<T> getCurrentMinos() {
         return currentMinos;
+    }
+
+    public ArrayList<T> getNextMinos() {
+        return nextQueue.get(0);
     }
 
     public boolean isGranded() {
