@@ -130,6 +130,9 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
                 for (final String key : staticSE.keySet()) {
                     if (!containsKey(key)) {
                         openSE(key, new File(staticSE.get(key)));
+                        //resourceフォルダをjpフォルダと同じフォルダ（src）に入れた場合
+                        //上のopenSEをコメントアウトした後、以下で読み込みできるはず。
+                        //openSE(key, this.getResourceAsStream("/" + staticSE.get(key)));
                     }
                 }
             }}).start();
@@ -186,6 +189,9 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
     */
     public synchronized boolean openSE(final String key,final InputStream is) {
         byte[] data = null;
+        if (is == null) {
+            return false;
+        }
         try {
             data = getBytes(is);//バイト列で保管
             is.close();
@@ -350,6 +356,8 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         } else {
             if (staticSE.containsKey(name)) {
                 openSE(name, new File(staticSE.get(name)));
+                //resourceを移動する場合、ここも変更の必要がある。
+                //openSE(name, this.getResourceAsStream("/" + staticSE.get(name)));
                 play(name, vol);
             }
             //System.out.println("Before play, initialize() and Load it : " + name);
@@ -371,6 +379,8 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         } else {
             if (staticSE.containsKey(name)) {
                 openSE(name, new File(staticSE.get(name)));
+                //resourceを移動する場合、ここも変更の必要がある。
+                //openSE(name, this.getResourceAsStream("/" + staticSE.get(name)));
                 play(name);
             }
             //System.out.println("Before play, initialize() and Load it : " + name);
