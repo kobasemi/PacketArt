@@ -32,7 +32,7 @@ public class PlayForm extends FormBase implements ActionListener {
     HashMap<Integer, Long> keyPressedTime;
     int keySensitivity = 10;
     long tick;
-    int falldownLimit;
+    int falldownLimit;   // fallDownCountの限界．ここを変えれば，速度が変わる
     long falldownTimer;
     int minoSize;
     int fallDownCount;
@@ -83,35 +83,29 @@ public class PlayForm extends FormBase implements ActionListener {
         buttons[0] = new JButton("リトライ");
         buttons[1] = new JButton("タイトルに戻る");
 
-        addComponentListener(new ComponentListener() {
-            public void componentShown(ComponentEvent e) {
-                requestFocusInWindow();
-            }
-
-            public void componentResized(ComponentEvent e) {
-            }
-
-            public void componentMoved(ComponentEvent e) {
-            }
-
-            public void componentHidden(ComponentEvent e) {
-            }
-        });
-
+      addComponentListener(new ComponentListener() {
+	      public void componentShown  (ComponentEvent e) { requestFocusInWindow(); }
+	      public void componentResized(ComponentEvent e) {}
+	      public void componentMoved  (ComponentEvent e) {}
+	      public void componentHidden (ComponentEvent e) {}
+      });
+      
         // 各種ボタンの設定
         for (int i = 0; i < buttons.length; i++) {
-            JButton item = buttons[i];
-            item.setName(i == 0 ? "Retry" : "Quit");
-            item.addActionListener(this);
-            item.setVisible(false);
-            item.setLocation(getSize().width / 3, (getSize().height / 4) * (i + 2));
-            item.setSize(getSize().width / 3, getSize().height / 10);
+        	buttons[i].setName(i == 0 ? "Retry" : "Quit");
+        	buttons[i].addActionListener(this);
+        	buttons[i].setVisible(false);
+//        	buttons[i].setLocation(getSize().width / 3, (getSize().height / 4) * (i + 2));
+//        	buttons[i].setSize(getSize().width / 3, getSize().height / 10);
+            // TODO getSize()できないみたい．どこかに定数宣言して，とってくるほうが．
+        	buttons[i].setLocation(300, 400 + i * 100);
+            buttons[i].setSize(100, 100);
         }
     }
 
     @Override
     public void initialize() {
-        keyQueue = new LinkedList<Integer>();
+    	keyQueue = new LinkedList<Integer>();
         keyPressedTime = new HashMap<Integer, Long>();
         model.initialize();
         // CurrentとNextを生成(ネクネク以上が必要なら、これを繰り返し呼ぶ)
@@ -134,6 +128,11 @@ public class PlayForm extends FormBase implements ActionListener {
         fallDownCountLimit = 3;
         fallDownCount = 0;
 
+        for (int i = 0; i < buttons.length; i++) {
+            buttons[i].setVisible(false);
+            buttons[i].setEnabled(false);
+        }
+        
         getContentPane().add(buttons[0], 0);
         getContentPane().add(buttons[1], 0);
 
@@ -145,7 +144,6 @@ public class PlayForm extends FormBase implements ActionListener {
         // TODO: backgrownd
 
         if (!isPaused) {
-
             for (PacketBlock item : model.getCurrentMinos()) {
                 paintMino(g, item,
                         topLeft.x + ((model.parentLocation.getX() + item.location.getX()) * minoSize),
@@ -160,18 +158,27 @@ public class PlayForm extends FormBase implements ActionListener {
             }
         }
 
-
+        // PAINT SCORE AREA
         g.setColor(Color.getHSBColor(0, 0, 0.8f));
         g.drawRoundRect(scoreTopLeft.x, scoreTopLeft.y,
                 (int) (getSize().width * 0.25), (int) (getSize().height * 0.3), 5, 5);
-        g.drawString("段数:" + model.getElaseLines(), scoreTopLeft.x + 20, scoreTopLeft.y + 20);
+        g.drawString("Score : " + model.getElaseLines() * 10, scoreTopLeft.x + 20, scoreTopLeft.y + 20);
 
+        // PAINT NEXT AREA
+//        TODO ネクストミノがしっかり表示されない
         g.setColor(Color.getHSBColor(0, 0, 0.8f));
         g.drawRoundRect(nextTopLeft.x, nextTopLeft.y,
                 (int) (getSize().width * 0.25), (int) (getSize().height * 0.3), 5, 5);
         g.drawString("NEXT:", nextTopLeft.x + 20, nextTopLeft.y + 20);
         for (PacketBlock item : model.getNextMinos()) {
-            paintMino(g, item, nextTopLeft.x + 30, nextTopLeft.y + 30);
+//        	 TODO 
+//        	各ミノの表示位置がバラバラになって統一性がない
+//        	それは，各ミノの原点座標の位置が統一されていないからかと思われる
+//        	つまり，それを統一すれば，いいのであろうけど，僕は触りたくないので，暇な人どうぞ
+//        	あと，ネクストミノに表示されてるときの色と実際に落ちてくるときの色が違う．気に入らん．
+            paintMino(g, item,
+            		nextTopLeft.x + 60 + item.location.getX() * minoSize,
+            		nextTopLeft.y + 60 + item.location.getY() * minoSize);
         }
 
 
@@ -200,6 +207,7 @@ public class PlayForm extends FormBase implements ActionListener {
         g.fillRoundRect(topLeft.x, topLeft.y + minoSize * 3, model.column * minoSize, 5, 2, 2);
     }
 
+//    TODO 処理分けね？長すぎわろろーん
 	void paintMino(Graphics g, PacketBlock block, int x, int y) {
 		/*
 		  static Color 	getHSBColor(float h, float s, float b)
@@ -360,6 +368,7 @@ public class PlayForm extends FormBase implements ActionListener {
 		while (keyQueue.size() != 0 && keyPressedTime.size() != 0) {
 			// 未来の話なら抜ける(そんなことあり得るのか)
 			// 中断したら落ちる
+			
 			int tgt = keyQueue.get(0);
 			if (keyPressedTime.containsKey(tgt))
 				if (keyPressedTime.get(tgt) > tick)
@@ -370,28 +379,17 @@ public class PlayForm extends FormBase implements ActionListener {
 
 		// ゲームオーバー判定
 		if (model.isGameOver()) {
-			// JDK 8のラムダ式が利用できればこんなコードにはならなかった(はず)
-			new Thread() {
-				@Override
-				public void run() {
-					try {
-						// ボタン表示待ち
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					for (int i = 0; i < buttons.length; i++) {
-						buttons[i].setVisible(true);
-						buttons[i].setEnabled(true);
-					}
-					getContentPane().validate();
 
-					// ゲームオーバーになったときにBGMを止める。
-					if (MusicPlayer.getSequencer() != null) {
-						((MusicPlayer) musicplayer).stopMusic();
-					}
-				}
-			}.run();
+			// ゲームオーバーになったときにBGMを止める。
+			if (MusicPlayer.getSequencer() != null) {
+					((MusicPlayer) musicplayer).stopMusic();
+			}
+			for (int i = 0; i < buttons.length; i++) {
+				buttons[i].setVisible(true);
+				buttons[i].setEnabled(true);
+			}
+			
+			getContentPane().validate();
 			return;
 		}
 
@@ -520,8 +518,6 @@ public class PlayForm extends FormBase implements ActionListener {
     		pentoNum = (int)PacketUtil.getMilliTimeStamp(pkt) & 0x00007fff;
     	}
 
-    	//if (sum % ConfigStatus.MT)
-		//System.out.println("sum = " + sum);
     	switch(ConfigStatus.getMino()){
 		case Tetro:
 			model.generateMino(TetroMino.values()[tetroNum % 7], false, model.column / 2);
@@ -557,30 +553,51 @@ public class PlayForm extends FormBase implements ActionListener {
         packetBlock.packet = pkt;
     }
 
-    @Override
-    public void mouseClicked(MouseEvent e) {
-    }
+    public void actionPerformed(ActionEvent e) {
+        // JButtonの挙動を定義
+        if (e.getSource() instanceof JButton) {
+            // ボタンの不可視と無効
+        	for (int i = 0; i < buttons.length; i++) {
+                buttons[i].setVisible(false);
+                buttons[i].setEnabled(false);
+            }
+//            getContentPane().validate();
 
-    @Override
-    public void mousePressed(MouseEvent e) {
-    }
+            if (((JButton) (e.getSource())).getName() == "Retry") {
+                // ボタンがRetryならボタンを消して再初期化
+                initialize();
+            } else {
+            	// TODO 上のスレッドも消したし，これも消したらえんちゃうの．
+//                new Thread() {
+//                    @Override
+//                    public void run() {
+//                        try {
+//                            Thread.sleep(100);
+//                        } catch (InterruptedException e1) {
+//                            e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//                        }
+//                        FormUtil.getInstance().changeForm("Title");
+//                    }
+//                }.run();
+            	FormUtil.getInstance().changeForm("Title");
+            }
 
-    @Override
-    public void mouseReleased(MouseEvent e) {
+        }
     }
-
+    
     @Override
-    public void mouseEntered(MouseEvent e) {
-    }
-
+    public void onClose() { onFormChanged(); }
     @Override
-    public void mouseExited(MouseEvent e) {
+    public void onFormChanged() {
+        keyQueue = null;
+        keyPressedTime = null;
+        for (JButton item : buttons) {
+            getContentPane().remove(item);
+        }
+        //model = null;  //TODO 入れたらどうなんねん
+        removeKeyListener(this);
     }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-    }
-
+    
     @Override
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
@@ -601,58 +618,21 @@ public class PlayForm extends FormBase implements ActionListener {
     public void keyReleased(KeyEvent e) {
         keyPressedTime.remove(e.getKeyCode());
     }
-
     @Override
-    public void mouseDragged(MouseEvent e) {
-    }
-
+    public void keyTyped(KeyEvent e) {}
+    
     @Override
-    public void mouseMoved(MouseEvent e) {
-    }
-
+    public void mouseClicked(MouseEvent e) {}
     @Override
-    public void onClose() {
-        onFormChanged();
-    }
-
+    public void mousePressed(MouseEvent e) {}
     @Override
-    public void onFormChanged() {
-        keyQueue = null;
-        keyPressedTime = null;
-        for (JButton item : buttons) {
-            getContentPane().remove(item);
-        }
-        //model = null;
-        removeKeyListener(this);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-        // JButtonの挙動を定義
-        if (e.getSource() instanceof JButton) {
-            // タイトルに帰る
-            for (int i = 0; i < buttons.length; i++) {
-                buttons[i].setVisible(false);
-                buttons[i].setEnabled(false);
-            }
-            getContentPane().validate();
-
-            if (((JButton) (e.getSource())).getName() == "Retry") {
-                // ボタンがRetryならボタンを消して再初期化
-                initialize();
-            } else {
-                new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e1) {
-                            e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                        }
-                        FormUtil.getInstance().changeForm("Title");
-                    }
-                }.run();
-            }
-
-        }
-    }
+    public void mouseReleased(MouseEvent e) {}
+    @Override
+    public void mouseEntered(MouseEvent e) {}
+    @Override
+    public void mouseExited(MouseEvent e) {}
+    @Override
+    public void mouseDragged(MouseEvent e) {}
+    @Override
+    public void mouseMoved(MouseEvent e) {}
 }
