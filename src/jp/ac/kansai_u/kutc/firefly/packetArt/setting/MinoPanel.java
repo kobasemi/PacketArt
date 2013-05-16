@@ -23,17 +23,17 @@ public class MinoPanel extends JPanel{
 		setLayout(new FlowLayout(FlowLayout.LEFT, ConfigInfo.HGAP, 0));
 		setOpaque(false);
 		
-		JLabel labelMino = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "labelMino.png"));
-		btnMino4    = new JRadioButton(new ImageIcon(ConfigInfo.BTNPATH + "btnMino4.png"));
-		btnMino5    = new JRadioButton(new ImageIcon(ConfigInfo.BTNPATH + "btnMino5.png"));
-		btnMinoBoth = new JRadioButton(new ImageIcon(ConfigInfo.BTNPATH + "btnMinoBoth.png"));
+		JLabel labelMino = new JLabel(new ImageIcon(this.getClass().getResource(ConfigInfo.IMGPATH + "labelMino.png")));
+		btnMino4    = new JRadioButton(new ImageIcon(this.getClass().getResource(ConfigInfo.BTNPATH + "btnMino4.png")));
+		btnMino5    = new JRadioButton(new ImageIcon(this.getClass().getResource(ConfigInfo.BTNPATH + "btnMino5.png")));
+		btnMinoBoth = new JRadioButton(new ImageIcon(this.getClass().getResource(ConfigInfo.BTNPATH + "btnMinoBoth.png")));
 		
 		ButtonGroup minoGroup = new ButtonGroup();
 		minoGroup.add(btnMino4); minoGroup.add(btnMino5); minoGroup.add(btnMinoBoth);
 		
-		btnMino4   .setSelectedIcon(new ImageIcon(ConfigInfo.BTNPATH + "btnMino4Selected.png"));
-		btnMino5   .setSelectedIcon(new ImageIcon(ConfigInfo.BTNPATH + "btnMino5Selected.png"));
-		btnMinoBoth.setSelectedIcon(new ImageIcon(ConfigInfo.BTNPATH + "btnMinoBothSelected.png"));
+		btnMino4   .setSelectedIcon(new ImageIcon(this.getClass().getResource(ConfigInfo.BTNPATH + "btnMino4Selected.png")));
+		btnMino5   .setSelectedIcon(new ImageIcon(this.getClass().getResource(ConfigInfo.BTNPATH + "btnMino5Selected.png")));
+		btnMinoBoth.setSelectedIcon(new ImageIcon(this.getClass().getResource(ConfigInfo.BTNPATH + "btnMinoBothSelected.png")));
 		
 		btnMino4   .setContentAreaFilled(false);
 		btnMino5   .setContentAreaFilled(false);

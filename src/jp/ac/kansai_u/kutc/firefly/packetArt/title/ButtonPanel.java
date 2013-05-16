@@ -2,7 +2,6 @@ package jp.ac.kansai_u.kutc.firefly.packetArt.title;
 
 import java.awt.CardLayout;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -121,12 +120,12 @@ class ButtonPanel extends JPanel {
 			switch (num) {
 			case FIRST_NUM:
 				for (int i = 0; i < num; i++) {
-					image[i] = ImageIO.read(new File(IMAGE_PATH + FILE_NAME[i]));
+					image[i] = ImageIO.read(this.getClass().getResourceAsStream("/" + IMAGE_PATH + FILE_NAME[i]));
 				}
 				break;
 			case SECOND_NUM:
 				for (int i = 0; i < num; i++) {
-					image[i] = ImageIO.read(new File(IMAGE_PATH + FILE_NAME[FIRST_NUM + i]));
+					image[i] = ImageIO.read(this.getClass().getResourceAsStream("/" + IMAGE_PATH + FILE_NAME[FIRST_NUM + i]));
 				}
 				break;
 			}
@@ -143,7 +142,8 @@ class ButtonPanel extends JPanel {
 		BufferedImage image = null;
 		
 		try {
-			image = ImageIO.read(new File(IMAGE_PATH + MESSAGE));
+			
+			image = ImageIO.read(this.getClass().getResourceAsStream("/" + IMAGE_PATH + MESSAGE));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

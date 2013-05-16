@@ -31,7 +31,7 @@ public class ConfigInfo {
 	final static int[][] KEYBIND= new int[][]{DEFAULTKEYCODE, GAMERKEYCODE, VIMKEYCODE};
 	
 	// Image File Path
-	final static String IMGPATH = new String("./resource/image/config/");
+	final static String IMGPATH = new String("/resource/image/config/");
 	final static String BTNPATH = new String(IMGPATH + "button/");
 	final static String VOLPATH = new String(IMGPATH + "volume/");
 	final static String KEYPATH = new String(IMGPATH + "key/");

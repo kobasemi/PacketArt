@@ -4,8 +4,8 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -25,22 +25,22 @@ public class SettingPanel extends JPanel implements ActionListener{
 		setBounds(0, 0, ConfigInfo.WIDTH, ConfigInfo.HEIGHT);
 		setLayout(null);
 		
-		try{ image = ImageIO.read(new File(ConfigInfo.IMGPATH + "background.png")); }
+		try{ image = ImageIO.read(this.getClass().getResourceAsStream(ConfigInfo.IMGPATH + "background.png")); }
 		catch(IOException e){ System.err.println(e.getMessage()); }
 		
-		JLabel formTitle = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "formTitle.png"));
+		JLabel formTitle = new JLabel(new ImageIcon(this.getClass().getResource(ConfigInfo.IMGPATH + "formTitle.png")));
 		formTitle.setBounds(ConfigInfo.WMARGIN, ConfigInfo.HMARGIN, 540, 100);
 		formTitle.setOpaque(false);
 		
-		JLabel frame = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "frame.png"));
+		JLabel frame = new JLabel(new ImageIcon(this.getClass().getResource(ConfigInfo.IMGPATH + "frame.png")));
 		frame.setBounds(17, 30, 566, 740);
 		
 		setStatusPanel= new ConfigStatusMainPanel();
 		setStatusPanel.setBounds(ConfigInfo.WMARGIN, 140, 540, 450);
 		
 //		TODO buttonにボーダーラインがあるかも？
-		btnSetting = new JButton(new ImageIcon(ConfigInfo.IMGPATH + "btnSetting.png"));
-		btnCancel  = new JButton(new ImageIcon(ConfigInfo.IMGPATH + "btnCancel.png"));
+		btnSetting = new JButton(new ImageIcon(this.getClass().getResource(ConfigInfo.IMGPATH + "btnSetting.png")));
+		btnCancel  = new JButton(new ImageIcon(this.getClass().getResource(ConfigInfo.IMGPATH + "btnCancel.png")));
 		btnSetting.setContentAreaFilled(false);
 		btnCancel .setContentAreaFilled(false);
 		btnSetting.addActionListener(this);

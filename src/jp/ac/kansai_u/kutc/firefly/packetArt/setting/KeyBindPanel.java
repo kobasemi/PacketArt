@@ -11,9 +11,9 @@ import java.awt.event.KeyEvent;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
-import javax.swing.JRadioButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
 /**
  * キーコンフィグに関するパネル
@@ -37,24 +37,24 @@ public class KeyBindPanel extends JPanel implements ActionListener{
 		JPanel sectionPanel = new JPanel();
 		sectionPanel.setLayout(new FlowLayout(FlowLayout.LEFT, ConfigInfo.HGAP, 0));
 		sectionPanel.setOpaque(false);
-		JLabel labelSection = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "labelKeyBind.png"));
+		JLabel labelSection = new JLabel(new ImageIcon(this.getClass().getResource(ConfigInfo.IMGPATH + "labelKeyBind.png")));
 		sectionPanel.add(labelSection);
 		
 		JPanel btnKeyBindPanel = new JPanel();
 		btnKeyBindPanel.setLayout(new FlowLayout(FlowLayout.CENTER, ConfigInfo.HGAP, 0));
 		btnKeyBindPanel.setOpaque(false);
-		btnKeyDefault = new JRadioButton(new ImageIcon(ConfigInfo.KEYPATH + "bindDefault.png"));
-		btnKeyGamer   = new JRadioButton(new ImageIcon(ConfigInfo.KEYPATH + "bindGamer.png"));
-		btnKeyVim     = new JRadioButton(new ImageIcon(ConfigInfo.KEYPATH + "bindVim.png"));
+		btnKeyDefault = new JRadioButton(new ImageIcon(this.getClass().getResource(ConfigInfo.KEYPATH + "bindDefault.png")));
+		btnKeyGamer   = new JRadioButton(new ImageIcon(this.getClass().getResource(ConfigInfo.KEYPATH + "bindGamer.png")));
+		btnKeyVim     = new JRadioButton(new ImageIcon(this.getClass().getResource(ConfigInfo.KEYPATH + "bindVim.png")));
 		ButtonGroup bindGroup = new ButtonGroup();
 		bindGroup.add(btnKeyDefault); bindGroup.add(btnKeyGamer); bindGroup.add(btnKeyVim);
 		
 		btnKeyDefault.setContentAreaFilled(false);
 		btnKeyGamer  .setContentAreaFilled(false);
 		btnKeyVim    .setContentAreaFilled(false);
-		btnKeyDefault.setSelectedIcon(new ImageIcon(ConfigInfo.KEYPATH + "bindDefaultSelected.png"));
-		btnKeyGamer  .setSelectedIcon(new ImageIcon(ConfigInfo.KEYPATH + "bindGamerSelected.png"));
-		btnKeyVim    .setSelectedIcon(new ImageIcon(ConfigInfo.KEYPATH + "bindVimSelected.png"));
+		btnKeyDefault.setSelectedIcon(new ImageIcon(this.getClass().getResource(ConfigInfo.KEYPATH + "bindDefaultSelected.png")));
+		btnKeyGamer  .setSelectedIcon(new ImageIcon(this.getClass().getResource(ConfigInfo.KEYPATH + "bindGamerSelected.png")));
+		btnKeyVim    .setSelectedIcon(new ImageIcon(this.getClass().getResource(ConfigInfo.KEYPATH + "bindVimSelected.png")));
 		btnKeyDefault.addActionListener(this);
 		btnKeyGamer  .addActionListener(this);
 		btnKeyVim    .addActionListener(this);
@@ -65,12 +65,12 @@ public class KeyBindPanel extends JPanel implements ActionListener{
 		
 		JPanel arrowImagePanel = new JPanel();
 		arrowImagePanel.setOpaque(false);
-		labelLeftImg  = new JLabel(new ImageIcon(ConfigInfo.KEYPATH + "arrLeft.png"));
-		labelUpImg    = new JLabel(new ImageIcon(ConfigInfo.KEYPATH + "arrUp.png"));
-		labelRightImg = new JLabel(new ImageIcon(ConfigInfo.KEYPATH + "arrRight.png"));
-		labelDownImg  = new JLabel(new ImageIcon(ConfigInfo.KEYPATH + "arrDown.png"));
-		labelLSpinImg = new JLabel(new ImageIcon(ConfigInfo.KEYPATH + "arrLSpin.png"));
-		labelRSpinImg = new JLabel(new ImageIcon(ConfigInfo.KEYPATH + "arrRSpin.png"));
+		labelLeftImg  = new JLabel(new ImageIcon(this.getClass().getResource(ConfigInfo.KEYPATH + "arrLeft.png")));
+		labelUpImg    = new JLabel(new ImageIcon(this.getClass().getResource(ConfigInfo.KEYPATH + "arrUp.png")));
+		labelRightImg = new JLabel(new ImageIcon(this.getClass().getResource(ConfigInfo.KEYPATH + "arrRight.png")));
+		labelDownImg  = new JLabel(new ImageIcon(this.getClass().getResource(ConfigInfo.KEYPATH + "arrDown.png")));
+		labelLSpinImg = new JLabel(new ImageIcon(this.getClass().getResource(ConfigInfo.KEYPATH + "arrLSpin.png")));
+		labelRSpinImg = new JLabel(new ImageIcon(this.getClass().getResource(ConfigInfo.KEYPATH + "arrRSpin.png")));
 		labelImageArray = new JLabel[]{labelLeftImg, labelUpImg, labelRightImg, labelDownImg,
 				labelLSpinImg, labelRSpinImg};
 		for(int i=0; i<labelImageArray.length; i++){

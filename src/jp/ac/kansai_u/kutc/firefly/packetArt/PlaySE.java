@@ -1,27 +1,26 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.BufferedOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.HashMap;
 
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.Line;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.Line;
 import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
-
-import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
@@ -129,10 +128,10 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
             public void run(){
                 for (final String key : staticSE.keySet()) {
                     if (!containsKey(key)) {
-                        openSE(key, new File(staticSE.get(key)));
+                        //openSE(key, new File(staticSE.get(key)));
                         //resourceフォルダをjpフォルダと同じフォルダ（src）に入れた場合
                         //上のopenSEをコメントアウトした後、以下で読み込みできるはず。
-                        //openSE(key, this.getResourceAsStream("/" + staticSE.get(key)));
+                        openSE(key, this.getClass().getResourceAsStream(staticSE.get(key)));
                     }
                 }
             }}).start();
@@ -357,7 +356,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
             if (staticSE.containsKey(name)) {
                 openSE(name, new File(staticSE.get(name)));
                 //resourceを移動する場合、ここも変更の必要がある。
-                //openSE(name, this.getResourceAsStream("/" + staticSE.get(name)));
+                openSE(name, this.getClass().getResourceAsStream("/" + staticSE.get(name)));
                 play(name, vol);
             }
             //System.out.println("Before play, initialize() and Load it : " + name);
@@ -378,9 +377,9 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
             return true;
         } else {
             if (staticSE.containsKey(name)) {
-                openSE(name, new File(staticSE.get(name)));
+                //openSE(name, new File(staticSE.get(name)));
                 //resourceを移動する場合、ここも変更の必要がある。
-                //openSE(name, this.getResourceAsStream("/" + staticSE.get(name)));
+                openSE(name, this.getClass().getResourceAsStream("/" + staticSE.get(name)));
                 play(name);
             }
             //System.out.println("Before play, initialize() and Load it : " + name);
@@ -529,7 +528,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
      * @param is バイト列に変換したいInputStream
      * @return バイト配列（エラーなら空）
      */
-    private static byte[] getBytes(final InputStream is) {
+    public static byte[] getBytes(final InputStream is) {
         final ByteArrayOutputStream b = new ByteArrayOutputStream();
         final OutputStream os = new BufferedOutputStream(b);
         int c;
