@@ -127,7 +127,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
     public synchronized void initialize() {
         new Thread(new Runnable(){
             public void run(){
-                for (String key : staticSE.keySet()) {
+                for (final String key : staticSE.keySet()) {
                     if (!containsKey(key)) {
                         openSE(key, new File(staticSE.get(key)));
                     }
@@ -147,7 +147,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
      * @param file 音楽ファイルです。
      * @return 成功ならtrueを返します。失敗した場合、登録されません。
     */
-    public synchronized boolean openSE(String key, File file) {
+    public synchronized boolean openSE(String key,final File file) {
         InputStream is = null;
         byte[] data = null;//バイト列で保管
         try {
@@ -165,7 +165,39 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
             return false;
         }
         boolean ret = false;
-        PrimitiveHolder<byte[]> p = new PrimitiveHolder<byte[]>(data);
+        final PrimitiveHolder<byte[]> p = new PrimitiveHolder<byte[]>(data);
+        synchronized(this) {
+            ret = addClips(key, p);
+        }
+        return ret;
+    }
+
+    /**
+     * <a href="http://aidiary.hatenablog.com/entry/20061105/1275137770">Clip使い回し</a>
+     * 新たにInputStreamから音楽ファイルを読み出し、ClipをRING_SIZE個このクラスに登録し、<br>
+     * いつでも多重再生できる状態にします。<br>
+     * <br>
+     * 不正なInputStreamを指定された場合・PCが音声を出力できない場合は<br>
+     * falseが返ります。<br>
+     *
+     * @param key キーです。どのSEを再生するか選択するのに使います。
+     * @param is 音楽ファイルを指し示すInputStreamです。
+     * @return 成功ならtrueを返します。失敗した場合、登録されません。
+    */
+    public synchronized boolean openSE(final String key,final InputStream is) {
+        byte[] data = null;
+        try {
+            data = getBytes(is);//バイト列で保管
+            is.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        if (data == null) {
+            return false;
+        }
+        boolean ret = false;
+        final PrimitiveHolder<byte[]> p = new PrimitiveHolder<byte[]>(data);
         synchronized(this) {
             ret = addClips(key, p);
         }
@@ -184,7 +216,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
      * @param url 音楽ファイルを指し示すURLです。
      * @return 成功ならtrueを返します。失敗した場合、登録されません。
     */
-    public synchronized boolean openSE(String key, URL url) {
+    public synchronized boolean openSE(final String key,final URL url) {
         byte[] data = null;
         try {
             final InputStream is = url.openStream();
@@ -198,7 +230,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
             return false;
         }
         boolean ret = false;
-        PrimitiveHolder<byte[]> p = new PrimitiveHolder<byte[]>(data);
+        final PrimitiveHolder<byte[]> p = new PrimitiveHolder<byte[]>(data);
         synchronized(this) {
             ret = addClips(key, p);
         }
@@ -217,9 +249,9 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
      * @param b 音楽のバイト列です
      * @return 成功ならtrueを返します。失敗した場合、登録されません。
     */
-    public synchronized boolean openSE(String key,byte[] b) {
+    public synchronized boolean openSE(final String key, byte[] b) {
         boolean ret = false;
-        PrimitiveHolder<byte[]> p = new PrimitiveHolder<byte[]>(b);
+        final PrimitiveHolder<byte[]> p = new PrimitiveHolder<byte[]>(b);
         synchronized(this) {
             ret = addClips(key, p);
         }
@@ -227,7 +259,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
     }
 
     //こいつが核です。
-    private boolean addClips(final String key,byte[] data) {
+    private boolean addClips(final String key, byte[] data) {
         //new Thread(new Runnable(){
           //  public void run(){
         ByteArrayInputStream bais = null;
@@ -265,7 +297,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
     }
 
     //こいつが核です。
-    private boolean addClips(final String key,PrimitiveHolder<byte[]> p) {
+    private boolean addClips(final String key,final PrimitiveHolder<byte[]> p) {
         //new Thread(new Runnable(){
           //  public void run(){
         ByteArrayInputStream bais = null;
@@ -309,7 +341,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
      * @param name 再生するSEの名前
      * @param vol 再生するときの音量
     */
-    public synchronized boolean play(String name, double vol) {
+    public synchronized boolean play(final String name, double vol) {
         final LimitedRing<Clip> clips = get(name);
         if (clips != null) {
             final Clip clip = clips.peek();
@@ -330,7 +362,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
      *
      * @param name 再生するSEの名前
     */
-    public synchronized boolean play(String name) {
+    public synchronized boolean play(final String name) {
         final LimitedRing<Clip> clips = get(name);
         if (clips != null) {
             final Clip clip = clips.peek();
@@ -473,8 +505,8 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
      * @param volume 1-100で指定された音量の数値です。
     */
     public synchronized void setVolumeAll(double volume) {
-        for (LimitedRing<Clip> clips : values()) {
-            for(Clip clip : clips) {
+        for (final LimitedRing<Clip> clips : values()) {
+            for(final Clip clip : clips) {
                 setVolume(clip, volume);
             }
         }
@@ -522,16 +554,16 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         return new ByteArrayInputStream(byteData);
     }
 */
-    public void debugMe(String header) {
+    public void debugMe(final String header) {
         FloatControl ctrl = null;
-        for (LimitedRing<Clip> clips : values()) {
-            for(Clip clip : clips) {
+        for (final LimitedRing<Clip> clips : values()) {
+            for(final Clip clip : clips) {
                 debugMe(header, clip);
             }
         }
     }
 
-    public void debugMe(String header, Line line) {
+    public void debugMe(final String header,final Line line) {
         FloatControl ctrl = null;
         try {
             ctrl = (FloatControl)(line.getControl(FloatControl.Type.MASTER_GAIN));
