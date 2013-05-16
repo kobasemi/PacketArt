@@ -52,11 +52,11 @@ public class ConfigStatusMainPanel extends JPanel{
 		ConfigStatus.setVolSound    (panelSoundVolume.getStatus());
 		ConfigStatus.setDifficulty  (panelDifficulty .getStatus());
 		ConfigStatus.setKeyBind     (panelKeyBind    .getStatus());
-		ConfigStatus.setKeyLeft     (ConfigStatus.KEYBIND[panelKeyBind.getStatus()][ConfigInfo.LEFT]);
-		ConfigStatus.setKeyUp       (ConfigStatus.KEYBIND[panelKeyBind.getStatus()][ConfigInfo.UP]);
-		ConfigStatus.setKeyRight    (ConfigStatus.KEYBIND[panelKeyBind.getStatus()][ConfigInfo.RIGHT]);
-		ConfigStatus.setKeyDown     (ConfigStatus.KEYBIND[panelKeyBind.getStatus()][ConfigInfo.DOWN]);
-		ConfigStatus.setKeyLeftSpin (ConfigStatus.KEYBIND[panelKeyBind.getStatus()][ConfigInfo.LSPIN]);
-		ConfigStatus.setKeyRightSpin(ConfigStatus.KEYBIND[panelKeyBind.getStatus()][ConfigInfo.RSPIN]);
+		ConfigStatus.setKeyLeft     (ConfigInfo.KEYBIND[panelKeyBind.getStatus()][ConfigInfo.LEFT]);
+		ConfigStatus.setKeyUp       (ConfigInfo.KEYBIND[panelKeyBind.getStatus()][ConfigInfo.UP]);
+		ConfigStatus.setKeyRight    (ConfigInfo.KEYBIND[panelKeyBind.getStatus()][ConfigInfo.RIGHT]);
+		ConfigStatus.setKeyDown     (ConfigInfo.KEYBIND[panelKeyBind.getStatus()][ConfigInfo.DOWN]);
+		ConfigStatus.setKeyLeftSpin (ConfigInfo.KEYBIND[panelKeyBind.getStatus()][ConfigInfo.LSPIN]);
+		ConfigStatus.setKeyRightSpin(ConfigInfo.KEYBIND[panelKeyBind.getStatus()][ConfigInfo.RSPIN]);
 	}
 }

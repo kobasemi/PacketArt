@@ -16,29 +16,23 @@ public class ConfigStatus {
 	private static byte     keybind;		// キーバインド（Default, Gamer, Vim）
 	private static int      up, down, left, right, leftSpin, rightSpin;	// キー
 	
-	//各キーバインドの中身
-	final static int DEFAULTKEYCODE[] =
-			new int[]{KeyEvent.VK_LEFT, KeyEvent.VK_UP, KeyEvent.VK_RIGHT, KeyEvent.VK_DOWN, KeyEvent.VK_ALT, KeyEvent.VK_SPACE};
-	final static int GAMERKEYCODE[] =
-			new int[]{KeyEvent.VK_A, KeyEvent.VK_W, KeyEvent.VK_D, KeyEvent.VK_S, KeyEvent.VK_J, KeyEvent.VK_K};
-	final static int VIMKEYCODE[] =
-			new int[]{KeyEvent.VK_H, KeyEvent.VK_K, KeyEvent.VK_L, KeyEvent.VK_J, KeyEvent.VK_A, KeyEvent.VK_S};
-	final static int[][] KEYBIND= new int[][]{DEFAULTKEYCODE, GAMERKEYCODE, VIMKEYCODE};
-	
 	/**
 	 * コンストラクタ
 	 */
 	public ConfigStatus(){
-		viewLog = false;
-		mino = MinoType.values()[ConfigInfo.MINO4];
-		melody = true;
-		volMusic = ConfigInfo.VOLBGMMEDIUM;
-		volSound = ConfigInfo.VOLSEMEDIUM;
+		viewLog    = false;
+		mino       = MinoType.values()[ConfigInfo.MINO4];
+		melody     = true;
+		volMusic   = ConfigInfo.VOLBGMMEDIUM;
+		volSound   = ConfigInfo.VOLSEMEDIUM;
 		difficulty = ConfigInfo.AUTO;
-		keybind = ConfigInfo.KEYDEFAULT;
-		left = KEYBIND[keybind][ConfigInfo.LEFT]; up = KEYBIND[keybind][ConfigInfo.UP];
-		right = KEYBIND[keybind][ConfigInfo.RIGHT]; down = KEYBIND[keybind][ConfigInfo.DOWN];
-		leftSpin = KEYBIND[keybind][ConfigInfo.LSPIN]; rightSpin = KEYBIND[keybind][ConfigInfo.RSPIN];
+		keybind    = ConfigInfo.KEYDEFAULT;
+		left       = ConfigInfo.KEYBIND[keybind][ConfigInfo.LEFT];
+		up         = ConfigInfo.KEYBIND[keybind][ConfigInfo.UP];
+		right      = ConfigInfo.KEYBIND[keybind][ConfigInfo.RIGHT];
+		down       = ConfigInfo.KEYBIND[keybind][ConfigInfo.DOWN];
+		leftSpin   = ConfigInfo.KEYBIND[keybind][ConfigInfo.LSPIN];
+		rightSpin  = ConfigInfo.KEYBIND[keybind][ConfigInfo.RSPIN];
 	}
 	
 	/**

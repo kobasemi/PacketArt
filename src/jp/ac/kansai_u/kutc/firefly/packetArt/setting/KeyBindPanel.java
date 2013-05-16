@@ -81,12 +81,12 @@ public class KeyBindPanel extends JPanel implements ActionListener{
 		
 		JPanel labelKeyPanel = new JPanel();
 		labelKeyPanel.setOpaque(false);
-		labelLeftKey  = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][ConfigInfo.LEFT]));
-		labelUpKey    = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][ConfigInfo.UP]));
-		labelRightKey = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][ConfigInfo.RIGHT]));
-		labelDownKey  = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][ConfigInfo.DOWN]));
-		labelLSpinKey = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][ConfigInfo.LSPIN]));
-		labelRSpinKey = new JLabel(KeyEvent.getKeyText(ConfigStatus.KEYBIND[b][ConfigInfo.RSPIN]));
+		labelLeftKey  = new JLabel(KeyEvent.getKeyText(ConfigInfo.KEYBIND[b][ConfigInfo.LEFT]));
+		labelUpKey    = new JLabel(KeyEvent.getKeyText(ConfigInfo.KEYBIND[b][ConfigInfo.UP]));
+		labelRightKey = new JLabel(KeyEvent.getKeyText(ConfigInfo.KEYBIND[b][ConfigInfo.RIGHT]));
+		labelDownKey  = new JLabel(KeyEvent.getKeyText(ConfigInfo.KEYBIND[b][ConfigInfo.DOWN]));
+		labelLSpinKey = new JLabel(KeyEvent.getKeyText(ConfigInfo.KEYBIND[b][ConfigInfo.LSPIN]));
+		labelRSpinKey = new JLabel(KeyEvent.getKeyText(ConfigInfo.KEYBIND[b][ConfigInfo.RSPIN]));
 		labelKeyCodeArray = new JLabel[]{labelLeftKey, labelUpKey, labelRightKey, labelDownKey,
 				labelLSpinKey, labelRSpinKey};
 		for(int i=0; i<labelKeyCodeArray.length; i++){
@@ -113,8 +113,8 @@ public class KeyBindPanel extends JPanel implements ActionListener{
 	 */
 	public byte getStatus(){
 		if     (btnKeyDefault.isSelected()) return ConfigInfo.KEYDEFAULT;
-		else if(btnKeyGamer.isSelected())   return ConfigInfo.KEYGAMER;
-		else if(btnKeyVim.isSelected())     return ConfigInfo.KEYVIM;
+		else if(btnKeyGamer  .isSelected()) return ConfigInfo.KEYGAMER;
+		else if(btnKeyVim    .isSelected()) return ConfigInfo.KEYVIM;
 		return -1;
 	}
 	
@@ -122,6 +122,6 @@ public class KeyBindPanel extends JPanel implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		byte idx = getStatus();  // キーバインドのインデックスを取得
 		for(int i=0; i<labelKeyCodeArray.length; i++)
-				labelKeyCodeArray[i].setText(KeyEvent.getKeyText(ConfigStatus.KEYBIND[idx][i]));
+				labelKeyCodeArray[i].setText(KeyEvent.getKeyText(ConfigInfo.KEYBIND[idx][i]));
 	}
 }
