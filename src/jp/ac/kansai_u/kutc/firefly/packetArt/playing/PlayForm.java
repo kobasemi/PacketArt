@@ -105,6 +105,11 @@ public class PlayForm extends FormBase implements ActionListener {
 
     @Override
     public void initialize() {
+        requestFocusInWindow();
+    	if(!PcapManager.getInstance().isReadyRun()){
+    		FormUtil.getInstance().changeForm("ReadDump");
+    		return;
+    	}
     	keyQueue = new LinkedList<Integer>();
         keyPressedTime = new HashMap<Integer, Long>();
         model.initialize();
@@ -135,14 +140,12 @@ public class PlayForm extends FormBase implements ActionListener {
         
         getContentPane().add(buttons[0], 0);
         getContentPane().add(buttons[1], 0);
-
-        requestFocusInWindow();
     }
 
     @Override
     public void paint(Graphics g) {
         // TODO: backgrownd
-
+    	if(!PcapManager.getInstance().isReadyRun()) return;
         if (!isPaused) {
             for (PacketBlock item : model.getCurrentMinos()) {
                 paintMino(g, item,
@@ -363,6 +366,7 @@ public class PlayForm extends FormBase implements ActionListener {
 
 	@Override
 	public void update() {
+		if(!PcapManager.getInstance().isReadyRun()) return;
 		// 入力されたキーを配列へ
 		List<Integer> keys = new ArrayList<Integer>();
 		while (keyQueue.size() != 0 && keyPressedTime.size() != 0) {
