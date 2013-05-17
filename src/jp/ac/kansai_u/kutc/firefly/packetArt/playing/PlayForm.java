@@ -48,9 +48,11 @@ public class PlayForm extends FormBase implements ActionListener {
     PacketHolder packetHolder = new PacketHolder();//メモリを考え、一個しか使いません。
     PlaySE playSE = PlaySE.getInstance();
 
-    JButton[] buttons = new JButton[3];
-
+    JButton[] buttons = new JButton[2];
+    
     private boolean isInitialized = false;
+	private boolean isStart = false;
+	private int strX = 600, strY = 300;
 
 
     /**
@@ -83,9 +85,8 @@ public class PlayForm extends FormBase implements ActionListener {
         model = new PacketrisModel<PacketBlock>(new PacketBlock());
         falldownLimit = 100;
 
-        buttons[0] = new JButton("再開");
-        buttons[1] = new JButton("最初から");
-        buttons[2] = new JButton("タイトルへ戻る");
+        buttons[0] = new JButton("最初から");
+        buttons[1] = new JButton("タイトルへ戻る");
 
         addComponentListener(new ComponentListener() {
             public void componentShown(ComponentEvent e) {
@@ -104,7 +105,7 @@ public class PlayForm extends FormBase implements ActionListener {
 
         // 各種ボタンの設定
         for (int i = 0; i < buttons.length; i++) {
-            buttons[i].setName(i == 0 ? "Restart" : i == 1 ? "Retry" : "Quit");
+            buttons[i].setName(i == 0 ? "Retry" : "Quit");
             buttons[i].setHorizontalAlignment(JButton.CENTER);
             buttons[i].setFont(new Font("IPAexゴシック", Font.PLAIN, 20));
             buttons[i].addActionListener(this);
@@ -113,7 +114,8 @@ public class PlayForm extends FormBase implements ActionListener {
 
     @Override
     public void initialize() {
-        requestFocusInWindow();
+//        requestFocusInWindow();
+    	isStart = false;
         if (!PcapManager.getInstance().isReadyRun()) {
             FormUtil.getInstance().changeForm("ReadDump");
             JOptionPane.showMessageDialog(null, "正常に開始することができませんでした。はじめにパケットをロードしてください。",
@@ -134,6 +136,7 @@ public class PlayForm extends FormBase implements ActionListener {
             generateNextBlockFromPacket();
 
         addKeyListener(this);
+        addMouseListener(this);
         minoSize = (int) (Math.min(getPreferredSize().width / model.column, getPreferredSize().height / model.row) * 0.9);
         topLeft = new Point(
                 (getSize().width - (minoSize * model.column)) / 2 + 75,
@@ -150,7 +153,7 @@ public class PlayForm extends FormBase implements ActionListener {
 
         for (int i = 0; i < buttons.length; i++) {
             buttons[i].setVisible(false);
-            buttons[i].setBounds(getPreferredSize().width / 3, (getPreferredSize().height / 4) * (i + 1),
+            buttons[i].setBounds(getPreferredSize().width / 3, (getPreferredSize().height / 4) * (i + 2),
                     getPreferredSize().width / 3, getPreferredSize().height / 10);
             if (buttons[i].getParent() == null)
                 getContentPane().add(buttons[i], 0);
@@ -160,8 +163,16 @@ public class PlayForm extends FormBase implements ActionListener {
 
     @Override
     public void paint(Graphics g) {
-        // TODO: backgrownd
         if (!PcapManager.getInstance().isReadyRun()) return;
+        if (!isStart){
+        	String str = new String("マウスクリックでゲーム開始");
+        	Font f = new Font("MONOSPACE", Font.PLAIN, 40);
+        	g.setFont(f);
+        	g.setColor(Color.darkGray);
+        	g.drawString(str, strX, strY);
+        	if(strX < -500) strX=600;
+        	return;
+        }
         if (!isPaused) {
             for (PacketBlock item : model.getCurrentMinos()) {
                 paintMino(g, item,
@@ -396,6 +407,10 @@ public class PlayForm extends FormBase implements ActionListener {
             }
             return;
         }
+        if (!isStart){
+        	strX -= 1;
+        	return;
+        }
         // 入力されたキーを配列へ
         List<Integer> keys = new ArrayList<Integer>();
         while (keyQueue.size() != 0 && keyPressedTime.size() != 0) {
@@ -513,9 +528,7 @@ public class PlayForm extends FormBase implements ActionListener {
         //int cols = 0:
         do {
             pkt = pcapManager.nextPacketFromQueue();
-            //TODO
-            //今はpktが来るまでぶん回しているが、空になった時点でchangeFormを呼び出しreadDumpFormへうつらせる。
-            //
+            
             if (pcapManager.isReadyRun() == false) {
                 FormUtil.getInstance().changeForm("ReadDump");
             }
@@ -638,7 +651,7 @@ public class PlayForm extends FormBase implements ActionListener {
         for (JButton item : buttons) {
             getContentPane().remove(item);
         }
-        //model = null;  //TODO 入れたらどうなんねん
+        //model = null;
         removeKeyListener(this);
     }
 
@@ -669,6 +682,7 @@ public class PlayForm extends FormBase implements ActionListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
+    	isStart = true;
     }
 
     @Override

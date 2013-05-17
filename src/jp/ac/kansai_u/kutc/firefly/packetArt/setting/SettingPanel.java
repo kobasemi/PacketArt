@@ -38,7 +38,6 @@ public class SettingPanel extends JPanel implements ActionListener{
 		setStatusPanel= new ConfigStatusMainPanel();
 		setStatusPanel.setBounds(ConfigInfo.WMARGIN, 140, 540, 450);
 		
-//		TODO buttonにボーダーラインがあるかも？
 		btnSetting = new JButton(new ImageIcon(this.getClass().getResource(ConfigInfo.IMGPATH + "btnSetting.png")));
 		btnCancel  = new JButton(new ImageIcon(this.getClass().getResource(ConfigInfo.IMGPATH + "btnCancel.png")));
 		btnSetting.setContentAreaFilled(false);
@@ -67,7 +66,6 @@ public class SettingPanel extends JPanel implements ActionListener{
 			PlaySE.getInstance().play(PlaySE.SELECT);
 			setStatusPanel.setStatus();  // 各項目の状態をセットする
 			PlaySE.getInstance().setVolumeAll((double)ConfigStatus.getVolSound());  //SEのボリュームを設定
-			ConfigStatus.printStatus();//TODO 後々削除
 		} else {
 			PlaySE.getInstance().play(PlaySE.CANCEL);
 		}
