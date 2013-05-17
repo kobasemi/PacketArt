@@ -29,6 +29,7 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.setting.SettingForm;
  * @author hiyoko
  */
 public class TitleForm extends FormBase implements FocusListener {
+	private boolean flag;
 	private PanelManager panelManager;
 	private Thread titlemusic; // by Lisa
 	
@@ -48,12 +49,10 @@ public class TitleForm extends FormBase implements FocusListener {
 			panelManager = new PanelManager(getSize().width, getSize().height);
 		}
 		
+		flag = true;
 		panelManager.addToParent(getContentPane());
 		enableButton();
 		enableKeyFocus();
-		
-		// TODO: オプションから戻ってきた時にボタンがフォーカスを失うのをなんとかする
-		// panelManager.getButton(0).requestFocusInWindow();
 		
 		// 遷移先のフォームが存在しなければ生成する
 		if(!FormUtil.getInstance().getForm().isExistForm("Playing")) {
@@ -75,7 +74,19 @@ public class TitleForm extends FormBase implements FocusListener {
 	public void paint(Graphics g) {}
 	
 	@Override
-	public void update() {}
+	public void update() {
+		if (flag) {
+			int count = 1000; // 1000回リクエストしても駄目なら諦める
+			while (true) {
+				if (panelManager.getButton(0).isFocusOwner() || count < 0) {
+					flag = false;
+					break;
+				}
+				panelManager.getButton(0).requestFocusInWindow();
+				count--;
+			}
+		}
+	}
 	
 	public void mouseClicked(MouseEvent e) {
 		Object obj = e.getSource();
