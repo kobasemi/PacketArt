@@ -464,9 +464,10 @@ public class PlayForm extends FormBase implements ActionListener {
                 while (model.fallDown()) {
                 }
                 model.fixMino();
-                model.deleteLines();
+                //model.deleteLines();
                 falldownTimer = 0;
                 generateNextBlockFromPacket();
+                return;
             }
         }
 
@@ -493,6 +494,7 @@ public class PlayForm extends FormBase implements ActionListener {
                 }
             }
 
+            model.deleteLines();
 
             //if (model.deleteLines() > 0) {
             //	PlaySE.getInstance().play(PlaySE.DEMISE);
