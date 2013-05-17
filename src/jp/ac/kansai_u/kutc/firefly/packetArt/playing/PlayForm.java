@@ -48,6 +48,8 @@ public class PlayForm extends FormBase implements ActionListener {
 
     JButton[] buttons = new JButton[3];
 
+	private boolean isInitialized = false;
+
 
     /**
      * キー入力に対する敏感さを取得します。この値は0から60までの値をとります。
@@ -77,10 +79,11 @@ public class PlayForm extends FormBase implements ActionListener {
 
     public PlayForm() {
         model = new PacketrisModel<PacketBlock>(new PacketBlock());
-        falldownLimit = 30;
-        buttons[0] = new JButton(new ImageIcon(this.getClass().getResource("/resource/image/play/btnRestart.png")));
-        buttons[1] = new JButton(new ImageIcon(this.getClass().getResource("/resource/image/play/btnRetry.png")));
-        buttons[2] = new JButton(new ImageIcon(this.getClass().getResource("/resource/image/play/btnQuit.png")));
+        falldownLimit = 100;
+
+        buttons[0] = new JButton("再開");
+        buttons[1] = new JButton("最初から");
+        buttons[2] = new JButton("タイトルへ戻る");
 
         addComponentListener(new ComponentListener() {
             public void componentShown(ComponentEvent e) {
@@ -100,8 +103,8 @@ public class PlayForm extends FormBase implements ActionListener {
         // 各種ボタンの設定
         for (int i = 0; i < buttons.length; i++) {
             buttons[i].setName(i == 0 ? "Restart" : i == 1 ? "Retry" : "Quit");
-            buttons[i].setVisible(false);
-            buttons[i].setOpaque(false);
+            buttons[i].setHorizontalAlignment(JButton.CENTER);
+            buttons[i].setFont(new Font("IPAexゴシック", Font.PLAIN, 20));
             buttons[i].addActionListener(this);
         }
     }
@@ -144,14 +147,14 @@ public class PlayForm extends FormBase implements ActionListener {
         fallDownCountLimit = 3;
         fallDownCount = 0;
 
-        for (int i = 0; i < buttons.length; i++) {
-            buttons[i].setBounds(getPreferredSize().width / 3, (getPreferredSize().height / 4) * (i + 1),
-                    getPreferredSize().width / 3, getPreferredSize().height / 10);
-            buttons[i].setVisible(false);
-
-            if (buttons[i].getParent() == null)
+        for(int i=0; i<buttons.length; i++){
+        	buttons[i].setVisible(false);
+        	buttons[i].setBounds(getPreferredSize().width / 3, (getPreferredSize().height / 4) * (i + 1), 
+        			getPreferredSize().width / 3, getPreferredSize().height / 10);
+        	if (buttons[i].getParent() == null)
                 getContentPane().add(buttons[i], 0);
         }
+        isInitialized = true;
     }
 
     @Override
@@ -377,7 +380,17 @@ public class PlayForm extends FormBase implements ActionListener {
 
     @Override
     public void update() {
-        if (!PcapManager.getInstance().isReadyRun()) return;
+        if (!PcapManager.getInstance().isReadyRun()){
+        	if(!PcapManager.getInstance().isReadyRun()){
+				if(isInitialized){
+    				JOptionPane.showMessageDialog(null, "全パケットを消費しました",
+    					"おめでとうございます", JOptionPane.INFORMATION_MESSAGE);
+    				FormUtil.getInstance().changeForm("Title");
+    			}
+    			return;
+    		}
+        	return;
+        }
         // 入力されたキーを配列へ
         List<Integer> keys = new ArrayList<Integer>();
         while (keyQueue.size() != 0 && keyPressedTime.size() != 0) {
