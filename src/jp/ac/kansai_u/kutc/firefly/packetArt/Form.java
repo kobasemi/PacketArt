@@ -46,7 +46,7 @@ public class Form extends JFrame {
         card = new CardLayout();
         getContentPane().setLayout(card);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setTitle("Packet Art");
+        setTitle("PACKETRiS");
         
         // 左上のアイコンを変更
         URL iconurl = this.getClass().getResource("/resource/image/icon.png");
