@@ -168,7 +168,7 @@ public class PlayForm extends FormBase implements ActionListener {
         	String str = new String("マウスクリックでゲーム開始");
         	Font f = new Font("MONOSPACE", Font.PLAIN, 40);
         	g.setFont(f);
-        	g.setColor(Color.darkGray);
+        	g.setColor(Color.gray);
         	g.drawString(str, strX, strY);
         	if(strX < -500) strX=600;
         	return;
