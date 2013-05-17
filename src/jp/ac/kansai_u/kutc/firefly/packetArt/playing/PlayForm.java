@@ -5,14 +5,17 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
 import jp.ac.kansai_u.kutc.firefly.packetArt.PlaySE;
 import jp.ac.kansai_u.kutc.firefly.packetArt.music.MusicPlayer;
 import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
+import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigInfo;
 import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigStatus;
 import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketHolder;
 import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketUtil;
 import jp.ac.kansai_u.kutc.firefly.packetArt.setting.MinoType;
+import jp.ac.kansai_u.kutc.firefly.packetArt.title.TitleForm;
 
 import org.jnetpcap.packet.PcapPacket;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -41,6 +44,9 @@ public class PlayForm extends FormBase implements ActionListener {
     boolean isPaused = false;
     boolean isGranded = false;
 
+    int formWidth = 600;
+    int formHeight = 800;
+    
     Point topLeft;
     Point scoreTopLeft;
     Point nextTopLeft;
@@ -48,7 +54,7 @@ public class PlayForm extends FormBase implements ActionListener {
     PacketHolder packetHolder = new PacketHolder();//メモリを考え、一個しか使いません。
     PlaySE playSE = PlaySE.getInstance();
 
-    JButton[] buttons = new JButton[2];
+    JButton[] buttons = new JButton[3];
 
 
     /**
@@ -79,9 +85,10 @@ public class PlayForm extends FormBase implements ActionListener {
 
     public PlayForm() {
         model = new PacketrisModel<PacketBlock>(new PacketBlock());
-        falldownLimit = 60;
-        buttons[0] = new JButton("リトライ");
-        buttons[1] = new JButton("タイトルに戻る");
+        falldownLimit = 30;
+        buttons[0] = new JButton(new ImageIcon("./resource/image/play/btnRestart.png"));
+        buttons[1] = new JButton(new ImageIcon("./resource/image/play/btnRetry.png"));
+        buttons[2] = new JButton(new ImageIcon("./resource/image/play/btnQuit.png"));
 
       addComponentListener(new ComponentListener() {
 	      public void componentShown  (ComponentEvent e) { requestFocusInWindow(); }
@@ -90,16 +97,14 @@ public class PlayForm extends FormBase implements ActionListener {
 	      public void componentHidden (ComponentEvent e) {}
       });
       
-        // 各種ボタンの設定
+      // 各種ボタンの設定
         for (int i = 0; i < buttons.length; i++) {
-        	buttons[i].setName(i == 0 ? "Retry" : "Quit");
-        	buttons[i].addActionListener(this);
+        	buttons[i].setName(i == 0 ? "Restart" : i == 1 ? "Retry" : "Quit");
+        	buttons[i].setBounds(formWidth / 2, (formHeight / 2) + (i * buttons[i].getIcon().getIconHeight() + (i * 50)),
+        			buttons[i].getIcon().getIconWidth(), buttons[i].getIcon().getIconHeight());
         	buttons[i].setVisible(false);
-//        	buttons[i].setLocation(getSize().width / 3, (getSize().height / 4) * (i + 2));
-//        	buttons[i].setSize(getSize().width / 3, getSize().height / 10);
-            // TODO getSize()できないみたい．どこかに定数宣言して，とってくるほうが．
-        	buttons[i].setLocation(300, 400 + i * 100);
-            buttons[i].setSize(100, 100);
+        	buttons[i].setOpaque(false);
+        	buttons[i].addActionListener(this);
         }
     }
 
@@ -108,6 +113,8 @@ public class PlayForm extends FormBase implements ActionListener {
         requestFocusInWindow();
     	if(!PcapManager.getInstance().isReadyRun()){
     		FormUtil.getInstance().changeForm("ReadDump");
+    		JOptionPane.showMessageDialog(null, "はじめにパケットをロードしてください",
+    				"パケットぬるぽ", JOptionPane.ERROR_MESSAGE);
     		return;
     	}
     	keyQueue = new LinkedList<Integer>();
@@ -136,10 +143,8 @@ public class PlayForm extends FormBase implements ActionListener {
         for (int i = 0; i < buttons.length; i++) {
             buttons[i].setVisible(false);
             buttons[i].setEnabled(false);
+            getContentPane().add(buttons[i], 0);
         }
-        
-        getContentPane().add(buttons[0], 0);
-        getContentPane().add(buttons[1], 0);
     }
 
     @Override
@@ -168,7 +173,6 @@ public class PlayForm extends FormBase implements ActionListener {
         g.drawString("Score : " + model.getElaseLines() * 10, scoreTopLeft.x + 20, scoreTopLeft.y + 20);
 
         // PAINT NEXT AREA
-//        TODO ネクストミノがしっかり表示されない
         g.setColor(Color.getHSBColor(0, 0, 0.8f));
         g.drawRoundRect(nextTopLeft.x, nextTopLeft.y,
                 (int) (getSize().width * 0.25), (int) (getSize().height * 0.3), 5, 5);
@@ -388,7 +392,7 @@ public class PlayForm extends FormBase implements ActionListener {
 			if (MusicPlayer.getSequencer() != null) {
 					((MusicPlayer) musicplayer).stopMusic();
 			}
-			for (int i = 0; i < buttons.length; i++) {
+			for (int i = 1; i < buttons.length; i++) {  // Restart以外のボタンの可視化，有効化
 				buttons[i].setVisible(true);
 				buttons[i].setEnabled(true);
 			}
@@ -400,7 +404,13 @@ public class PlayForm extends FormBase implements ActionListener {
 		if (keys.contains(KeyEvent.VK_ESCAPE)) {
 			isPaused = !isPaused;
 			System.out.print(isPaused);
+			for (int i = 0; i < buttons.length; i++) {
+				buttons[i].setVisible(isPaused);
+				buttons[i].setEnabled(isPaused);
+			}
+			getContentPane().validate();
 		}
+		
 		if (isPaused)
 			return;
         // キー入力の処理
@@ -471,9 +481,9 @@ public class PlayForm extends FormBase implements ActionListener {
             //TODO
             //今はpktが来るまでぶん回しているが、空になった時点でchangeFormを呼び出しreadDumpFormへうつらせる。
             //
-            //if (pcapManager.isReadyRun() == false) {
-            //FormUtil.getInstance().changeForm("ReadDump");
-            //}
+            if (pcapManager.isReadyRun() == false) {
+            	FormUtil.getInstance().changeForm("ReadDump");
+            }
         } while (pkt == null);
         packetHolder.setPacket(pkt);//パケットが到着。パケットをパケホルダーへ。
         if (packetHolder.hasIp4()) {//このパケットはIPv4を含む
@@ -560,32 +570,24 @@ public class PlayForm extends FormBase implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         // JButtonの挙動を定義
         if (e.getSource() instanceof JButton) {
+        	isPaused = false;
             // ボタンの不可視と無効
         	for (int i = 0; i < buttons.length; i++) {
                 buttons[i].setVisible(false);
                 buttons[i].setEnabled(false);
             }
-//            getContentPane().validate();
-
-            if (((JButton) (e.getSource())).getName() == "Retry") {
-                // ボタンがRetryならボタンを消して再初期化
-                initialize();
-            } else {
-            	// TODO 上のスレッドも消したし，これも消したらえんちゃうの．
-//                new Thread() {
-//                    @Override
-//                    public void run() {
-//                        try {
-//                            Thread.sleep(100);
-//                        } catch (InterruptedException e1) {
-//                            e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//                        }
-//                        FormUtil.getInstance().changeForm("Title");
-//                    }
-//                }.run();
-            	FormUtil.getInstance().changeForm("Title");
-            }
-
+        	
+        	if(((JButton)(e.getSource())).getName() == "Restart")
+        		;
+        	else{
+        		if (MusicPlayer.getSequencer() != null)  //音楽再生中ならストップ
+					((MusicPlayer) musicplayer).stopMusic();
+					
+        		if (((JButton) (e.getSource())).getName() == "Retry")  //Retryなら再初期化
+        			initialize();
+        		else if (((JButton) (e.getSource())).getName() == "Quit") //Quitなら，フォームチェンジ
+        			FormUtil.getInstance().changeForm("Title");
+        	}
         }
     }
     

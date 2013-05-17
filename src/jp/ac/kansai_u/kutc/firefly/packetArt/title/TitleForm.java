@@ -38,7 +38,7 @@ public class TitleForm extends FormBase implements FocusListener {
 	public TitleForm() {
 		PcapManager.getInstance().start();
 		PlaySE.getInstance().play(PlaySE.OPEN);
-		new ConfigStatus();
+//		new ConfigStatus();
 	}
 	
 	@Override
