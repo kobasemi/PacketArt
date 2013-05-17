@@ -167,7 +167,6 @@ public class ConfigStatus {
 	 */
 	public static int getKeyRightSpin(){ return rightSpin; }
 
-//	TODO 最終的には消すけど，今は変数確認用に使う
 	/**
 	 * 各項目の設定を標準出力する
 	 */

@@ -163,7 +163,6 @@ public class PlayForm extends FormBase implements ActionListener {
 
     @Override
     public void paint(Graphics g) {
-        // TODO: backgrownd
         if (!PcapManager.getInstance().isReadyRun()) return;
         if (!isStart){
         	String str = new String("マウスクリックでゲーム開始");
@@ -527,9 +526,7 @@ public class PlayForm extends FormBase implements ActionListener {
         //int cols = 0:
         do {
             pkt = pcapManager.nextPacketFromQueue();
-            //TODO
-            //今はpktが来るまでぶん回しているが、空になった時点でchangeFormを呼び出しreadDumpFormへうつらせる。
-            //
+            
             if (pcapManager.isReadyRun() == false) {
                 FormUtil.getInstance().changeForm("ReadDump");
             }

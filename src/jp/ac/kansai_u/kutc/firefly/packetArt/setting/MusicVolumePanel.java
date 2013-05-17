@@ -103,8 +103,6 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 		
 		if(testBGM != null)
 			((MidiPlayer) testBGM).stopMidi();
-//		TODO nullいるの？どうなの．
-		//		testBGM = null;
 		testBGM = new MidiPlayer(getStatus(), ConfigInfo.BGMTESTSOUND);
 		testBGM.start();
 	}
