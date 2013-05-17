@@ -76,7 +76,9 @@ public class ReadDumpForm extends FormBase{
     public void keyTyped(KeyEvent e) {
     }
     public void onFormChanged(){
-        (PcapManager.getInstance()).removeHandler(readDumpPanel.linerPanel);
+        synchronized(this) {
+            (PcapManager.getInstance()).removeHandler(readDumpPanel.linerPanel);
+        }
     }
     public void onClose(){
     }

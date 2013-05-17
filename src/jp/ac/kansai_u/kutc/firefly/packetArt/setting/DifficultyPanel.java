@@ -23,18 +23,18 @@ public class DifficultyPanel extends JPanel{
 		setLayout(new FlowLayout(FlowLayout.LEFT, ConfigInfo.HGAP, 0));
 		setOpaque(false);
 		
-		JLabel labelDifficulty = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "labelDifficulty.png"));
-		btnDifficultyStatic  = new JRadioButton(new ImageIcon(ConfigInfo.BTNPATH + "btnStatic.png"));
-	    btnDifficultyDynamic = new JRadioButton(new ImageIcon(ConfigInfo.BTNPATH + "btnDynamic.png"));
-	    btnDifficultyAuto    = new JRadioButton(new ImageIcon(ConfigInfo.BTNPATH + "btnAuto.png"));
+		JLabel labelDifficulty = new JLabel(new ImageIcon(this.getClass().getResource(ConfigInfo.IMGPATH + "labelDifficulty.png")));
+		btnDifficultyStatic  = new JRadioButton(new ImageIcon(this.getClass().getResource(ConfigInfo.BTNPATH + "btnStatic.png")));
+	    btnDifficultyDynamic = new JRadioButton(new ImageIcon(this.getClass().getResource(ConfigInfo.BTNPATH + "btnDynamic.png")));
+	    btnDifficultyAuto    = new JRadioButton(new ImageIcon(this.getClass().getResource(ConfigInfo.BTNPATH + "btnAuto.png")));
 	    
 	    ButtonGroup difficultyGroup = new ButtonGroup();
 	    difficultyGroup.add(btnDifficultyStatic); difficultyGroup.add(btnDifficultyDynamic);
 	    difficultyGroup.add(btnDifficultyAuto);
 	    
-	    btnDifficultyStatic .setSelectedIcon(new ImageIcon(ConfigInfo.BTNPATH + "btnStaticSelected.png"));
-	    btnDifficultyDynamic.setSelectedIcon(new ImageIcon(ConfigInfo.BTNPATH + "btnDynamicSelected.png"));
-	    btnDifficultyAuto   .setSelectedIcon(new ImageIcon(ConfigInfo.BTNPATH + "btnAutoSelected.png"));
+	    btnDifficultyStatic .setSelectedIcon(new ImageIcon(this.getClass().getResource(ConfigInfo.BTNPATH + "btnStaticSelected.png")));
+	    btnDifficultyDynamic.setSelectedIcon(new ImageIcon(this.getClass().getResource(ConfigInfo.BTNPATH + "btnDynamicSelected.png")));
+	    btnDifficultyAuto   .setSelectedIcon(new ImageIcon(this.getClass().getResource(ConfigInfo.BTNPATH + "btnAutoSelected.png")));
 	    
 	    btnDifficultyStatic .setContentAreaFilled(false);
 	    btnDifficultyDynamic.setContentAreaFilled(false);

@@ -2,7 +2,6 @@ package jp.ac.kansai_u.kutc.firefly.packetArt.title;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -40,7 +39,7 @@ class MainPanel extends JPanel {
 		BufferedImage image = null;
 		
 		try {
-			image = ImageIO.read(new File(IMAGE_PATH + FILE_NAME_CURSOR));
+			image = ImageIO.read(this.getClass().getResourceAsStream("/" + IMAGE_PATH + FILE_NAME_CURSOR));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -71,7 +70,7 @@ class MainPanel extends JPanel {
 		
 		try {
 			for (int i = 0; i < image.length; i++) {
-				image[i] = ImageIO.read(new File(IMAGE_PATH + FILE_NAME[i]));
+				image[i] = ImageIO.read(this.getClass().getResourceAsStream("/" + IMAGE_PATH + FILE_NAME[i]));
 				label[i] = new JLabel(new ImageIcon(image[i]));
 				label[i].setSize(image[i].getWidth(), image[i].getHeight());
 			}

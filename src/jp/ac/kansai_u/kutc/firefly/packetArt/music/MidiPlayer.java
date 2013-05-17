@@ -1,7 +1,5 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.music;
 
-import java.io.File;
-
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiSystem;
@@ -9,6 +7,8 @@ import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
+
+import jp.ac.kansai_u.kutc.firefly.packetArt.ResourceLoader;
 
 /**
  * 外部Midiファイルを再生するクラスです。
@@ -23,7 +23,7 @@ public class MidiPlayer extends Thread {
 	
 	public MidiPlayer(int _coefficient, String _filename) {
 		coefficient = _coefficient;
-		filename = _filename;
+		filename = "/resource/se/" + _filename;
 		killps = false;
 	}
 
@@ -67,7 +67,8 @@ public class MidiPlayer extends Thread {
 	 * @throws Exception
 	 */
 	public static Sequence getSequenceData(String filename) throws Exception {
-		Sequence sequence0 = MidiSystem.getSequence(new File("resource/se/" + filename));
+		ResourceLoader rl = new ResourceLoader();
+		Sequence sequence0 = MidiSystem.getSequence(rl.loadResource(filename));
 		float division = sequence0.getDivisionType();
 		int resolution = sequence0.getResolution();
 
@@ -83,7 +84,8 @@ public class MidiPlayer extends Thread {
 	 * @throws Exception
 	 */
 	public static Sequence setNewSequence(int coefficient, String filename) throws Exception {
-		Sequence sequence0 = MidiSystem.getSequence(new File("resource/se/" + filename));
+		ResourceLoader rl = new ResourceLoader();
+		Sequence sequence0 = MidiSystem.getSequence(rl.loadResource(filename));
 		Sequence sequence = getSequenceData(filename);
 		Track track1 = sequence.createTrack();
 

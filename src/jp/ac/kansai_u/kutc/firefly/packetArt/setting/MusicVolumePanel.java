@@ -30,20 +30,20 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 		setLayout(new FlowLayout(FlowLayout.LEFT, ConfigInfo.HGAP, 0));
 		setOpaque(false);
 		
-		JLabel labelVolume = new JLabel(new ImageIcon(ConfigInfo.IMGPATH + "labelBGM.png"));
-		btnVolumeMute = new JRadioButton(new ImageIcon(ConfigInfo.VOLPATH + "volMute.png"));
-		btnVolumeLow  = new JRadioButton(new ImageIcon(ConfigInfo.VOLPATH + "volLow.png"));
-		btnVolumeMed  = new JRadioButton(new ImageIcon(ConfigInfo.VOLPATH + "volMedium.png"));
-		btnVolumeHigh = new JRadioButton(new ImageIcon(ConfigInfo.VOLPATH + "volHigh.png"));
+		JLabel labelVolume = new JLabel(new ImageIcon(this.getClass().getResource(ConfigInfo.IMGPATH + "labelBGM.png")));
+		btnVolumeMute = new JRadioButton(new ImageIcon(this.getClass().getResource(ConfigInfo.VOLPATH + "volMute.png")));
+		btnVolumeLow  = new JRadioButton(new ImageIcon(this.getClass().getResource(ConfigInfo.VOLPATH + "volLow.png")));
+		btnVolumeMed  = new JRadioButton(new ImageIcon(this.getClass().getResource(ConfigInfo.VOLPATH + "volMedium.png")));
+		btnVolumeHigh = new JRadioButton(new ImageIcon(this.getClass().getResource(ConfigInfo.VOLPATH + "volHigh.png")));
 		
 		ButtonGroup volumeGroup = new ButtonGroup();
 		volumeGroup.add(btnVolumeMute); volumeGroup.add(btnVolumeLow );
 		volumeGroup.add(btnVolumeMed ); volumeGroup.add(btnVolumeHigh);
 		
-		btnVolumeMute.setSelectedIcon(new ImageIcon(ConfigInfo.VOLPATH + "volMuteSelected.png"));
-		btnVolumeLow .setSelectedIcon(new ImageIcon(ConfigInfo.VOLPATH + "volLowSelected.png"));
-		btnVolumeMed .setSelectedIcon(new ImageIcon(ConfigInfo.VOLPATH + "volMediumSelected.png"));
-		btnVolumeHigh.setSelectedIcon(new ImageIcon(ConfigInfo.VOLPATH + "volHighSelected.png"));
+		btnVolumeMute.setSelectedIcon(new ImageIcon(this.getClass().getResource(ConfigInfo.VOLPATH + "volMuteSelected.png")));
+		btnVolumeLow .setSelectedIcon(new ImageIcon(this.getClass().getResource(ConfigInfo.VOLPATH + "volLowSelected.png")));
+		btnVolumeMed .setSelectedIcon(new ImageIcon(this.getClass().getResource(ConfigInfo.VOLPATH + "volMediumSelected.png")));
+		btnVolumeHigh.setSelectedIcon(new ImageIcon(this.getClass().getResource(ConfigInfo.VOLPATH + "volHighSelected.png")));
 		
 		btnVolumeMute.setContentAreaFilled(false);
 		btnVolumeLow .setContentAreaFilled(false);
@@ -103,8 +103,6 @@ public class MusicVolumePanel extends JPanel implements ActionListener{
 		
 		if(testBGM != null)
 			((MidiPlayer) testBGM).stopMidi();
-//		TODO nullいるの？どうなの．
-		//		testBGM = null;
 		testBGM = new MidiPlayer(getStatus(), ConfigInfo.BGMTESTSOUND);
 		testBGM.start();
 	}

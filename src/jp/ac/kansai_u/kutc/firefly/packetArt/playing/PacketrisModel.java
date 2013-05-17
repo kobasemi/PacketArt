@@ -203,9 +203,9 @@ public class PacketrisModel<T extends Block> {
      */
     public boolean fallDown() {
         if (isGranded && !canAllocate(parentLocation.add(0, 1))) {
-            fixMino();
-            isGranded = false;
             return false;
+        } else if (canAllocate(parentLocation.add(0, 1))) {
+            isGranded = false;
         }
         if (canAllocate(parentLocation.add(0, 1))) {
             parentLocation = parentLocation.add(0, 1);

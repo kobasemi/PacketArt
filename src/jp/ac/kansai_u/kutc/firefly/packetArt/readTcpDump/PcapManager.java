@@ -45,7 +45,7 @@ public final class PcapManager extends Thread{
      * @return シングルトンのインスタンスを返します。
     */
     public static  synchronized PcapManager getInstance(){
-        System.out.println("PcapManager.getInstance()");
+//        System.out.println("PcapManager.getInstance()");
         return instance;
     }
 

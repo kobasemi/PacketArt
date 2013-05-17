@@ -14,9 +14,9 @@ public class CodeMaker {
 	 */
 	public static String[] setCheerfulCode(int length){
 		String[] cheerfulcode = new String[length];
-		String[] codesource = {"C", "C", "C", "C", "F", "F", "G7", "G7",
-							   "C", "C", "C", "C", "F", "F", "G7", "G7",
-							   "C", "C", "C", "C", "F", "F", "G7", "G7"};
+		String[] codesource = {"C", "G7", "C", "G7", "G7", "G7", "C", "C",
+							   "F", "F", "C", "C", "G7", "G7", "C", "C",
+							   "F", "F", "C", "C", "G7", "G7", "C", "C"};
 		int saya = 0;
 		// 指定の曲の長さに対応させる。
 		for(int i = 0; i < length; i++){

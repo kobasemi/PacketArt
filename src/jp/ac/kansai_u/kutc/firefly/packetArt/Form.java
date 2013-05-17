@@ -1,9 +1,19 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 /**
  * 利用者に表示される画面です。
@@ -37,6 +47,12 @@ public class Form extends JFrame {
         getContentPane().setLayout(card);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Packet Art");
+        
+        // 左上のアイコンを変更
+        URL iconurl = this.getClass().getResource("/resource/image/icon.png");
+        Image icon = new ImageIcon(iconurl).getImage();
+        setIconImage(icon);
+        
         getContentPane().setPreferredSize(new Dimension(600, 800));
         pack();
         //setLocationByPlatform(true);

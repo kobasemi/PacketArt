@@ -38,7 +38,7 @@ public class PcapPanel extends JPanel{
     private QueueFlow queueFlow;
     public final static int X = 600;
     public final static int Y = 200;
-
+    
     public PcapPanel() {
         super();
         setLayout(new GridLayout(5,1));
@@ -62,6 +62,11 @@ public class PcapPanel extends JPanel{
 }
 
 class FileFlow extends JPanel {
+
+    JButton button1;
+    JButton button2;
+    JButton button3;
+    
     public FileFlow() {
         super();
         final FileFlow parent = this;
@@ -75,7 +80,7 @@ class FileFlow extends JPanel {
         if (f != null) {
             textField.setText(f.getAbsolutePath());
         }
-        JButton button1 = new JButton("選択..");
+        button1 = new JButton("選択..");
         final JFileChooser fileChooser = new JFileChooser();
             FileFilter filter = 
                 new FileNameExtensionFilter("PcapDumpファイル",
@@ -93,10 +98,12 @@ class FileFlow extends JPanel {
                             textField.setText(file.getAbsolutePath());
                         }
                     }
+                    button2.setVisible(true);
                 }
             }
         );
-        final JButton button2 = new JButton("開く");
+        button2 = new JButton("開く");
+        button2.setVisible(false);
         button2.addActionListener(
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -129,7 +136,7 @@ class FileFlow extends JPanel {
             }
         );
 
-        final JButton button3 = new JButton("止める");
+        button3 = new JButton("止める");
         button3.addActionListener(
             new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -166,7 +173,7 @@ class FileFlow extends JPanel {
         add(textField);
         add(button1);
         add(button2);
-        add(button3);
+//        add(button3);
         //TODO: OK画像,running画像
     }
 }
