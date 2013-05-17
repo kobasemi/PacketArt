@@ -1,34 +1,23 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.playing;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
+import jp.ac.kansai_u.kutc.firefly.packetArt.Location;
 import jp.ac.kansai_u.kutc.firefly.packetArt.PlaySE;
 import jp.ac.kansai_u.kutc.firefly.packetArt.music.MusicPlayer;
 import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
 import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigStatus;
 import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketHolder;
 import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketUtil;
-
 import org.jnetpcap.packet.PcapPacket;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * パケットを利用したテトリスを表示、処理するフォームです。
@@ -50,6 +39,7 @@ public class PlayForm extends FormBase implements ActionListener {
     Thread musicplayer; // ゲームBGM用のスレッドを用意。
     boolean isPaused = false;
     boolean isGranded = false;
+    Location ghost;
 
     Point topLeft;
     Point scoreTopLeft;
@@ -60,7 +50,7 @@ public class PlayForm extends FormBase implements ActionListener {
 
     JButton[] buttons = new JButton[3];
 
-	private boolean isInitialized = false;
+    private boolean isInitialized = false;
 
 
     /**
@@ -142,7 +132,7 @@ public class PlayForm extends FormBase implements ActionListener {
         // CurrentとNextを生成(ネクネク以上が必要なら、これを繰り返し呼ぶ)
         for (int i = 0; i < 20; i++)
             generateNextBlockFromPacket();
-        
+
         addKeyListener(this);
         minoSize = (int) (Math.min(getPreferredSize().width / model.column, getPreferredSize().height / model.row) * 0.9);
         topLeft = new Point(
@@ -158,11 +148,11 @@ public class PlayForm extends FormBase implements ActionListener {
         fallDownCountLimit = 3;
         fallDownCount = 0;
 
-        for(int i=0; i<buttons.length; i++){
-        	buttons[i].setVisible(false);
-        	buttons[i].setBounds(getPreferredSize().width / 3, (getPreferredSize().height / 4) * (i + 1), 
-        			getPreferredSize().width / 3, getPreferredSize().height / 10);
-        	if (buttons[i].getParent() == null)
+        for (int i = 0; i < buttons.length; i++) {
+            buttons[i].setVisible(false);
+            buttons[i].setBounds(getPreferredSize().width / 3, (getPreferredSize().height / 4) * (i + 1),
+                    getPreferredSize().width / 3, getPreferredSize().height / 10);
+            if (buttons[i].getParent() == null)
                 getContentPane().add(buttons[i], 0);
         }
         isInitialized = true;
@@ -178,6 +168,14 @@ public class PlayForm extends FormBase implements ActionListener {
                         topLeft.x + ((model.parentLocation.getX() + item.location.getX()) * minoSize),
                         topLeft.y + ((model.parentLocation.getY() + item.location.getY()) * minoSize));
             }
+            // ゴースト描画
+            for (PacketBlock item : model.getCurrentMinos()) {
+                g.drawRect(
+                        topLeft.x + (ghost.getX() + item.location.getX()) * minoSize,
+                        topLeft.y + (ghost.getY() + item.location.getY()) * minoSize,
+                        minoSize - 2, minoSize - 2);
+            }
+
             for (ArrayList<PacketBlock> column : model.getBoard()) {
                 for (PacketBlock item : column) {
                     paintMino(g, item,
@@ -185,6 +183,8 @@ public class PlayForm extends FormBase implements ActionListener {
                             topLeft.y + item.location.getY() * minoSize);
                 }
             }
+
+
         }
 
         // PAINT SCORE AREA
@@ -199,11 +199,6 @@ public class PlayForm extends FormBase implements ActionListener {
                 (int) (getSize().width * 0.25), (int) (getSize().height * 0.3), 5, 5);
         g.drawString("NEXT:", nextTopLeft.x + 20, nextTopLeft.y + 20);
         for (PacketBlock item : model.getNextMinos()) {
-//        	 TODO 
-//        	各ミノの表示位置がバラバラになって統一性がない
-//        	それは，各ミノの原点座標の位置が統一されていないからかと思われる
-//        	つまり，それを統一すれば，いいのであろうけど，僕は触りたくないので，暇な人どうぞ
-//        	あと，ネクストミノに表示されてるときの色と実際に落ちてくるときの色が違う．気に入らん．
             paintMino(g, item,
                     nextTopLeft.x + 60 + item.location.getX() * minoSize,
                     nextTopLeft.y + 60 + item.location.getY() * minoSize);
@@ -235,10 +230,9 @@ public class PlayForm extends FormBase implements ActionListener {
         g.fillRoundRect(topLeft.x, topLeft.y + minoSize * 3, model.column * minoSize, 5, 2, 2);
     }
 
-    //    TODO 処理分けね？長すぎわろろーん
     void paintMino(Graphics g, PacketBlock block, int x, int y) {
         /*
-		  static Color 	getHSBColor(float h, float s, float b)
+          static Color 	getHSBColor(float h, float s, float b)
           HSB カラーモデルに指定された値に基づいて Color オブジェクトを生成します。
 		 */
         float pos, saturation, brightness;
@@ -391,16 +385,16 @@ public class PlayForm extends FormBase implements ActionListener {
 
     @Override
     public void update() {
-        if (!PcapManager.getInstance().isReadyRun()){
-        	if(!PcapManager.getInstance().isReadyRun()){
-				if(isInitialized){
-    				JOptionPane.showMessageDialog(null, "全パケットを消費しました",
-    					"おめでとうございます", JOptionPane.INFORMATION_MESSAGE);
-    				FormUtil.getInstance().changeForm("Title");
-    			}
-    			return;
-    		}
-        	return;
+        if (!PcapManager.getInstance().isReadyRun()) {
+            if (!PcapManager.getInstance().isReadyRun()) {
+                if (isInitialized) {
+                    JOptionPane.showMessageDialog(null, "全パケットを消費しました",
+                            "おめでとうございます", JOptionPane.INFORMATION_MESSAGE);
+                    FormUtil.getInstance().changeForm("Title");
+                }
+                return;
+            }
+            return;
         }
         // 入力されたキーを配列へ
         List<Integer> keys = new ArrayList<Integer>();
@@ -474,6 +468,11 @@ public class PlayForm extends FormBase implements ActionListener {
                 falldownTimer = 0;
                 generateNextBlockFromPacket();
             }
+        }
+
+        ghost = model.parentLocation;
+        while (model.canAllocate(ghost.add(0, 1))) {
+            ghost = ghost.add(0, 1);
         }
 
         // もし指定のタイミングになったらfalldown
