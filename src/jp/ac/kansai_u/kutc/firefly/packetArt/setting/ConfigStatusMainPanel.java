@@ -37,7 +37,7 @@ public class ConfigStatusMainPanel extends JPanel{
 		add(panelMelody);
 		add(panelMusicVolume);
 		add(panelSoundVolume);
-		add(panelDifficulty);
+//		add(panelDifficulty);
 		add(panelKeyBind);
 	}
 	
