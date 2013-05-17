@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
 import javax.swing.KeyStroke;
@@ -75,15 +76,25 @@ public class TitleForm extends FormBase implements FocusListener {
 	
 	@Override
 	public void update() {
+		// この画面に遷移した時にボタンにフォーカスを取得させることを試みる
 		if (flag) {
 			int count = 1000; // 1000回リクエストしても駄目なら諦める
+			
 			while (true) {
 				if (panelManager.getButton(0).isFocusOwner() || count < 0) {
 					flag = false;
 					break;
 				}
+				
 				panelManager.getButton(0).requestFocusInWindow();
 				count--;
+				System.out.println("Focus Reauest Loop : " + (1000 - count));
+				
+				try {
+					TimeUnit.MILLISECONDS.sleep(10);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
