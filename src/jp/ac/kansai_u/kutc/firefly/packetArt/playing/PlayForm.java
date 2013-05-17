@@ -1,5 +1,24 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.playing;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
 import jp.ac.kansai_u.kutc.firefly.packetArt.PlaySE;
@@ -8,15 +27,8 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
 import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigStatus;
 import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketHolder;
 import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketUtil;
-import org.jnetpcap.packet.PcapPacket;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import org.jnetpcap.packet.PcapPacket;
 
 /**
  * パケットを利用したテトリスを表示、処理するフォームです。
@@ -130,8 +142,7 @@ public class PlayForm extends FormBase implements ActionListener {
         // CurrentとNextを生成(ネクネク以上が必要なら、これを繰り返し呼ぶ)
         for (int i = 0; i < 20; i++)
             generateNextBlockFromPacket();
-
-        model.popNextQueue();
+        
         addKeyListener(this);
         minoSize = (int) (Math.min(getPreferredSize().width / model.column, getPreferredSize().height / model.row) * 0.9);
         topLeft = new Point(
