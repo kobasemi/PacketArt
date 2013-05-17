@@ -117,6 +117,12 @@ public class PlayForm extends FormBase implements ActionListener {
     				"パケットぬるぽ", JOptionPane.ERROR_MESSAGE);
     		return;
     	}
+    	if(PcapManager.getInstance().getQueueLeft() < 15000){
+    		FormUtil.getInstance().changeForm("ReadDump");
+    		JOptionPane.showMessageDialog(null, "パケットを最低でも15000個ロードしてください",
+    				"パケット不足", JOptionPane.ERROR_MESSAGE);
+    		return;
+    	}
     	keyQueue = new LinkedList<Integer>();
         keyPressedTime = new HashMap<Integer, Long>();
         model.initialize();
@@ -124,6 +130,7 @@ public class PlayForm extends FormBase implements ActionListener {
         for(int i = 0; i < 10; i++)
         	generateNextBlockFromPacket();
         
+        model.popNextQueue();
         model.popNextQueue();
         addKeyListener(this);
         minoSize = (int) (Math.min(getPreferredSize().width / model.column, getPreferredSize().height / model.row) * 0.9);
@@ -292,7 +299,7 @@ public class PlayForm extends FormBase implements ActionListener {
 			g.fillOval(x + 5, y + 5, minoSize / 10, minoSize / 10); // ハイライト
 			int posX = 9;
 			int posY = 19;
-			if (ConfigStatus.isViewLog()) {//もしログフラグが立っていたら
+			if (ConfigStatus.isViewLog() && pkt != null) {//もしログフラグが立っていたら
 				Graphics2D g2 = (Graphics2D)g;
 				Font font = new Font("MONOSCAPE", Font.BOLD, 16);
 				g2.setFont(font);
@@ -550,7 +557,7 @@ public class PlayForm extends FormBase implements ActionListener {
     	if(model.nextQueue.size() > 10)
     		model.popNextQueue();
     	
-    	ArrayList<PacketBlock> mino = model.getCurrentMinos();
+    	ArrayList<PacketBlock> mino = model.getNextMinos();
         for (int i = 0; i < mino.size(); i++) {
             if (i == 0)
                 presentPacket(mino.get(i), pkt);
@@ -609,7 +616,7 @@ public class PlayForm extends FormBase implements ActionListener {
         int key = e.getKeyCode();
         long time = tick;
 
-        System.out.println("input key:" + key);
+//        System.out.println("input key:" + key);
 
         if (!keyPressedTime.containsKey(key)) {
             keyPressedTime.put(key, time);
