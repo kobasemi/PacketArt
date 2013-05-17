@@ -20,7 +20,7 @@ public class ConfigStatus {
 	 * コンストラクタ
 	 */
 	public ConfigStatus(){
-		viewLog    = false;
+		viewLog    = true;
 		mino       = MinoType.values()[ConfigInfo.MINO4];
 		melody     = true;
 		volMusic   = ConfigInfo.VOLBGMMEDIUM;

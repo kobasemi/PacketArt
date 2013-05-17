@@ -403,6 +403,7 @@ public class PlayForm extends FormBase implements ActionListener {
                     JOptionPane.showMessageDialog(null, "全パケットを消費しました",
                             "おめでとうございます", JOptionPane.INFORMATION_MESSAGE);
                     FormUtil.getInstance().changeForm("Title");
+                    isInitialized = false;
                 }
                 return;
             }
