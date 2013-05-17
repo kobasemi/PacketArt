@@ -1,27 +1,35 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.playing;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormBase;
 import jp.ac.kansai_u.kutc.firefly.packetArt.FormUtil;
 import jp.ac.kansai_u.kutc.firefly.packetArt.PlaySE;
 import jp.ac.kansai_u.kutc.firefly.packetArt.music.MusicPlayer;
 import jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump.PcapManager;
-import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigInfo;
 import jp.ac.kansai_u.kutc.firefly.packetArt.setting.ConfigStatus;
 import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketHolder;
 import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketUtil;
-import jp.ac.kansai_u.kutc.firefly.packetArt.setting.MinoType;
-import jp.ac.kansai_u.kutc.firefly.packetArt.title.TitleForm;
 
 import org.jnetpcap.packet.PcapPacket;
-
-import javax.swing.*;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * パケットを利用したテトリスを表示、処理するフォームです。
@@ -86,9 +94,9 @@ public class PlayForm extends FormBase implements ActionListener {
     public PlayForm() {
         model = new PacketrisModel<PacketBlock>(new PacketBlock());
         falldownLimit = 30;
-        buttons[0] = new JButton(new ImageIcon("./resource/image/play/btnRestart.png"));
-        buttons[1] = new JButton(new ImageIcon("./resource/image/play/btnRetry.png"));
-        buttons[2] = new JButton(new ImageIcon("./resource/image/play/btnQuit.png"));
+        buttons[0] = new JButton(new ImageIcon(this.getClass().getResource("/resource/image/play/btnRestart.png")));
+        buttons[1] = new JButton(new ImageIcon(this.getClass().getResource("/resource/image/play/btnRetry.png")));
+        buttons[2] = new JButton(new ImageIcon(this.getClass().getResource("/resource/image/play/btnQuit.png")));
 
       addComponentListener(new ComponentListener() {
 	      public void componentShown  (ComponentEvent e) { requestFocusInWindow(); }
@@ -117,9 +125,9 @@ public class PlayForm extends FormBase implements ActionListener {
     				"パケットぬるぽ", JOptionPane.ERROR_MESSAGE);
     		return;
     	}
-    	if(PcapManager.getInstance().getQueueLeft() < 15000){
+    	if(PcapManager.getInstance().getQueueLeft() < 1000){
     		FormUtil.getInstance().changeForm("ReadDump");
-    		JOptionPane.showMessageDialog(null, "パケットを最低でも15000個ロードしてください",
+    		JOptionPane.showMessageDialog(null, "パケットを最低でも1000個ロードしてください",
     				"パケット不足", JOptionPane.ERROR_MESSAGE);
     		return;
     	}
@@ -127,11 +135,9 @@ public class PlayForm extends FormBase implements ActionListener {
         keyPressedTime = new HashMap<Integer, Long>();
         model.initialize();
         // CurrentとNextを生成(ネクネク以上が必要なら、これを繰り返し呼ぶ)
-        for(int i = 0; i < 10; i++)
+        for(int i = 0; i < 20; i++)
         	generateNextBlockFromPacket();
         
-        model.popNextQueue();
-        model.popNextQueue();
         addKeyListener(this);
         minoSize = (int) (Math.min(getPreferredSize().width / model.column, getPreferredSize().height / model.row) * 0.9);
         topLeft = new Point(
