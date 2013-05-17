@@ -399,6 +399,7 @@ public class PlayForm extends FormBase implements ActionListener {
         if (!PcapManager.getInstance().isReadyRun()) {
             if (!PcapManager.getInstance().isReadyRun()) {
                 if (isInitialized) {
+                	
                     JOptionPane.showMessageDialog(null, "全パケットを消費しました",
                             "おめでとうございます", JOptionPane.INFORMATION_MESSAGE);
                     FormUtil.getInstance().changeForm("Title");
@@ -431,7 +432,7 @@ public class PlayForm extends FormBase implements ActionListener {
             if (MusicPlayer.getSequencer() != null) {
                 ((MusicPlayer) musicplayer).stopMusic();
             }
-            for (int i = 1; i < buttons.length; i++) {  // Restart以外のボタンの可視化，有効化
+            for (int i = 0; i < buttons.length; i++) {  // Restart以外のボタンの可視化，有効化
                 buttons[i].setVisible(true);
                 buttons[i].setEnabled(true);
             }
