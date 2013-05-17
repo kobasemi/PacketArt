@@ -57,6 +57,7 @@ class ButtonPanel extends JPanel {
 	
 	// カードパネルを生成する
 	private JPanel createCardPanel(final int width, final int height, JButton[] button) {
+		int buttonIndex = 0;
 		int index = 0;
 		int interval = 0;
 		int margin = 0;
@@ -69,6 +70,7 @@ class ButtonPanel extends JPanel {
 			margin = interval;
 			break;
 		case SECOND_NUM:
+			buttonIndex = FIRST_NUM;
 			index = FIRST_NUM;
 			JLabel labelMessage = createLabel();
 			
@@ -82,7 +84,7 @@ class ButtonPanel extends JPanel {
 		
 		for (int i = 0; i < button.length; i++) {
 			button[i] = new JButton();
-			configureButton(i, button[i], image[i]);
+			configureButton(i + buttonIndex, button[i], image[i]);
 			
 			if (i == 0) {
 					button[i].setLocation((width - image[i].getWidth()) / 2, margin);

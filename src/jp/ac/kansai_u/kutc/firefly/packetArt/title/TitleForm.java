@@ -163,8 +163,6 @@ public class TitleForm extends FormBase implements FocusListener {
     
     @Override
     public void onFormChanged() {
-    	disableButton();
-    	
     	// フォームチェンジ時にはタイトルBGMを止める。 by Lisa
 		 ((MidiPlayer) titlemusic).stopMidi();
     }
@@ -174,17 +172,19 @@ public class TitleForm extends FormBase implements FocusListener {
     
     // ボタンをクリックするか、ボタン上でエンターキーを押下した時の動作
     private void buttonPressed(JButton source) {
-		
 		switch (panelManager.getButtonIndex(source)) {
 		case 0: // Start
+			disableButton();
 			PlaySE.getInstance().play(PlaySE.SELECT);
 	    	FormUtil.getInstance().changeForm("Playing");
 			break;
 		case 1: // Load
+			disableButton();
 			PlaySE.getInstance().play(PlaySE.SELECT);
 	    	FormUtil.getInstance().changeForm("ReadDump");
 			break;
 		case 2: // Option
+			disableButton();
 			PlaySE.getInstance().play(PlaySE.SELECT);
 	    	FormUtil.getInstance().changeForm("Option");
 			break;
@@ -194,13 +194,13 @@ public class TitleForm extends FormBase implements FocusListener {
 			panelManager.getButton(4).requestFocusInWindow();
 			break;
 		case 4: // Exit - Yes
+			disableButton();
 			PlaySE.getInstance().play(PlaySE.CANCEL);
 			PcapManager.getInstance().kill();
 			PcapManager.getInstance().close();
 			try {
 				Thread.sleep(450);
 			} catch (InterruptedException e) {
-				// TODO 自動生成された catch ブロック
 				e.printStackTrace();
 			}
 			System.exit(0);
@@ -215,6 +215,7 @@ public class TitleForm extends FormBase implements FocusListener {
     
     // ボタンを無効化する
     private void disableButton() {
+    	System.out.println("Disable Button in Title");
 		for (JButton button : panelManager.getButtonArray()) {
 			button.setEnabled(false);
     		button.removeKeyListener(this);
@@ -225,6 +226,7 @@ public class TitleForm extends FormBase implements FocusListener {
     
     // ボタンを有効化する
     private void enableButton() {
+    	System.out.println("Enable Button in Title");
 		for (JButton button : panelManager.getButtonArray()) {
 			button.setEnabled(true);
     		button.addKeyListener(this);
