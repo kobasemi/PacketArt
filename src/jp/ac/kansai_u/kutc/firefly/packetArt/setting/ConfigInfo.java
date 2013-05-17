@@ -22,7 +22,7 @@ public class ConfigInfo {
 	
 	// KeyCode Array in KeyBind: Default, Gamer and vim
 	final static int DEFAULTKEYCODE[] =
-		new int[]{KeyEvent.VK_LEFT, KeyEvent.VK_UP, KeyEvent.VK_RIGHT, KeyEvent.VK_DOWN, KeyEvent.VK_SPACE, KeyEvent.VK_ALT};
+		new int[]{KeyEvent.VK_LEFT, KeyEvent.VK_UP, KeyEvent.VK_RIGHT, KeyEvent.VK_DOWN, KeyEvent.VK_SPACE, KeyEvent.VK_Z};
 	final static int GAMERKEYCODE[] =
 		new int[]{KeyEvent.VK_A, KeyEvent.VK_W, KeyEvent.VK_D, KeyEvent.VK_S, KeyEvent.VK_J, KeyEvent.VK_K};
 	final static int VIMKEYCODE[] =

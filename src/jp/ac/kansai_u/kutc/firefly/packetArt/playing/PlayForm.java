@@ -53,7 +53,8 @@ public class PlayForm extends FormBase implements ActionListener {
     private boolean isInitialized = false;
 	private boolean isStart = false;
 	private int strX = 600, strY = 300;
-
+	
+	int minimumPacketSize = 1000;
 
     /**
      * キー入力に対する敏感さを取得します。この値は0から60までの値をとります。
@@ -122,10 +123,10 @@ public class PlayForm extends FormBase implements ActionListener {
                     "正常に開始することができません", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        if (PcapManager.getInstance().getQueueLeft() < 1000) {
+        if (PcapManager.getInstance().getQueueLeft() < minimumPacketSize) {
             FormUtil.getInstance().changeForm("ReadDump");
-            JOptionPane.showMessageDialog(null, "パケットを最低でも1000個ロードしてください",
-                    "パケット不足", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "パケットを最低でも" + minimumPacketSize + 
+            		"個ロードしてください", "パケット不足", JOptionPane.ERROR_MESSAGE);
             return;
         }
         keyQueue = new LinkedList<Integer>();
@@ -170,7 +171,10 @@ public class PlayForm extends FormBase implements ActionListener {
         	g.setFont(f);
         	g.setColor(Color.gray);
         	g.drawString(str, strX, strY);
-        	if(strX < -500) strX=600;
+        	if(strX < -500){
+        		strY=(int) (Math.random()*400 + 200);
+        		strX=600;
+        	}
         	return;
         }
         if (!isPaused) {
@@ -399,11 +403,12 @@ public class PlayForm extends FormBase implements ActionListener {
         if (!PcapManager.getInstance().isReadyRun()) {
             if (!PcapManager.getInstance().isReadyRun()) {
                 if (isInitialized) {
-                	
+                	if (MusicPlayer.getSequencer() != null)  //音楽再生中ならストップ
+                        ((MusicPlayer) musicplayer).stopMusic();
+                	isInitialized = false;
                     JOptionPane.showMessageDialog(null, "全パケットを消費しました",
                             "おめでとうございます", JOptionPane.INFORMATION_MESSAGE);
                     FormUtil.getInstance().changeForm("Title");
-                    isInitialized = false;
                 }
                 return;
             }
@@ -626,18 +631,13 @@ public class PlayForm extends FormBase implements ActionListener {
                 buttons[i].setVisible(false);
                 buttons[i].setEnabled(false);
             }
-
-            if (((JButton) (e.getSource())).getName() == "Restart")
-                ;
-            else {
-                if (MusicPlayer.getSequencer() != null)  //音楽再生中ならストップ
+            if (MusicPlayer.getSequencer() != null)  //音楽再生中ならストップ
                     ((MusicPlayer) musicplayer).stopMusic();
 
-                if (((JButton) (e.getSource())).getName() == "Retry")  //Retryなら再初期化
-                    initialize();
-                else if (((JButton) (e.getSource())).getName() == "Quit") //Quitなら，フォームチェンジ
-                    FormUtil.getInstance().changeForm("Title");
-            }
+            if (((JButton) (e.getSource())).getName() == "Retry")  //Retryなら再初期化
+                initialize();
+            else if (((JButton) (e.getSource())).getName() == "Quit") //Quitなら，フォームチェンジ
+                FormUtil.getInstance().changeForm("Title");
         }
     }
 
