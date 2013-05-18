@@ -1,7 +1,7 @@
 概要
 =========
 パケットアートのためのプログラムです。
-詳しくは，http://www.firefly.kutc.kansai-u.ac.jp/~743291/packetart/
+詳しくは，http://www.firefly.kutc.kansai-u.ac.jp/~k743291/packetart/
 
 
 依存ライブラリ
