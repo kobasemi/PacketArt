@@ -13,6 +13,12 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketUtil;
 import jp.ac.kansai_u.kutc.firefly.packetArt.util.DrawUtil;
 import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketHolder;
 
+/**
+ 本戦でどこかのチームが使ったと思う、パケットから棒を作成するクラスです。
+ こっちの方が極座標使ってるから性能は上だぜ。なんとこの線、折れるぜ。
+ なんとこの線、C言語でいう連結リストと同じ形式で、連結できるぜ。
+ 色も長さも邦楽も決められるぜ。
+*/
 public class PacketBar extends PacketHolder {
 
     public Point endPoint;//PacketBarの終点が代入される

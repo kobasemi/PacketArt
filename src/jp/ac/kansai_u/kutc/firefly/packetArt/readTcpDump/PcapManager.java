@@ -1,6 +1,6 @@
 package jp.ac.kansai_u.kutc.firefly.packetArt.readTcpDump;
 
-import java.io.File;//File.existsに必要
+import java.io.File;
 import java.util.List;
 
 import org.jnetpcap.Pcap;//こいつが心臓
@@ -13,21 +13,29 @@ import org.jnetpcap.PcapBpfProgram;
 import org.jnetpcap.PcapClosedException;
 
 
-// いまさらだけど、これ使っても良かったかも http://d.hatena.ne.jp/backpaper0/20111111/1321012118
-
 /**
- * 完全にパケットアート用。<br>
- * シングルトンになったので、<br>
- * close時にnullを代入してください。<br>
+ * PcapManagerはjnetpcapを使い、パケットの読み込みと<br>
+ * パケットの保持、パケットハンドラの搭載、<br>
+ * ハンドラを含む他のクラスパケットの受け渡し、<br>
+ * BPFフィルタの保持、デバイス情報の取得と提供を<br>
+ * シングルトンのスレッドで提供しますので、初めにstart()関数を呼び出してください。<br>
+ * このスレッドは一定の保持キューサイズを超えた時点で<br>
+ * 最も古いパケットから順に捨てていきます。<br>
+ * すべての完全にリアルタイムなパケットを使用する場合は<br>
+ * パケットハンドラを使用してください。<br>
+ * その他の場合はnextPacketFromQueue()関数が確実です。<br>
+ *
  * jnetpcapの仕様に沿って、このクラスは一切例外を投げません。<br>
  *
  * 使い方:<br>
  * <br>
- * //他のクラスで<br>
+ * //他のクラスで、handlerをTcpHandler.javaをimplementしたものとすると<br>
  * PcapManager pm = PcapManager.getInstance();<br>
+ * pm.start();
+ * pm.openFile(....);pm.openDev(...);
  * pm.addHandler(handler);<br>
+ * ~~~~~~この間のTCPパケットは自動的に到着次第ハンドラに渡される
  * pm.removeHandler(handler);<br>
- * //handler はhandlersの中の~Handlerをimplementsしたものです。<br>
  * <br>
  * その他アクセスできる変数はget??という<br>
  * メソッドを参照してください。<br>
@@ -40,37 +48,36 @@ import org.jnetpcap.PcapClosedException;
  * @author sya-ke
 */
 public final class PcapManager extends Thread{
-    private static final PcapManager instance = new PcapManager();
+    private static final PcapManager instance = new PcapManager();//シングルトン！
     /**
      * @return シングルトンのインスタンスを返します。
     */
     public static  synchronized PcapManager getInstance(){
-//        System.out.println("PcapManager.getInstance()");
         return instance;
     }
 
-    private volatile boolean killThis;
-    private PcapPacket pkt;
-    private static StringBuilder errBuf;//libpcapからのエラーをここに
-    private File pcapFile;
-    private PcapIf pcapDev;
-    private boolean fromFile;
-    private boolean fromDev;
-    private boolean readyRun;
-    private boolean filtered;
+    private volatile boolean killThis;//スレッド停止フラグ（安全にスレッドを停止する）
+    private PcapPacket pkt;//一個しか保持しません。run関数でしか使ってません。
+    private static StringBuilder errBuf;//libpcapからのエラーをここに格納します。
+    private File pcapFile;//オープンしているファイルの情報を保持します。
+    private PcapIf pcapDev;//オープンしているデバイスの情報を保持します。
+    private boolean fromFile;//ファイルからオープン？
+    private boolean fromDev;//デバイスからオープン？
+    private boolean readyRun;//パケットが読み込める？＞
+    private boolean filtered;//BPFフィルタが有効になっている？
     private Pcap pcap;//jnetpcapの核。
-    private PcapBpfProgram bpfFilter;
-    private String bpfText;
+    private PcapBpfProgram bpfFilter;//BPFフィルタへのポインタ
+    private String bpfText;//BPFフィルタのテキスト
 
-    private HandlerHolder handlerHolder;
-    private PacketQueue packetQueue;
+    private HandlerHolder handlerHolder;//別ファイルを参照のこと
+    private PacketQueue packetQueue;//別ファイルを参照のこと
 
     public final int TIMEOUT_OPENDEV = 10;//デバイスからの読み込みで、0.01秒のパケット待ちを許す。
     public final int QUEUE_SIZE = 30000;//30000パケットの保持をする。MAXでだいたい3MBくらいメモリを食う。
     public final int PUSH_SIZE = 1;//1パケットのロードにつき1パケットの確保をする。0.01秒ごとにパケットを間引く意味もある。
 
-    private Object openPcapLock = new Object();
-    private Object filterLock = new Object();
+    private Object openPcapLock = new Object();//ロック用オブジェクト
+    private Object filterLock = new Object();//ロック用オブジェクト
 
     /**
      * 空のコンストラクタです。このコンストラクタを<br>
@@ -114,24 +121,23 @@ public final class PcapManager extends Thread{
     */
     public void run() {
         debugMe("pm.run");
-        //debugMe("PcapManager.run() start");
-        killThis = false;
-        while (killThis == false) {
-            while (readyRun == false || pcap == null){
+        killThis = false;//pcapManager.start()でスレッドを開始させる
+        while (!isKilled()) {//pcapManager.kill()呼び出されたらループを抜ける
+            while (readyRun == false || pcap == null){//読むパケットが無い。
                 if (isKilled()) {
-                    return;
+                    return;//ループを抜けます。
                     //スレッドの実行を停止します。
                 }
             }
-            pkt = null;
+            pkt = null;//前回のパケットのポインタを破棄します。
             pkt = nextPacket();//0.01秒間パケットが来なかったらタイムアウトします。
             //パケットが来なかった場合、pktにはnullが入ります。
-            savePacket(pkt);
+            savePacket(pkt);//nullは捨てられます。
             //キューは古いパケットを捨てていくので、この関数を空撃ちしてパケットを間引けます。
             if (pkt != null ) {
                 handlerHolder.inspect(pkt);//そのパケットをプロトコルハンドラへ渡し、ハンドラを実行します。
             } else {
-                if (fromFile) {
+                if (fromFile) {//デバイスからの場合、到着パケットは未知。
                     handlerHolder.onNoPacketsLeft();
                     //パケットが無くなった場合、OnNoPacketsLeftハンドラを呼び出します。
                     //おそらく0.01秒ごとに呼び出されます。
@@ -179,7 +185,7 @@ public final class PcapManager extends Thread{
         synchronized(openPcapLock) {
             if (pcap != null) {
                 System.out.println("You've already opened pcap! closing previous one..");
-                close();
+                close();//前回のファイルのロックを切ります。
             }
             pcap = Pcap.openOffline(fname,errBuf);
             if (pcap == null) {
@@ -194,7 +200,7 @@ public final class PcapManager extends Thread{
             readyRun = true;
             handlerHolder.onPcapOpened();
             debugMe("PcapManager.openFile(" + fname +") Done");
-            setBPFfilter(bpfText);
+            setBPFfilter(bpfText);//再度フィルタをセットします。
             return true;
         }
     }
@@ -361,11 +367,11 @@ public final class PcapManager extends Thread{
      * @return パケット、というかlibpcapの保持するパケットへのポインタを返します。エラーならnull。
     */
     public synchronized PcapPacket nextPacket() {
-        PcapPacket packet = new PcapPacket(JMemory.POINTER);
+        PcapPacket packet = new PcapPacket(JMemory.POINTER);//ポインタを作成
         try {
             if ( pcap != null ) {
                 synchronized(pcap) {
-                    if ( pcap.nextEx(packet) == Pcap.NEXT_EX_OK ) {
+                    if ( pcap.nextEx(packet) == Pcap.NEXT_EX_OK ) {//ポインタにアロケート
                         return packet;
                     } else {
                         return null;
@@ -374,9 +380,10 @@ public final class PcapManager extends Thread{
             } else {
                 return null;
             }
-        } catch (PcapClosedException e) {
+        } catch (PcapClosedException e) {//呼ばれない時もあるが、問題ない。
             System.out.println("GIVE ME MORE PCAP FILES!!!!");
             handlerHolder.onPcapClosed();
+            //一応呼び出してはいるが、OnNoPacketsLeftハンドラがあるから不要かも
             //ここでユーザにファイルのパケットをすべて消費したことを告げる。
             pcap = null;
             readyRun = false;
@@ -395,7 +402,7 @@ public final class PcapManager extends Thread{
     public synchronized PcapPacket nextPacketCopied() {
         PcapPacket pkt = nextPacket();
         if (pkt != null) {
-            return new PcapPacket(pkt);
+            return new PcapPacket(pkt);//newすることで参照を断ち切る
         }
         return null;
     }
@@ -417,7 +424,7 @@ public final class PcapManager extends Thread{
         }
 
         synchronized(pcap) {
-            DLT = pcap.datalink();
+            DLT = pcap.datalink();//オープンしているPcapからDLTを取得できる
             howManyEnqeued = pcap.dispatch(howManyPackets, DLT, packetQueue, dummy);
         }
         if (howManyEnqeued < 0) {
@@ -434,9 +441,9 @@ public final class PcapManager extends Thread{
      * @return 成功ならtrueを返します。
     */
     public void savePacket(PcapPacket pkt) {
-    	if (pkt == null) {
-    		return;
-    	}
+        if (pkt == null) {
+            return;
+        }
         packetQueue.add(new PcapPacket(pkt));
     }
 
@@ -486,13 +493,13 @@ public final class PcapManager extends Thread{
      * @return PcapPacketを返します。非常食が空の場合はnullが返ります。
     */
     public PcapPacket nextPacketFromQueue() {
-    	PcapPacket pkt = packetQueue.poll();
-    	if (pkt == null && fromFile == true) {
-    		readyRun = false;
-    		//デバイスからロードの場合、まだ来る可能性がある。
-    		//よって、その時は常にreadyRun = true。
-    	}
-    	return pkt;
+        PcapPacket pkt = packetQueue.poll();
+        if (pkt == null && fromFile == true) {
+            readyRun = false;
+            //デバイスからロードの場合、まだ来る可能性がある。
+            //よって、その時は常にreadyRun = true。
+        }
+        return pkt;
     }
 
     /*
@@ -521,7 +528,7 @@ public final class PcapManager extends Thread{
             return false;
         }
         synchronized(filterLock) {
-            if (isFiltered()) {
+            if (isFiltered()) {//依然に設定したフィルタは削除
                 Pcap.freecode(bpfFilter);
                 filtered = false;
                 System.out.println("PcapManager.setBPFfilter(), removing previous BPF !");
