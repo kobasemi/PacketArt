@@ -7,6 +7,7 @@ import java.lang.StringBuilder;
 import java.net.InetAddress;
 
 /**
+ * jnetpcapでパケットの様々な情報を取得するためのクラスです。
  *
  * @author sya-ke
 */

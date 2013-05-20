@@ -7,5 +7,5 @@ import org.jnetpcap.protocol.network.Icmp;
  * @author sya-ke
 */
 public interface IcmpHandler{
-    public void handleIcmp(Icmp icmp);
+    public void handleIcmp(final Icmp icmp);
 }

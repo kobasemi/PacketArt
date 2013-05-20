@@ -7,5 +7,5 @@ import org.jnetpcap.protocol.tcpip.Udp;
  * @author sya-ke
 */
 public interface UdpHandler{
-    public void handleUdp(Udp udp);
+    public void handleUdp(final Udp udp);
 }

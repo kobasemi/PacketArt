@@ -25,20 +25,20 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.handlers.*;
 */
 public class HandlerHolder extends ProtocolHandlerBase {
 
-    private List<TcpHandler> tcpHandlers;
-    private List<UdpHandler> udpHandlers;
-    private List<Ip6Handler> ip6Handlers;
-    private List<Ip4Handler> ip4Handlers;
-    private List<PPPHandler> pppHandlers;
-    private List<L2TPHandler> l2tpHandlers;
-    private List<IcmpHandler> icmpHandlers;
-    private List<ArpHandler> arpHandlers;
-    private List<EthernetHandler> ethernetHandlers;
-    private List<PacketHandler> packetHandlers;
+    private final List<TcpHandler> tcpHandlers;
+    private final List<UdpHandler> udpHandlers;
+    private final List<Ip6Handler> ip6Handlers;
+    private final List<Ip4Handler> ip4Handlers;
+    private final List<PPPHandler> pppHandlers;
+    private final List<L2TPHandler> l2tpHandlers;
+    private final List<IcmpHandler> icmpHandlers;
+    private final List<ArpHandler> arpHandlers;
+    private final List<EthernetHandler> ethernetHandlers;
+    private final List<PacketHandler> packetHandlers;
 
-    private List<OnPcapClosedHandler> onPcapClosedHandlers;
-    private List<OnPcapOpenedHandler> onPcapOpenedHandlers;
-    private List<OnNoPacketsLeftHandler> onNoPacketsLeftHandlers;
+    private final List<OnPcapClosedHandler> onPcapClosedHandlers;
+    private final List<OnPcapOpenedHandler> onPcapOpenedHandlers;
+    private final List<OnNoPacketsLeftHandler> onNoPacketsLeftHandlers;
 
     /**
      * 全部空に初期化します。<br>
@@ -70,7 +70,7 @@ public class HandlerHolder extends ProtocolHandlerBase {
      * @param o なんらかのパケットハンドラを実装(implement)したオブジェクトです。
      * @return o がなんのパケットハンドラも実装していないオブジェクトだったならfalseを返します。
     */
-    public boolean classify(Object o) {
+    public boolean classify(final Object o) {
         boolean added = false;
         System.out.println("classifying protocolHandler: " + o.getClass().getName());
         synchronized(o){ 
@@ -151,7 +151,7 @@ public class HandlerHolder extends ProtocolHandlerBase {
      * @param t interfaceを実装したハンドラです。
      * @see  ProtocolHandlerBase#inspect(PcapPacket)
     */
-    public synchronized void addHandler(TcpHandler t) {
+    public synchronized void addHandler(final TcpHandler t) {
         tcpHandlers.add(t);
     }
     /**
@@ -161,7 +161,7 @@ public class HandlerHolder extends ProtocolHandlerBase {
      *
      * @param t interfaceを実装したハンドラです。
     */
-    public synchronized void addHandler(UdpHandler t) {
+    public synchronized void addHandler(final UdpHandler t) {
         udpHandlers.add(t);
     }
     /**
@@ -171,7 +171,7 @@ public class HandlerHolder extends ProtocolHandlerBase {
      *
      * @param t interfaceを実装したハンドラです。
     */
-    public  synchronized void addHandler(Ip6Handler t) {
+    public  synchronized void addHandler(final Ip6Handler t) {
         ip6Handlers.add(t);
     }
     /**
@@ -181,7 +181,7 @@ public class HandlerHolder extends ProtocolHandlerBase {
      *
      * @param t interfaceを実装したハンドラです。
     */
-    public synchronized void addHandler(Ip4Handler t) {
+    public synchronized void addHandler(final Ip4Handler t) {
         ip4Handlers.add(t);
     }
     /**
@@ -191,7 +191,7 @@ public class HandlerHolder extends ProtocolHandlerBase {
      *
      * @param t interfaceを実装したハンドラです。
     */
-    public  synchronized void addHandler(PPPHandler t) {
+    public  synchronized void addHandler(final PPPHandler t) {
         pppHandlers.add(t);
     }
     /**
@@ -201,7 +201,7 @@ public class HandlerHolder extends ProtocolHandlerBase {
      *
      * @param t interfaceを実装したハンドラです。
     */
-    public  synchronized void addHandler(L2TPHandler t) {
+    public  synchronized void addHandler(final L2TPHandler t) {
         l2tpHandlers.add(t);
     }
     /**
@@ -211,7 +211,7 @@ public class HandlerHolder extends ProtocolHandlerBase {
      *
      * @param t interfaceを実装したハンドラです。
     */
-    public  synchronized void addHandler(IcmpHandler t) {
+    public  synchronized void addHandler(final IcmpHandler t) {
         icmpHandlers.add(t);
     }
     /**
@@ -221,7 +221,7 @@ public class HandlerHolder extends ProtocolHandlerBase {
      *
      * @param t interfaceを実装したハンドラです。
     */
-    public  synchronized void addHandler(ArpHandler t) {
+    public  synchronized void addHandler(final ArpHandler t) {
         arpHandlers.add(t);
     }
     /**
@@ -231,7 +231,7 @@ public class HandlerHolder extends ProtocolHandlerBase {
      *
      * @param t interfaceを実装したハンドラです。
     */
-    public  synchronized void addHandler(EthernetHandler t) {
+    public  synchronized void addHandler(final EthernetHandler t) {
         ethernetHandlers.add(t);
     }
     /**
@@ -241,7 +241,7 @@ public class HandlerHolder extends ProtocolHandlerBase {
      *
      * @param t interfaceを実装したハンドラです。
     */
-    public  synchronized void addHandler(PacketHandler t) {
+    public  synchronized void addHandler(final PacketHandler t) {
         packetHandlers.add(t);
     }
     /**
@@ -251,7 +251,7 @@ public class HandlerHolder extends ProtocolHandlerBase {
      *
      * @param t interfaceを実装したハンドラです。
     */
-    public  synchronized void addHandler(OnPcapClosedHandler t) {
+    public  synchronized void addHandler(final OnPcapClosedHandler t) {
         onPcapClosedHandlers.add(t);
     }
     /**
@@ -261,7 +261,7 @@ public class HandlerHolder extends ProtocolHandlerBase {
      *
      * @param t interfaceを実装したハンドラです。
     */
-    public  synchronized void addHandler(OnPcapOpenedHandler t) {
+    public  synchronized void addHandler(final OnPcapOpenedHandler t) {
         onPcapOpenedHandlers.add(t);
     }
     /**
@@ -271,7 +271,7 @@ public class HandlerHolder extends ProtocolHandlerBase {
      *
      * @param t interfaceを実装したハンドラです。
     */
-    public  synchronized void addHandler(OnNoPacketsLeftHandler t) {
+    public  synchronized void addHandler(final OnNoPacketsLeftHandler t) {
         onNoPacketsLeftHandlers.add(t);
     }
 
@@ -282,7 +282,7 @@ public class HandlerHolder extends ProtocolHandlerBase {
      *
      * @param o 登録解除したいオブジェクトです。
     */
-    public boolean removeHandler(Object o) {
+    public boolean removeHandler(final Object o) {
         System.out.println("removing protocolHandler: " + o.getClass().getName());
         boolean removed = false;
         synchronized(this) {
@@ -343,62 +343,62 @@ public class HandlerHolder extends ProtocolHandlerBase {
     }
 
 //-----ProtocolHandlerBaseのメソッドをオーバーライドしたものです
-    public void handleTcp(Tcp tcp) {
-        for (TcpHandler h: tcpHandlers) {
+    public void handleTcp(final Tcp tcp) {
+        for (final TcpHandler h: tcpHandlers) {
             h.handleTcp(tcp);
         }
     }
 
-    public void handleUdp(Udp udp) {
-        for (UdpHandler h: udpHandlers) {
+    public void handleUdp(final Udp udp) {
+        for (final UdpHandler h: udpHandlers) {
             h.handleUdp(udp);
         }
     }
 
-    public void handleIp6(Ip6 ip6) {
-        for (Ip6Handler h: ip6Handlers) {
+    public void handleIp6(final Ip6 ip6) {
+        for (final Ip6Handler h: ip6Handlers) {
             h.handleIp6(ip6);
         }
     }
 
-    public void handleIp4(Ip4 ip4) {
-        for (Ip4Handler h: ip4Handlers) {
+    public void handleIp4(final Ip4 ip4) {
+        for (final Ip4Handler h: ip4Handlers) {
             h.handleIp4(ip4);
         }
     }
 
-    public void handlePPP(PPP ppp) {
-        for (PPPHandler h: pppHandlers) {
+    public void handlePPP(final PPP ppp) {
+        for (final PPPHandler h: pppHandlers) {
             h.handlePPP(ppp);
         }
     }
 
-    public void handleL2TP(L2TP lt2p) {
-        for (L2TPHandler h: l2tpHandlers) {
+    public void handleL2TP(final L2TP lt2p) {
+        for (final L2TPHandler h: l2tpHandlers) {
             h.handleL2TP(lt2p);
         }
     }
 
-    public void handleIcmp(Icmp icmp) {
-        for (IcmpHandler h: icmpHandlers) {
+    public void handleIcmp(final Icmp icmp) {
+        for (final IcmpHandler h: icmpHandlers) {
             h.handleIcmp(icmp);
         }
     }
 
-    public void handleArp(Arp arp) {
-        for (ArpHandler h: arpHandlers) {
+    public void handleArp(final Arp arp) {
+        for (final ArpHandler h: arpHandlers) {
             h.handleArp(arp);
         }
     }
 
-    public void handleEthernet(Ethernet ethernet) {
-        for (EthernetHandler h: ethernetHandlers) {
+    public void handleEthernet(final Ethernet ethernet) {
+        for (final EthernetHandler h: ethernetHandlers) {
             h.handleEthernet(ethernet);
         }
     }
 
-    public void handlePacket(PcapPacket packet) {
-        for (PacketHandler h: packetHandlers) {
+    public void handlePacket(final PcapPacket packet) {
+        for (final PacketHandler h: packetHandlers) {
             h.handlePacket(packet);
         }
     }
@@ -406,17 +406,17 @@ public class HandlerHolder extends ProtocolHandlerBase {
 
 //-----PcapManagerのスレッドからのみ呼ばれるので排他制御しない
     public void onPcapClosed() {
-        for (OnPcapClosedHandler h: onPcapClosedHandlers) {
+        for (final OnPcapClosedHandler h: onPcapClosedHandlers) {
             h.onPcapClosed();
         }
     }
     public void onPcapOpened() {
-        for (OnPcapOpenedHandler h: onPcapOpenedHandlers) {
+        for (final OnPcapOpenedHandler h: onPcapOpenedHandlers) {
             h.onPcapOpened();
         }
     }
     public void onNoPacketsLeft() {
-        for (OnNoPacketsLeftHandler h: onNoPacketsLeftHandlers) {
+        for (final OnNoPacketsLeftHandler h: onNoPacketsLeftHandlers) {
             h.onNoPacketsLeft();
         }
     }

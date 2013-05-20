@@ -32,8 +32,8 @@ public class DrawUtil {
      * @param len 棒の長さ。あんまり長すぎると困る。
      * @return 終点の座標をPointで。
     */
-    public static Point polarPointing(Point startPoint, int dir, int len) {
-        Point endPoint = startPoint.getLocation();
+    public static Point polarPointing(final Point startPoint, int dir, int len) {
+        final Point endPoint = startPoint.getLocation();
         double sinDir = Math.sin(Math.toRadians(dir));
         double cosDir = Math.cos(Math.toRadians(dir));
         Double dx = new Double(len * sinDir);
@@ -48,9 +48,9 @@ public class DrawUtil {
      *
      * @param point 変換したい座標
      * @param X 区画のx座標
-     * @param Y 区画のy座標 
+     * @param Y 区画のy座標
     */
-    public static void pointResolver(Point point,int X,int Y) {
+    public static void pointResolver(final Point point,int X,int Y) {
         double x = point.getX();
         double y = point.getY();
         if (x >= X)

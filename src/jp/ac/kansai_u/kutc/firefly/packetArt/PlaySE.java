@@ -24,10 +24,8 @@ import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import jp.ac.kansai_u.kutc.firefly.packetArt.util.LimitedRing;
-import jp.ac.kansai_u.kutc.firefly.packetArt.util.PrimitiveHolder;
-//import jp.ac.kansai_u.kutc.firefly.packetArt.util.LimitedQueue;
-
+import jp.ac.kansai_u.kutc.firefly.packetArt.util.LimitedRing;//Clip挿入用の回転キュー
+import jp.ac.kansai_u.kutc.firefly.packetArt.util.PrimitiveHolder;//byte[]を参照渡しするためのホルダ
 
 /**
  * SEをならすクラスです。
@@ -65,7 +63,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         return instance;
     }
 
-    //HashMap(key, filename)
+    //HashMap<SE名,SEファイルパス>
     private final HashMap<String, String> staticSE = new HashMap<String, String>();
 
     //固定のSEここから
@@ -102,7 +100,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
     //このクラスの肝です。
 
     /**
-     * 何もしません。
+     * 固定SE名と固定SEファイルをあらかじめハッシュマップに登録します。
     */
     private PlaySE() {
         super();
@@ -124,17 +122,18 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
      * 数秒の時間がかかります。
     */
     public synchronized void initialize() {
-        new Thread(new Runnable(){
-            public void run(){
-                for (final String key : staticSE.keySet()) {
-                    if (!containsKey(key)) {
-                        //openSE(key, new File(staticSE.get(key)));
-                        //resourceフォルダをjpフォルダと同じフォルダ（src）に入れた場合
-                        //上のopenSEをコメントアウトした後、以下で読み込みできるはず。
+        for (final String key : staticSE.keySet()) {
+            if (!containsKey(key)) {
+                new Thread(new Runnable(){
+                    public void run(){
+                        //openSE(key, new File(staticSE.get(key)));//こっちは未jar時
+
                         openSE(key, this.getClass().getResourceAsStream(staticSE.get(key)));
+                        //こっちはjar時
                     }
-                }
-            }}).start();
+                }).start();
+            }
+        }
     }
 
     /**
@@ -149,7 +148,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
      * @param file 音楽ファイルです。
      * @return 成功ならtrueを返します。失敗した場合、登録されません。
     */
-    public synchronized boolean openSE(String key,final File file) {
+    public synchronized boolean openSE(final String key,final File file) {
         InputStream is = null;
         byte[] data = null;//バイト列で保管
         try {
@@ -416,6 +415,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         }
     }
 
+    //ここ、publicにするとインライン展開されないから、JVM的にはprivateにすべきなんだろうなあ
     /**
      * <a href="http://www.javadocexamples.com/java_source/de/pxlab/pxl/sound/Controls.java.html">Controls</a>
      * 名前のとおりです。
@@ -438,6 +438,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         ctrl.setValue(pos);
     }
 
+    //ここ、publicにするとインライン展開されないから、JVM的にはprivateにすべきなんだろうなあ
     /**
      * <a href="http://www.javadocexamples.com/java_source/de/pxlab/pxl/sound/Controls.java.html">Controls</a>
      * Lineを継承した(Clipなど)何らかの音声用オブジェクトのボリュームを返します。<br>
@@ -463,6 +464,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         return (float)( ( ( current  - minimum) / (maximum - minimum) )* 100.0F);
     }
 
+    //ここ、publicにするとインライン展開されないから、JVM的にはprivateにすべきなんだろうなあ
     /**
      * <a href="http://www.javadocexamples.com/java_source/de/pxlab/pxl/sound/Controls.java.html">Controls</a>
      * Lineを継承した(Clipなど)何らかの音声用オブジェクトのボリュームを変更します。<br>
@@ -491,6 +493,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         ctrl.setValue(newValue);
     }
 
+    //ここ、publicにするとインライン展開されないから、JVM的にはprivateにすべきなんだろうなあ
     /**
      * このクラスに登録され、文字列で指定されたそれぞれのClipのうち、<br>
      * LimitedRingの先頭のものに対してgetVolumeを実行します<br>
@@ -508,6 +511,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         return getVolume(clip);
     }
 
+    //ここ、publicにするとインライン展開されないから、JVM的にはprivateにすべきなんだろうなあ
     /**
      * このクラスに登録されたすべてのClipに対してsetVolumeを実行します<br>
      *
@@ -550,19 +554,24 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         }
         return b.toByteArray();
     }
-/*
-    /
+
+    /**
      * <a href="http://d.hatena.ne.jp/suusuke/20080127/1201417192">bytestream</a>
-     * InputStreamをバイト配列に変換する
      * バイト列をInputStreamに変換する
+     * 使わないカモ。
      *
      * @param byteData InputStreamに変換したいbyte列
      * @return InputStream （エラーなら空）
-    /
+    */
     public static InputStream getInputStream(byte[] byteData) {
         return new ByteArrayInputStream(byteData);
     }
-*/
+
+    /**
+     * デバッグ情報をstdoutに表示します。
+     *
+     * @param header デバッグのヘッダ
+    */
     public void debugMe(final String header) {
         FloatControl ctrl = null;
         for (final LimitedRing<Clip> clips : values()) {
@@ -572,6 +581,12 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
         }
     }
 
+    /**
+     * デバッグ情報をstdoutに表示します。
+     *
+     * @param header デバッグのヘッダ
+     * @param line 音量を表示したいlineオブジェクト
+    */
     public void debugMe(final String header,final Line line) {
         FloatControl ctrl = null;
         try {
@@ -580,7 +595,7 @@ public class PlaySE extends HashMap<String,LimitedRing<Clip>> implements LineLis
             try {
                 ctrl = (FloatControl)(line.getControl(FloatControl.Type.VOLUME));
             } catch (IllegalArgumentException iax2) {
-                System.out.println("Your Computer setVolume() not supported.");
+                System.out.println("Your Computer getVolume() not supported.");
                 return;
             }
         }

@@ -10,7 +10,7 @@ import org.jnetpcap.protocol.tcpip.Tcp;
  * <code>{
  *
  * public class TcpMusic implements TcpHandler{
- *     public void handleTcp(Tcp tcp){
+ *     public void handleTcp(final Tcp tcp){
  *         int dstPort = tcp.destination();
  *         (MusicPlayer.getInstance()).playInt(dstPort);
  *     }
@@ -21,5 +21,5 @@ import org.jnetpcap.protocol.tcpip.Tcp;
  * @author sya-ke
 */
 public interface TcpHandler{
-    public void handleTcp(Tcp tcp);
+    public void handleTcp(final Tcp tcp);
 }

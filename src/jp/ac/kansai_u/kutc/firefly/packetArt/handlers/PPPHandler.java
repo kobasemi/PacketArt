@@ -7,5 +7,5 @@ import org.jnetpcap.protocol.wan.PPP;
  * @author sya-ke
 */
 public interface PPPHandler{
-    public void handlePPP(PPP ppp);
+    public void handlePPP(final PPP ppp);
 }

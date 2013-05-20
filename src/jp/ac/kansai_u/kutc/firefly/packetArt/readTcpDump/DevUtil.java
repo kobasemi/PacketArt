@@ -17,15 +17,15 @@ import org.jnetpcap.PcapIf;
  * for (String s : sa) {<br>
  *     System.out.println(s);<br>
  * }<br>
- * 
+ *
  *
  * @author sya-ke
 */
 public class DevUtil {
 
     private StringBuilder errBuf;//libpcapからのエラーをここに
-    private List<PcapIf> allDevs;
-    private ArrayList<DevInfo> allDevInfo;
+    private final List<PcapIf> allDevs;
+    private final ArrayList<DevInfo> allDevInfo;
     private boolean gotError;
 
     /**
@@ -114,8 +114,8 @@ public class DevUtil {
      * @param name デバイス名です。
      * @return デバイス名にひも付けされたデバイス(PcapIf)を返します。該当無しならnullが返ります。
     */
-    public PcapIf getDevByName(String devName) {
-        for (DevInfo devInfo : allDevInfo) {
+    public PcapIf getDevByName(final String devName) {
+        for (final DevInfo devInfo : allDevInfo) {
             if (devName.equals(devInfo.name)) {
                 return devInfo.device;
             }
@@ -129,8 +129,8 @@ public class DevUtil {
      * @param ip デバイスの持つIPアドレスです。IPv6でもOKです。
      * @return IPにひも付けされたデバイス名を返します。該当無しならnullが返ります。
     */
-    public String getNameByIP(String ip) {
-        for (DevInfo devInfo : allDevInfo) {
+    public String getNameByIP(final String ip) {
+        for (final DevInfo devInfo : allDevInfo) {
             if (ip.equals(devInfo.ipAddr) || devInfo.ip6Addr.contains(ip)) {
                 return devInfo.name;
             }
@@ -145,8 +145,8 @@ public class DevUtil {
      * @param macAddr デバイスの持つMACアドレスです。フォーマットは00:CB:CA:D0:32:5Aでお願いします。
      * @return MACアドレスにひも付けされたデバイス名が返ります。該当無しならnullが返ります。
     */
-    public String getNameByMacAddr(String macAddr) {
-        for (DevInfo devInfo : allDevInfo) {
+    public String getNameByMacAddr(final String macAddr) {
+        for (final DevInfo devInfo : allDevInfo) {
             if (macAddr.equals(devInfo.macAddr)) {
                 return devInfo.name;
             }
@@ -161,8 +161,8 @@ public class DevUtil {
      * @param description デバイスの説明文です。ベンダ名などが書いてあります。
      * @return 説明文にひも付けされたデバイス名が返ります。該当なしならnullが返ります。
     */
-    public String getNameByDescription(String description) {
-        for (DevInfo devInfo : allDevInfo) {
+    public String getNameByDescription(final String description) {
+        for (final DevInfo devInfo : allDevInfo) {
             if (description.equals(devInfo.description)) {
                 return devInfo.name;
             }
@@ -178,7 +178,7 @@ public class DevUtil {
      * @return devInfo.name ループバックデバイス名が返ります。該当なしならnullが返ります。
     */
     public String getNameByLoopback() {
-        for (DevInfo devInfo : allDevInfo) {
+        for (final DevInfo devInfo : allDevInfo) {
             if (devInfo.loopback) {
                 return devInfo.name;
             }
@@ -193,9 +193,9 @@ public class DevUtil {
      * @return "MACアドレス デバイスの説明"のString配列を返します。
     */
     public String[] getGoodInformations() {
-        String[] information = new String[ allDevs.size() ];
+        final String[] information = new String[ allDevs.size() ];
         int i=0;
-        for (DevInfo devInfo : allDevInfo) {
+        for (final DevInfo devInfo : allDevInfo) {
             String buf = "";
             buf += devInfo.macAddr + " " + devInfo.description;
             if (devInfo.ipAddr != null) {
@@ -215,7 +215,7 @@ public class DevUtil {
      * @return デバイス名が文字列で返ります、該当なしならnullが返ります。
      * @see getGoodInformations
     */
-    public String getNameByGoodInformation(String goodInformation) {
+    public String getNameByGoodInformation(final String goodInformation) {
         int l = 0;
         String macAddr = null;
         for (String info : getGoodInformations() ) {

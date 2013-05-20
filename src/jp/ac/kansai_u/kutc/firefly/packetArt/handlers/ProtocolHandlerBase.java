@@ -37,15 +37,15 @@ public class ProtocolHandlerBase {
     //パケット識別子兼、「受け皿」を宣言。
     //メモリの効率化を図るため
     //「受け皿」を使いまわす関数しか用意しない。
-    private Ethernet ethernet = new Ethernet();
-    private Arp arp = new Arp();
-    private L2TP l2tp = new L2TP();
-    private PPP ppp = new PPP();
-    private Icmp icmp = new Icmp();
-    private Ip4 ip4 = new Ip4();
-    private Ip6 ip6 = new Ip6();
-    private Tcp tcp = new Tcp();  
-    private Udp udp = new Udp();
+    private final Ethernet ethernet = new Ethernet();
+    private final Arp arp = new Arp();
+    private final L2TP l2tp = new L2TP();
+    private final PPP ppp = new PPP();
+    private final Icmp icmp = new Icmp();
+    private final Ip4 ip4 = new Ip4();
+    private final Ip6 ip6 = new Ip6();
+    private final Tcp tcp = new Tcp();
+    private final Udp udp = new Udp();
     private PcapPacket pkt;
     private boolean willHandlePackets;
     private boolean handled;
@@ -83,7 +83,7 @@ public class ProtocolHandlerBase {
      * @param packet PcapManager.nextPacket()で読みだしたパケットです。
      * @see org.jnetpcap.packet.PcapPacket
     */
-    public synchronized void inspect(PcapPacket packet) {
+    public synchronized void inspect(final PcapPacket packet) {
         if (willHandlePackets == false) {
             if (packet != null) {
                 pkt = new PcapPacket(packet);
@@ -149,51 +149,51 @@ public class ProtocolHandlerBase {
     /**
      * @see org.jnetpcap.protocol.tcpip.Tcp
     */
-    public void handleTcp(Tcp tcp){};
+    public void handleTcp(final Tcp tcp){};
 
     /**
      * @see org.jnetpcap.protocol.tcpip.Udp
     */
-    public void handleUdp(Udp udp){};
+    public void handleUdp(final Udp udp){};
 
     /**
      * @see org.jnetpcap.protocol.network.Ip6
     */
-    public void handleIp6(Ip6 ip6){};
+    public void handleIp6(final Ip6 ip6){};
 
     /**
      * @see org.jnetpcap.protocol.network.Ip4
     */
-    public void handleIp4(Ip4 ip4){};
+    public void handleIp4(final Ip4 ip4){};
 
     /**
      * @see org.jnetpcap.protocol.wan.PPP
     */
-    public void handlePPP(PPP ppp){};
+    public void handlePPP(final PPP ppp){};
 
     /**
      * @see org.jnetpcap.protocol.vpn.PPP
     */
-    public void handleL2TP(L2TP lt2p){};
+    public void handleL2TP(final L2TP lt2p){};
 
     /**
      * @see org.jnetpcap.protocol.network.Icmp
     */
-    public void handleIcmp(Icmp icmp){};
+    public void handleIcmp(final Icmp icmp){};
 
     /**
      * @see org.jnetpcap.protocol.network.Arp
     */
-    public void handleArp(Arp arp){};
+    public void handleArp(final Arp arp){};
 
     /**
      * @see org.jnetpcap.protocol.lan.Ethernet
     */
-    public void handleEthernet(Ethernet ethernet){};
+    public void handleEthernet(final Ethernet ethernet){};
 
     /**
      * @see org.jnetpcap.packet.PcapPacket
     */
-    public void handlePacket(PcapPacket packet){};
+    public void handlePacket(final PcapPacket packet){};
 
 }

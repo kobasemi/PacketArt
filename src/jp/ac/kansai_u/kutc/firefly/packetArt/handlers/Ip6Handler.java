@@ -7,5 +7,5 @@ import org.jnetpcap.protocol.network.Ip6;
  * @author sya-ke
 */
 public interface Ip6Handler{
-    public void handleIp6(Ip6 ip6);
+    public void handleIp6(final Ip6 ip6);
 }

@@ -7,5 +7,5 @@ import org.jnetpcap.protocol.lan.Ethernet;
  * @author sya-ke
 */
 public interface EthernetHandler{
-    public void handleEthernet(Ethernet ethernet);
+    public void handleEthernet(final Ethernet ethernet);
 }

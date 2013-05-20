@@ -58,7 +58,7 @@ public final class PcapManager extends Thread{
 
     private volatile boolean killThis;//スレッド停止フラグ（安全にスレッドを停止する）
     private PcapPacket pkt;//一個しか保持しません。run関数でしか使ってません。
-    private static StringBuilder errBuf;//libpcapからのエラーをここに格納します。
+    private final static StringBuilder errBuf = new StringBuilder();//libpcapからのエラーをここに格納します。
     private File pcapFile;//オープンしているファイルの情報を保持します。
     private PcapIf pcapDev;//オープンしているデバイスの情報を保持します。
     private boolean fromFile;//ファイルからオープン？
@@ -69,12 +69,11 @@ public final class PcapManager extends Thread{
     private PcapBpfProgram bpfFilter;//BPFフィルタへのポインタ
     private String bpfText;//BPFフィルタのテキスト
 
-    private HandlerHolder handlerHolder;//別ファイルを参照のこと
-    private PacketQueue packetQueue;//別ファイルを参照のこと
+    public final static int TIMEOUT_OPENDEV = 10;//デバイスからの読み込みで、0.01秒のパケット待ちを許す。
+    public final static int QUEUE_SIZE = 30000;//30000パケットの保持をする。MAXでだいたい3MBくらいメモリを食う。
 
-    public final int TIMEOUT_OPENDEV = 10;//デバイスからの読み込みで、0.01秒のパケット待ちを許す。
-    public final int QUEUE_SIZE = 30000;//30000パケットの保持をする。MAXでだいたい3MBくらいメモリを食う。
-    public final int PUSH_SIZE = 1;//1パケットのロードにつき1パケットの確保をする。0.01秒ごとにパケットを間引く意味もある。
+    private final PacketQueue packetQueue = new PacketQueue(QUEUE_SIZE);//別ファイルを参照のこと
+    private final HandlerHolder handlerHolder = new HandlerHolder();//別ファイルを参照のこと
 
     private Object openPcapLock = new Object();//ロック用オブジェクト
     private Object filterLock = new Object();//ロック用オブジェクト
@@ -101,10 +100,7 @@ public final class PcapManager extends Thread{
         fromFile = false;
         fromDev = false;
         readyRun = false;
-        packetQueue = new PacketQueue(QUEUE_SIZE);
         filtered = false;
-        errBuf = new StringBuilder();
-        handlerHolder = new HandlerHolder();
         killThis = false;
         bpfText = null;
         //debugMe("PcapManager.initDone()");
@@ -155,7 +151,7 @@ public final class PcapManager extends Thread{
      * @param o ハンドラをimplementsしたオブジェクト。
      * @return oがハンドラじゃなかった場合、falseが返ります。
     */
-    public synchronized boolean addHandler(Object o) {
+    public synchronized boolean addHandler(final Object o) {
         boolean wasOK = false;
          wasOK = handlerHolder.classify(o);
         return wasOK;
@@ -169,7 +165,7 @@ public final class PcapManager extends Thread{
      * @param o ハンドラをimplementsしたオブジェクト。
      * @return oというハンドラが登録されていなかった場合、falseを返します。
     */
-    public synchronized boolean removeHandler(Object o) {
+    public synchronized boolean removeHandler(final Object o) {
         return handlerHolder.removeHandler(o);
     }
 
@@ -181,7 +177,7 @@ public final class PcapManager extends Thread{
      * @param fname ファイル名を文字列で。フルパスでお願いします。
      * @return 成功ならtrueを返します。失敗ならerrBufにエラーが入ってます。
     */
-    public synchronized boolean openFile(String fname) {
+    public synchronized boolean openFile(final String fname) {
         synchronized(openPcapLock) {
             if (pcap != null) {
                 System.out.println("You've already opened pcap! closing previous one..");
@@ -216,7 +212,7 @@ public final class PcapManager extends Thread{
      * @return 成功ならtrueを返します。失敗ならerrBufにエラーが入ってます。
     */
     public synchronized boolean openDev() {
-        String devName = Pcap.lookupDev(errBuf);
+        final String devName = Pcap.lookupDev(errBuf);
         return openDev(devName);
     }
     //呼び出し先がスレッドセーフなので、スレッドセーフ。
@@ -228,7 +224,7 @@ public final class PcapManager extends Thread{
      *
      * @return 成功ならtrueを返します。失敗ならerrBufにエラーが入ってます。
     */
-    public synchronized boolean openDev(String devName) {
+    public synchronized boolean openDev(final String devName) {
         synchronized(openPcapLock) {
             System.out.println("PcapManager.openDev(" + devName +")");
             if (pcap != null) {
@@ -367,7 +363,7 @@ public final class PcapManager extends Thread{
      * @return パケット、というかlibpcapの保持するパケットへのポインタを返します。エラーならnull。
     */
     public synchronized PcapPacket nextPacket() {
-        PcapPacket packet = new PcapPacket(JMemory.POINTER);//ポインタを作成
+        final PcapPacket packet = new PcapPacket(JMemory.POINTER);//ポインタを作成
         try {
             if ( pcap != null ) {
                 synchronized(pcap) {
@@ -400,7 +396,7 @@ public final class PcapManager extends Thread{
      * @return パケットを返します。libpcapの方はすぐに解放されます。エラーならnull。
     */
     public synchronized PcapPacket nextPacketCopied() {
-        PcapPacket pkt = nextPacket();
+        final PcapPacket pkt = nextPacket();
         if (pkt != null) {
             return new PcapPacket(pkt);//newすることで参照を断ち切る
         }
@@ -440,7 +436,7 @@ public final class PcapManager extends Thread{
      * @param pkt 突っ込むパケットです。
      * @return 成功ならtrueを返します。
     */
-    public void savePacket(PcapPacket pkt) {
+    public void savePacket(final PcapPacket pkt) {
         if (pkt == null) {
             return;
         }
@@ -493,7 +489,7 @@ public final class PcapManager extends Thread{
      * @return PcapPacketを返します。非常食が空の場合はnullが返ります。
     */
     public PcapPacket nextPacketFromQueue() {
-        PcapPacket pkt = packetQueue.poll();
+        final PcapPacket pkt = packetQueue.poll();
         if (pkt == null && fromFile == true) {
             readyRun = false;
             //デバイスからロードの場合、まだ来る可能性がある。
@@ -522,7 +518,7 @@ public final class PcapManager extends Thread{
      * @param bpf BPF構文で書かれたフィルタリングの記号文字列です。
      * @return 成功ならtrue、エラーならfalse。getErr()でエラー内容は見れます。
     */
-    public boolean setBPFfilter(String bpf) {
+    public boolean setBPFfilter(final String bpf) {
         if (bpf == null) {
             errBuf.append("BPF You Entered is NULL");
             return false;
@@ -596,7 +592,7 @@ public final class PcapManager extends Thread{
      *
      * @param header デバッグのヘッダ
     */
-    public void debugMe(String header) {
+    public void debugMe(final String header) {
         System.out.println("----------------------------------" + header);
         System.out.print("PcapManager Thread is ");
         if (this.isAlive()) {

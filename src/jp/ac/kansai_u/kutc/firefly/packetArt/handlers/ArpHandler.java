@@ -7,5 +7,5 @@ import org.jnetpcap.protocol.network.Arp;
  * @author sya-ke
 */
 public interface ArpHandler{
-    public void handleArp(Arp arp);
+    public void handleArp(final Arp arp);
 }

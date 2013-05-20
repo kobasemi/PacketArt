@@ -7,5 +7,5 @@ import org.jnetpcap.protocol.network.Ip4;
  * @author sya-ke
 */
 public interface Ip4Handler{
-    public void handleIp4(Ip4 ip4);
+    public void handleIp4(final Ip4 ip4);
 }

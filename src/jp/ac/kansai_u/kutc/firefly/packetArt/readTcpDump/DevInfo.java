@@ -20,15 +20,15 @@ import jp.ac.kansai_u.kutc.firefly.packetArt.util.PacketUtil;
 */
 public class DevInfo {
 
-    public PcapIf device;
+    public final PcapIf device;
     //いわゆる、主キー。Map使わんでも、NICを100個つけてる人とかいないしね。
     //jnetpcapが拾ってきた時点でnull回避する。重複は絶対にない。
 
-    public String name;//名前。""はほぼありえない。
-    public String description;//デバイスの説明。（チップセットとか）。""アリ
+    public final String name;//名前。""はほぼありえない。
+    public final String description;//デバイスの説明。（チップセットとか）。""アリ
     public String macAddr;//OSが勝手につけたMACアドレス。"" == OSが取得を許さなかった
     public String ipAddr;//デバイスの持つIPアドレス。当然""アリ。
-    public ArrayList<String> ip6Addr;//IPv4とIPv6の両方が割り当てられている場合が多い。
+    public final ArrayList<String> ip6Addr;//IPv4とIPv6の両方が割り当てられている場合が多い。
     public boolean loopback;//ループバックかどうか。なんの役に立つかは不明
 
     /**
@@ -39,55 +39,42 @@ public class DevInfo {
      * @param pcapIf バイト、数字、booleanな情報を文字列な情報に変換したいデバイスのクラスです。
     */
     DevInfo(PcapIf pcapIf) {
-        ip6Addr = new ArrayList<String>();
-        if (pcapIf != null) {
-            this.device = pcapIf;
-            complete();
-        } else {
-            decomplete();
-        }
-    }
-
-    /**
-     * 必要な情報を取得し、文字列でデータ化します。<br>
-     * この関数はコンストラクタで呼ばれます。
-    */
-    private void complete() {
-        name = device.getName();
-        description = device.getDescription();
-        try {
-            macAddr = PacketUtil.getMacAddress(device.getHardwareAddress());
-        } catch (IOException e) {
-            //OSがMACアドレスのクエリを遮断した。なぜ！？
-            System.out.println( "Retributing MAC ADDRESS '" + device.toString()
-                                + "'Denied by OS!");
-            e.printStackTrace();
-            macAddr = "";
-        }
-        List<PcapAddr> addresses = device.getAddresses();
-        for (PcapAddr pcapAddr : addresses) {
-            PcapSockAddr pcapSockAddr = pcapAddr.getAddr();
-            if (pcapSockAddr.getFamily() == PcapSockAddr.AF_INET) {
-                ipAddr = PacketUtil.getInetAddress(pcapSockAddr.getData());
-            } else {
-                ip6Addr.add( PacketUtil.getInetAddress(pcapSockAddr.getData() ));
+        this.device = pcapIf;
+        if (this.device != null) {
+            this.ip6Addr = new ArrayList<String>();
+            this.name = device.getName();
+            this.description = device.getDescription();
+            try {
+                this.macAddr = PacketUtil.getMacAddress(device.getHardwareAddress());
+            } catch (IOException e) {
+                //OSがMACアドレスのクエリを遮断した。なぜ！？
+                System.out.println( "Retributing MAC ADDRESS '" + device.toString()
+                                    + "'Denied by OS!");
+                e.printStackTrace();
+                this.macAddr = "";
             }
+            final List<PcapAddr> addresses = device.getAddresses();
+            for (final PcapAddr pcapAddr : addresses) {
+                final PcapSockAddr pcapSockAddr = pcapAddr.getAddr();
+                if (pcapSockAddr.getFamily() == PcapSockAddr.AF_INET) {
+                    this.ipAddr = PacketUtil.getInetAddress(pcapSockAddr.getData());
+                } else {
+                    this.ip6Addr.add( PacketUtil.getInetAddress(pcapSockAddr.getData() ));
+                }
+            }
+            if (ipAddr != null && ipAddr.equals("127.0.0.1") || ip6Addr.contains("::1")) {
+                loopback = true;
+            } else {
+                loopback = false;
+            }
+        } else {
+            this.name = "";
+            this.description = "";
+            this.macAddr = "";
+            this.ipAddr = "";
+            this.ip6Addr = null;
+            this.loopback = false;
         }
-        if (ipAddr != null && ipAddr.equals("127.0.0.1") || ip6Addr.contains("::1")) {
-            loopback = true;
-        }
-    }
-
-    /**
-     * 初期化します。
-    */
-    private void decomplete() {
-        name = "";
-        description = "";
-        macAddr = "";
-        ipAddr = "";
-        ip6Addr = null;
-        loopback = false;
     }
 
     /**

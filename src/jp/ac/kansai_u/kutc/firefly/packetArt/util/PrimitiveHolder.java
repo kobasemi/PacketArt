@@ -5,7 +5,7 @@ package jp.ac.kansai_u.kutc.firefly.packetArt.util;
 */
 public class PrimitiveHolder<T> {
     public T value;
-    public PrimitiveHolder(T t){
+    public PrimitiveHolder(final T t){
         this.value = t;
     }
 }

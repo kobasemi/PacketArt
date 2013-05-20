@@ -22,16 +22,17 @@ import org.jnetpcap.protocol.tcpip.Udp;
 */
 public class PacketHolder {
 
-    //ここで代入することで二度とアロケートしないようにする
-    private Ethernet ethernet = new Ethernet();
-    private Arp arp = new Arp();
-    private L2TP l2tp = new L2TP();
-    private PPP ppp = new PPP();
-    private Icmp icmp = new Icmp();
-    private Ip4 ip4 = new Ip4();
-    private Ip6 ip6 = new Ip6();
-    private Tcp tcp = new Tcp();
-    private Udp udp = new Udp();
+    //ここで代入することで二度とポインタをアロケートしないようにする
+    //一刻もはやく参照を断ち切るという意味もある
+    private final Ethernet ethernet = new Ethernet();
+    private final Arp arp = new Arp();
+    private final L2TP l2tp = new L2TP();
+    private final PPP ppp = new PPP();
+    private final Icmp icmp = new Icmp();
+    private final Ip4 ip4 = new Ip4();
+    private final Ip6 ip6 = new Ip6();
+    private final Tcp tcp = new Tcp();
+    private final Udp udp = new Udp();
     private PcapPacket pkt;
 
     /**
@@ -45,7 +46,7 @@ public class PacketHolder {
      *
      * @param packet プロトコルを抽出したいパケット
     */
-    public PacketHolder(PcapPacket packet) {
+    public PacketHolder(final PcapPacket packet) {
         setPacket(packet);
     }
 
@@ -54,9 +55,9 @@ public class PacketHolder {
      * 受け皿をさらに使いまわします。
      *
      * @param packet プロトコルを抽出したいパケット
-     * 
+     *
     */
-    public void setPacket(PcapPacket packet) {
+    public void setPacket(final PcapPacket packet) {
         pkt = packet;
     }
 
@@ -249,4 +250,50 @@ public class PacketHolder {
     public boolean hasEthernet() {
         return  pkt != null & pkt.hasHeader(JProtocol.ETHERNET_ID);
     }
+
+    /**
+     * 「実際にキャプチャした時点での」パケットのサイズを返します。<br>
+     *
+     * @return パケットのサイズ(Byte)。パケットが装填されていない場合は-1
+    */
+    public long getCaplen() {
+        if (pkt != null)
+            return pkt.getCaptureHeader().caplen();
+        return -1;
+    }
+
+    /**
+     *  「実際にキャプチャした時点での」1970年からの秒数を返します。
+     *
+     * @return パケットの到着時刻(sec)。パケットが装填されていない場合は-1
+    */
+    public long getTimeStamp() {
+        if (pkt != null)
+            return pkt.getCaptureHeader().seconds();
+        return -1;
+    }
+
+    /**
+     *  「実際にキャプチャした時点での」1970年からの秒数をミリ秒で返します。
+     *
+     * @return パケットの到着時刻(milli sec)。パケットが装填されていない場合は-1
+    */
+    public long getMilliTimeStamp() {
+        if (pkt != null)
+            return pkt.getCaptureHeader().timestampInMillis();
+        return -1;
+    }
+
+    /**
+     *  「実際にキャプチャした時点での」1970年からの秒数をナノ秒で返します。パケット到着間隔がほぼ同じ場合<br>
+     * ミリ単位で区別することができるかもしれません。
+     *
+     * @return パケットの到着時刻(nano sec)。パケットが装填されていない場合は-1
+    */
+    public long getNanos() {
+        if (pkt != null)
+            return pkt.getCaptureHeader().nanos();
+        return -1;
+    }
+
 }

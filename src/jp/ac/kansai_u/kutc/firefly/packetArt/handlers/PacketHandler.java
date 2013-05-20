@@ -9,5 +9,5 @@ import org.jnetpcap.packet.PcapPacket;
  * @author sya-ke
 */
 public interface PacketHandler{
-    public void handlePacket(PcapPacket packet);
+    public void handlePacket(final PcapPacket packet);
 }

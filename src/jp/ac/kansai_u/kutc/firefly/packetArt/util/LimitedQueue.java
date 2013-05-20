@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class LimitedQueue<E> extends ConcurrentLinkedQueue<E> {
 
     private int limit;
-    private Object limitLock = new Object();
+    private final Object limitLock = new Object();
 
     /**
      * 最大装填数を初期設定します。
@@ -50,7 +50,7 @@ public class LimitedQueue<E> extends ConcurrentLinkedQueue<E> {
      * @return 基本的にtrueですが、nullが渡された場合はキューに入れず、falseを返します。
     */
     @Override
-    public synchronized boolean add(E o) {
+    public synchronized boolean add(final E o) {
         if (o == null) {
             return false;
         }

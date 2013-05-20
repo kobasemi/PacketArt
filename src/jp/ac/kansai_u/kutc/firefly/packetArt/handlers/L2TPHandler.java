@@ -7,5 +7,5 @@ import org.jnetpcap.protocol.vpn.L2TP;
  * @author sya-ke
 */
 public interface L2TPHandler{
-    public void handleL2TP(L2TP l2tp);
+    public void handleL2TP(final L2TP l2tp);
 }
